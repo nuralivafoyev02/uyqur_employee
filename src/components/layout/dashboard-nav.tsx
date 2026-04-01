@@ -3,12 +3,16 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
+import type { ComponentType } from "react";
 
 import { cx } from "@/lib/utils";
 
 export type DashboardNavItem = {
   href: string;
   label: string;
+  icon: ComponentType<{
+    className?: string;
+  }>;
 };
 
 type DashboardNavProps = {
@@ -31,11 +35,13 @@ export function DashboardNav({ items, compact = false }: DashboardNavProps) {
       {items.map((item) => {
         const active =
           pathname === item.href || pathname.startsWith(`${item.href}/`);
+        const Icon = item.icon;
 
         return (
           <Link
             key={item.href}
             href={item.href}
+            aria-current={active ? "page" : undefined}
             prefetch
             onMouseEnter={() => {
               router.prefetch(item.href);
@@ -44,13 +50,14 @@ export function DashboardNav({ items, compact = false }: DashboardNavProps) {
               router.prefetch(item.href);
             }}
             className={cx(
-              "rounded-xl px-3 py-2.5 text-sm font-medium transition",
+              "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition",
               active
                 ? "bg-app-accent text-white"
                 : "text-app-text-muted hover:bg-app-surface-muted hover:text-app-text",
             )}
           >
-            {item.label}
+            <Icon className={cx("h-[18px] w-[18px]", compact && "h-4 w-4")} />
+            <span>{item.label}</span>
           </Link>
         );
       })}

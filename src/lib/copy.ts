@@ -3,6 +3,10 @@ import type { AppLanguage, AppTheme } from "@/lib/preferences";
 type ShellCopy = {
   subtitle: string;
   menuAndProfile: string;
+  openProfile: string;
+  closeProfile: string;
+  profileTitle: string;
+  profileDescription: string;
   loadingName: string;
   loadingProfile: string;
   signOut: string;
@@ -59,6 +63,7 @@ export type AppCopy = {
   common: {
     active: string;
     cancel: string;
+    close: string;
   };
   shell: ShellCopy;
   settings: SettingsCopy;
@@ -69,10 +74,15 @@ const COPY: Record<AppLanguage, AppCopy> = {
     common: {
       active: "Faol",
       cancel: "Fikrimdan qaytdim",
+      close: "Yopish",
     },
     shell: {
       subtitle: "Uyqur Support ERP tizimi",
-      menuAndProfile: "Menyu va profil",
+      menuAndProfile: "Menyu",
+      openProfile: "Profil panelini ochish",
+      closeProfile: "Profil panelini yopish",
+      profileTitle: "Profil",
+      profileDescription: "Hisob ma'lumoti va sessiya boshqaruvi.",
       loadingName: "Yuklanmoqda...",
       loadingProfile: "Profil ma'lumoti yuklanmoqda",
       signOut: "Chiqish",
@@ -145,10 +155,15 @@ const COPY: Record<AppLanguage, AppCopy> = {
     common: {
       active: "Active",
       cancel: "Cancel",
+      close: "Close",
     },
     shell: {
       subtitle: "Uyqur Support ERP system",
-      menuAndProfile: "Menu and profile",
+      menuAndProfile: "Menu",
+      openProfile: "Open profile panel",
+      closeProfile: "Close profile panel",
+      profileTitle: "Profile",
+      profileDescription: "Account details and session controls.",
       loadingName: "Loading...",
       loadingProfile: "Profile data is loading",
       signOut: "Sign out",
