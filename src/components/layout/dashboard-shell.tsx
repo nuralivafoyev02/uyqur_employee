@@ -196,7 +196,7 @@ export function DashboardShell({
             href="/dashboard"
             className="flex items-center gap-2 px-3 text-sm font-bold text-app-text"
           >
-            <Image src="/uyqur-logo.jpg" alt="Logo" width={20} height={20} />
+            <Image src="/uyqur-logo.jpg" alt="Logo" width={35} height={35} className="rounded-[2px]" />
             Uyqur Support
           </Link>
           <div className="mt-8">

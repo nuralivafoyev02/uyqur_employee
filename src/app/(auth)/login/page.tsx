@@ -28,7 +28,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         <p className="app-kicker">Kirish</p>
         <h1 className="app-title">Ish jarayoniga qayting</h1>
         <p className="app-subtitle">
-          Hisobotlar, vazifalar va employee overview shu yerdan boshqariladi.
+          Hisobotlar, vazifalar va rejalar shu yerdan boshqariladi.
         </p>
       </div>
 
