@@ -5,6 +5,10 @@ type ShellCopy = {
   menuAndProfile: string;
   openProfile: string;
   closeProfile: string;
+  expandSidebar: string;
+  collapseSidebar: string;
+  collapseSidebarShort: string;
+  expandSidebarShort: string;
   profileTitle: string;
   profileDescription: string;
   loadingName: string;
@@ -81,6 +85,10 @@ const COPY: Record<AppLanguage, AppCopy> = {
       menuAndProfile: "Menyu",
       openProfile: "Profil panelini ochish",
       closeProfile: "Profil panelini yopish",
+      expandSidebar: "Yon panelni ochish",
+      collapseSidebar: "Yon panelni yopish",
+      collapseSidebarShort: "Yopish",
+      expandSidebarShort: "Ochish",
       profileTitle: "Profil",
       profileDescription: "Hisob ma'lumoti va sessiya boshqaruvi.",
       loadingName: "Yuklanmoqda...",
@@ -162,6 +170,10 @@ const COPY: Record<AppLanguage, AppCopy> = {
       menuAndProfile: "Menu",
       openProfile: "Open profile panel",
       closeProfile: "Close profile panel",
+      expandSidebar: "Expand sidebar",
+      collapseSidebar: "Collapse sidebar",
+      collapseSidebarShort: "Collapse",
+      expandSidebarShort: "Expand",
       profileTitle: "Profile",
       profileDescription: "Account details and session controls.",
       loadingName: "Loading...",

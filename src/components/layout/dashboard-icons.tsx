@@ -17,7 +17,7 @@ function IconBase({
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.9"
+      strokeWidth="1.75"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
@@ -31,10 +31,10 @@ function IconBase({
 export function DashboardIcon({ className }: IconProps) {
   return (
     <IconBase className={className}>
-      <rect x="3.5" y="3.5" width="7" height="7" rx="1.5" />
-      <rect x="13.5" y="3.5" width="7" height="4.5" rx="1.5" />
-      <rect x="13.5" y="11.5" width="7" height="9" rx="1.5" />
-      <rect x="3.5" y="13.5" width="7" height="7" rx="1.5" />
+      <rect x="3.5" y="3.5" width="7.5" height="7.5" rx="2" />
+      <rect x="13" y="3.5" width="7.5" height="5.5" rx="2" />
+      <rect x="13" y="11" width="7.5" height="9.5" rx="2" />
+      <rect x="3.5" y="13" width="7.5" height="7.5" rx="2" />
     </IconBase>
   );
 }
@@ -42,10 +42,11 @@ export function DashboardIcon({ className }: IconProps) {
 export function ReportsIcon({ className }: IconProps) {
   return (
     <IconBase className={className}>
-      <path d="M7 4.5h7l4 4v11a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 6 19.5v-13A2 2 0 0 1 8 4.5Z" />
-      <path d="M14 4.5v4h4" />
-      <path d="M9 12h6" />
-      <path d="M9 16h6" />
+      <path d="M8 3.75h6.5L19.5 8.75V18a2.25 2.25 0 0 1-2.25 2.25H8A2.25 2.25 0 0 1 5.75 18V6A2.25 2.25 0 0 1 8 3.75Z" />
+      <path d="M14.5 3.75v4.5h4.5" />
+      <path d="M9 11h6" />
+      <path d="M9 14.5h6" />
+      <path d="M9 18h4" />
     </IconBase>
   );
 }
@@ -53,12 +54,14 @@ export function ReportsIcon({ className }: IconProps) {
 export function PlansIcon({ className }: IconProps) {
   return (
     <IconBase className={className}>
-      <path d="M8 7.5h11" />
-      <path d="M8 12h11" />
-      <path d="M8 16.5h11" />
-      <path d="m4.5 7.5 1.3 1.3 2.2-2.4" />
-      <path d="m4.5 12 1.3 1.3 2.2-2.4" />
-      <path d="m4.5 16.5 1.3 1.3 2.2-2.4" />
+      <rect x="4.75" y="3.75" width="14.5" height="16.5" rx="2.5" />
+      <path d="M8 3.75v3.5" />
+      <path d="M16 3.75v3.5" />
+      <path d="M4.75 8.5h14.5" />
+      <path d="m8.1 13.15 1.25 1.25 2.25-2.6" />
+      <path d="M13.2 13.5h3.2" />
+      <path d="m8.1 17.1 1.25 1.25 2.25-2.6" />
+      <path d="M13.2 17.45h3.2" />
     </IconBase>
   );
 }
@@ -66,10 +69,10 @@ export function PlansIcon({ className }: IconProps) {
 export function EmployeesIcon({ className }: IconProps) {
   return (
     <IconBase className={className}>
-      <path d="M8.5 10.5a2.75 2.75 0 1 0 0-5.5 2.75 2.75 0 0 0 0 5.5Z" />
-      <path d="M16.5 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
-      <path d="M4.5 18.5a4 4 0 0 1 8 0" />
-      <path d="M14 18.5a3 3 0 0 1 6 0" />
+      <path d="M9 11a3.25 3.25 0 1 0 0-6.5A3.25 3.25 0 0 0 9 11Z" />
+      <path d="M16.5 10a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />
+      <path d="M3.75 18.75a5.25 5.25 0 0 1 10.5 0" />
+      <path d="M14 18.75a4.25 4.25 0 0 1 6.25-3.75" />
     </IconBase>
   );
 }
@@ -77,8 +80,15 @@ export function EmployeesIcon({ className }: IconProps) {
 export function SettingsIcon({ className }: IconProps) {
   return (
     <IconBase className={className}>
-      <circle cx="12" cy="12" r="3.1" />
-      <path d="M19.4 15a1 1 0 0 0 .2 1.1l.1.1a1.8 1.8 0 0 1-2.5 2.5l-.1-.1a1 1 0 0 0-1.1-.2 1 1 0 0 0-.6.9V20a1.8 1.8 0 1 1-3.6 0v-.2a1 1 0 0 0-.6-.9 1 1 0 0 0-1.1.2l-.1.1a1.8 1.8 0 0 1-2.5-2.5l.1-.1a1 1 0 0 0 .2-1.1 1 1 0 0 0-.9-.6H4a1.8 1.8 0 1 1 0-3.6h.2a1 1 0 0 0 .9-.6 1 1 0 0 0-.2-1.1l-.1-.1a1.8 1.8 0 0 1 2.5-2.5l.1.1a1 1 0 0 0 1.1.2 1 1 0 0 0 .6-.9V4a1.8 1.8 0 1 1 3.6 0v.2a1 1 0 0 0 .6.9 1 1 0 0 0 1.1-.2l.1-.1a1.8 1.8 0 0 1 2.5 2.5l-.1.1a1 1 0 0 0-.2 1.1 1 1 0 0 0 .9.6h.2a1.8 1.8 0 1 1 0 3.6h-.2a1 1 0 0 0-.9.6Z" />
+      <path d="M5 6.5h9" />
+      <path d="M17 6.5h2" />
+      <path d="M10.5 6.5a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5Z" />
+      <path d="M5 12h2" />
+      <path d="M10 12h9" />
+      <path d="M8.5 12a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5Z" />
+      <path d="M5 17.5h9" />
+      <path d="M17 17.5h2" />
+      <path d="M15.5 17.5a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5Z" />
     </IconBase>
   );
 }
@@ -97,6 +107,22 @@ export function CloseIcon({ className }: IconProps) {
     <IconBase className={className}>
       <path d="m6 6 12 12" />
       <path d="M18 6 6 18" />
+    </IconBase>
+  );
+}
+
+export function SidebarCollapseIcon({ className }: IconProps) {
+  return (
+    <IconBase className={className}>
+      <path d="m14.5 6.75-5.25 5.25 5.25 5.25" />
+    </IconBase>
+  );
+}
+
+export function SidebarExpandIcon({ className }: IconProps) {
+  return (
+    <IconBase className={className}>
+      <path d="m9.5 6.75 5.25 5.25-5.25 5.25" />
     </IconBase>
   );
 }

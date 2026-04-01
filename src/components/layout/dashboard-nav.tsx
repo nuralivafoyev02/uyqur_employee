@@ -18,9 +18,14 @@ export type DashboardNavItem = {
 type DashboardNavProps = {
   items: DashboardNavItem[];
   compact?: boolean;
+  collapsed?: boolean;
 };
 
-export function DashboardNav({ items, compact = false }: DashboardNavProps) {
+export function DashboardNav({
+  items,
+  compact = false,
+  collapsed = false,
+}: DashboardNavProps) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -31,7 +36,13 @@ export function DashboardNav({ items, compact = false }: DashboardNavProps) {
   }, [items, router]);
 
   return (
-    <nav className={cx("flex flex-col gap-1.5", compact && "gap-2")}>
+    <nav
+      className={cx(
+        "flex flex-col gap-1.5",
+        compact && "gap-2",
+        collapsed && "items-center",
+      )}
+    >
       {items.map((item) => {
         const active =
           pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -42,6 +53,7 @@ export function DashboardNav({ items, compact = false }: DashboardNavProps) {
             key={item.href}
             href={item.href}
             aria-current={active ? "page" : undefined}
+            aria-label={collapsed ? item.label : undefined}
             prefetch
             onMouseEnter={() => {
               router.prefetch(item.href);
@@ -49,15 +61,27 @@ export function DashboardNav({ items, compact = false }: DashboardNavProps) {
             onFocus={() => {
               router.prefetch(item.href);
             }}
+            title={collapsed ? item.label : undefined}
             className={cx(
-              "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition",
+              "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition",
+              collapsed && "w-12 justify-center px-0",
               active
                 ? "bg-app-accent text-white"
                 : "text-app-text-muted hover:bg-app-surface-muted hover:text-app-text",
             )}
           >
-            <Icon className={cx("h-[18px] w-[18px]", compact && "h-4 w-4")} />
-            <span>{item.label}</span>
+            <span
+              className={cx(
+                "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition",
+                active
+                  ? "bg-white/12 text-white"
+                  : "bg-app-bg-elevated text-app-text-subtle group-hover:bg-app-surface group-hover:text-app-text",
+                compact && "h-7 w-7 rounded-md",
+              )}
+            >
+              <Icon className={cx("h-[17px] w-[17px]", compact && "h-[15px] w-[15px]")} />
+            </span>
+            {collapsed ? null : <span className="truncate">{item.label}</span>}
           </Link>
         );
       })}

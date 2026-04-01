@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 
 import { useAppCopy, usePreferences } from "@/components/providers/preferences-provider";
@@ -12,6 +12,8 @@ import {
   EmployeesIcon,
   PlansIcon,
   ReportsIcon,
+  SidebarCollapseIcon,
+  SidebarExpandIcon,
   SettingsIcon,
   UserIcon,
 } from "@/components/layout/dashboard-icons";
@@ -20,7 +22,7 @@ import { RoleBadge } from "@/components/ui/badges";
 import { signOutAction } from "@/lib/actions/auth";
 import type { AppCopy } from "@/lib/copy";
 import type { AppLanguage } from "@/lib/preferences";
-import { getInitials } from "@/lib/utils";
+import { cx, getInitials } from "@/lib/utils";
 
 type ViewerSummary = {
   fullName: string;
@@ -294,9 +296,13 @@ export function DashboardShell({
   const { language } = usePreferences();
   const copy = useAppCopy();
   const [viewer, setViewer] = useState<ViewerSummary | null>(null);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const primaryItems = buildPrimaryItems(viewer?.role ?? null, copy.shell.nav);
   const settingsItem = buildSettingsItem(copy.shell.nav);
   const mobileItems = [...primaryItems, settingsItem];
+  const desktopLayoutStyle = {
+    "--sidebar-width": isSidebarExpanded ? "260px" : "88px",
+  } as CSSProperties;
 
   useEffect(() => {
     let active = true;
@@ -331,12 +337,21 @@ export function DashboardShell({
   }, []);
 
   return (
-    <div className="min-h-screen">
-      <div className="mx-auto grid min-h-screen max-w-7xl lg:grid-cols-[260px_minmax(0,1fr)]">
-        <aside className="hidden border-r border-app-border bg-app-surface px-4 py-6 backdrop-blur lg:flex lg:flex-col">
+    <div className="h-screen overflow-hidden">
+      <div
+        className="mx-auto grid h-screen max-w-7xl transition-[grid-template-columns] duration-300 ease-out lg:grid-cols-[var(--sidebar-width)_minmax(0,1fr)]"
+        style={desktopLayoutStyle}
+      >
+        <aside
+          className="hidden h-screen border-r border-app-border bg-app-surface px-4 py-6 backdrop-blur transition-[padding] duration-300 lg:flex lg:flex-col"
+        >
           <Link
             href="/dashboard"
-            className="flex items-center gap-2 px-3 text-sm font-bold text-app-text"
+            aria-label="Uyqur Support"
+            className={cx(
+              "flex items-center gap-2 px-3 text-sm font-bold text-app-text transition",
+              isSidebarExpanded ? "justify-start" : "justify-center px-0",
+            )}
           >
             <Image
               src="/uyqur-logo.jpg"
@@ -345,21 +360,47 @@ export function DashboardShell({
               height={35}
               className="rounded-[2px]"
             />
-            Uyqur Support
+            {isSidebarExpanded ? <span>Uyqur Support</span> : null}
           </Link>
 
           <div className="mt-8">
-            <DashboardNav items={primaryItems} />
+            <DashboardNav items={primaryItems} collapsed={!isSidebarExpanded} />
           </div>
 
-          <div className="mt-auto border-t border-app-border pt-4">
-            <DashboardNav items={[settingsItem]} />
+          <div className="mt-auto space-y-4 pt-6">
+            <button
+              type="button"
+              aria-label={
+                isSidebarExpanded ? copy.shell.collapseSidebar : copy.shell.expandSidebar
+              }
+              title={isSidebarExpanded ? copy.shell.collapseSidebar : copy.shell.expandSidebar}
+              className={cx(
+                "app-button-secondary hidden items-center gap-2 transition lg:inline-flex",
+                isSidebarExpanded
+                  ? "w-full justify-start px-3"
+                  : "mx-auto h-11 w-11 justify-center rounded-full px-0",
+              )}
+              onClick={() => setIsSidebarExpanded((current) => !current)}
+            >
+              {isSidebarExpanded ? (
+                <>
+                  <SidebarCollapseIcon className="h-4 w-4" />
+                  <span>{copy.shell.collapseSidebarShort}</span>
+                </>
+              ) : (
+                <SidebarExpandIcon className="h-4 w-4" />
+              )}
+            </button>
+
+            <div className="border-t border-app-border pt-4">
+              <DashboardNav items={[settingsItem]} collapsed={!isSidebarExpanded} />
+            </div>
           </div>
         </aside>
 
-        <div className="flex min-h-screen flex-col">
+        <div className="flex h-screen min-h-0 flex-col overflow-hidden">
           <header className="border-b border-app-border bg-app-surface backdrop-blur">
-            <div className="app-shell flex flex-col gap-4 py-4 md:flex-row md:items-center md:justify-between">
+            <div className="app-shell flex flex-col gap-4 py-1 md:flex-row md:items-center md:justify-between">
               <div>
                 <Link
                   href="/dashboard"
@@ -385,7 +426,9 @@ export function DashboardShell({
             </div>
           </header>
 
-          <main className="app-shell flex-1 py-6">{children}</main>
+          <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+            <div className="app-shell min-h-full py-6">{children}</div>
+          </main>
         </div>
       </div>
     </div>
