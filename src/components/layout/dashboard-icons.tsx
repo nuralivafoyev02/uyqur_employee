@@ -163,3 +163,13 @@ export function BreadcrumbChevronIcon({ className }: IconProps) {
     </IconBase>
   );
 }
+
+export function SignOutIcon({ className }: IconProps) {
+  return (
+    <IconBase className={className}>
+      <path d="M9 7H6.75A1.75 1.75 0 0 0 5 8.75v6.5A1.75 1.75 0 0 0 6.75 17H9" />
+      <path d="M13 8.5 17 12l-4 3.5" />
+      <path d="M10 12h7" />
+    </IconBase>
+  );
+}

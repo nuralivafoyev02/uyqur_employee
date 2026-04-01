@@ -9,18 +9,17 @@ import { createPortal } from "react-dom";
 import { useAppCopy, usePreferences } from "@/components/providers/preferences-provider";
 import {
   BreadcrumbChevronIcon,
-  CloseIcon,
   DashboardIcon,
   EmployeesIcon,
   PlansIcon,
   ReportsIcon,
+  SignOutIcon,
   SidebarCollapseIcon,
   SidebarExpandIcon,
   SettingsIcon,
   UserIcon,
 } from "@/components/layout/dashboard-icons";
 import { DashboardNav, type DashboardNavItem } from "@/components/layout/dashboard-nav";
-import { RoleBadge } from "@/components/ui/badges";
 import { signOutAction } from "@/lib/actions/auth";
 import type { AppCopy } from "@/lib/copy";
 import { getDashboardCopy } from "@/lib/dashboard-copy";
@@ -28,22 +27,26 @@ import { getEmployeesCopy } from "@/lib/employees-copy";
 import type { AppLanguage } from "@/lib/preferences";
 import { getPlansCopy } from "@/lib/plans-copy";
 import { getReportsCopy } from "@/lib/reports-copy";
-import { cx, getInitials } from "@/lib/utils";
+import { cx, getInitials, getRoleLabel } from "@/lib/utils";
 import type { ComponentType } from "react";
 
 type ViewerSummary = {
   fullName: string;
   email: string;
   role: "admin" | "manager" | "employee";
+  title: string | null;
+  department: string | null;
 };
 
 type SignOutButtonProps = {
   label: string;
+  icon?: React.ReactNode;
   confirmTitle: string;
   confirmDescription: string;
   confirmActionLabel: string;
   cancelLabel: string;
   className: string;
+  onTrigger?: () => void;
 };
 
 type HeaderMeta = {
@@ -148,11 +151,13 @@ function buildHeaderMeta({
 
 function SignOutButton({
   label,
+  icon,
   confirmTitle,
   confirmDescription,
   confirmActionLabel,
   cancelLabel,
   className,
+  onTrigger,
 }: SignOutButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -189,8 +194,16 @@ function SignOutButton({
   return (
     <>
       <form ref={formRef} action={signOutAction}>
-        <button type="button" className={className} onClick={() => setIsOpen(true)}>
-          {label}
+        <button
+          type="button"
+          className={className}
+          onClick={() => {
+            onTrigger?.();
+            setIsOpen(true);
+          }}
+        >
+          {icon}
+          <span>{label}</span>
         </button>
       </form>
 
@@ -252,17 +265,18 @@ function ProfileButton({
   language: AppLanguage;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
   const descriptionId = useId();
   const initials = viewer?.fullName ? getInitials(viewer.fullName) : null;
+  const profileMeta = [viewer?.department, viewer?.title].filter(Boolean).join(" · ");
+  const profileSubtitle =
+    profileMeta || (viewer ? getRoleLabel(viewer.role, language) : copy.shell.loadingProfile);
 
   useEffect(() => {
     if (!isOpen) {
       return;
     }
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -270,103 +284,107 @@ function ProfileButton({
       }
     };
 
+    const handlePointerDown = (event: MouseEvent | PointerEvent) => {
+      if (!wrapperRef.current?.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
     window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("pointerdown", handlePointerDown);
 
     return () => {
-      document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("pointerdown", handlePointerDown);
     };
   }, [isOpen]);
 
   return (
-    <>
+    <div ref={wrapperRef} className="relative">
       <button
         type="button"
         aria-haspopup="dialog"
+        aria-expanded={isOpen}
         aria-label={copy.shell.openProfile}
         className="app-icon-button h-11 w-11"
-        onClick={() => setIsOpen(true)}
+        onClick={() => setIsOpen((current) => !current)}
       >
         <UserIcon className="h-5 w-5" />
       </button>
 
-      {isOpen
-        ? createPortal(
-          <div
-            className="fixed inset-0 z-[100] flex items-start justify-center bg-slate-950/40 px-4 py-8 backdrop-blur-[2px] sm:items-center"
-            onClick={() => setIsOpen(false)}
-          >
-            <div
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby={titleId}
-              aria-describedby={descriptionId}
-              className="app-panel w-full max-w-md p-5 sm:p-6"
-              onClick={(event) => event.stopPropagation()}
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-app-accent-muted text-sm font-semibold text-app-accent">
-                    {initials ? initials : <UserIcon className="h-5 w-5" />}
-                  </div>
-                  <div>
-                    <p id={titleId} className="text-lg font-semibold tracking-tight text-app-text">
-                      {copy.shell.profileTitle}
-                    </p>
-                    <p id={descriptionId} className="text-sm text-app-text-muted">
-                      {copy.shell.profileDescription}
-                    </p>
-                  </div>
+      <div
+        role="dialog"
+        aria-modal="false"
+        aria-hidden={!isOpen}
+        aria-labelledby={titleId}
+        aria-describedby={descriptionId}
+        data-state={isOpen ? "open" : "closed"}
+        className="app-popover-panel absolute right-0 top-full z-50 mt-3 w-[min(21rem,calc(100vw-1.5rem))]"
+      >
+        <div className="app-panel relative overflow-hidden p-3.5 sm:p-4">
+            <div className="absolute right-5 top-0 h-3 w-3 -translate-y-1/2 rotate-45 border-l border-t border-app-border bg-app-surface" />
+
+            <div className="flex items-center gap-3">
+              <div className="relative shrink-0">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-app-accent text-sm font-semibold text-white">
+                  {initials ? initials : <UserIcon className="h-5 w-5" />}
                 </div>
-
-                <button
-                  type="button"
-                  aria-label={copy.shell.closeProfile}
-                  className="app-icon-button h-10 w-10"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <CloseIcon className="h-4 w-4" />
-                </button>
+                <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-app-surface bg-emerald-500" />
               </div>
-
-              <div className="mt-5 rounded-2xl border border-app-border bg-app-bg-elevated p-4">
-                <div className="space-y-1">
-                  <p className="text-sm font-semibold text-app-text">
+              <div className="min-w-0">
+                <div>
+                  <p
+                    id={titleId}
+                    className="truncate text-[18px] font-semibold leading-tight tracking-tight text-app-text"
+                  >
                     {viewer?.fullName ?? copy.shell.loadingName}
                   </p>
-                  <p className="text-sm text-app-text-muted">
-                    {viewer?.email ?? copy.shell.loadingProfile}
+                  <p
+                    id={descriptionId}
+                    className="mt-1 truncate text-sm leading-5 text-app-text-muted"
+                  >
+                    {profileSubtitle}
                   </p>
                 </div>
-
-                <div className="mt-3 flex flex-wrap items-center gap-2">
-                  {viewer ? <RoleBadge role={viewer.role} language={language} /> : null}
-                </div>
-              </div>
-
-              <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-                <Link
-                  href="/settings"
-                  className="app-button-secondary flex-1 justify-center"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {copy.shell.nav.settings}
-                </Link>
-                <SignOutButton
-                  label={copy.shell.signOut}
-                  confirmTitle={copy.shell.signOutConfirmTitle}
-                  confirmDescription={copy.shell.signOutConfirmDescription}
-                  confirmActionLabel={copy.shell.signOutConfirmAction}
-                  cancelLabel={copy.common.cancel}
-                  className="exit-btn app-button flex-1 justify-center"
-                />
               </div>
             </div>
-          </div>,
-          document.body,
-        )
-        : null}
-    </>
+
+            <div className="my-3 border-t border-app-border" />
+
+            <div className="space-y-1">
+              <Link
+                href="/reports"
+                className="flex items-center gap-3 rounded-xl px-2.5 py-2.5 text-[15px] font-medium text-app-text transition hover:bg-app-surface-muted"
+                onClick={() => setIsOpen(false)}
+              >
+                <ReportsIcon className="h-[18px] w-[18px] text-app-text-subtle" />
+                <span>{copy.shell.nav.reports}</span>
+              </Link>
+              <Link
+                href="/settings"
+                className="flex items-center gap-3 rounded-xl px-2.5 py-2.5 text-[15px] font-medium text-app-text transition hover:bg-app-surface-muted"
+                onClick={() => setIsOpen(false)}
+              >
+                <SettingsIcon className="h-[18px] w-[18px] text-app-text-subtle" />
+                <span>{copy.shell.nav.settings}</span>
+              </Link>
+            </div>
+
+            <div className="my-3 border-t border-app-border" />
+
+            <SignOutButton
+              label={copy.shell.signOut}
+              icon={<SignOutIcon className="h-[18px] w-[18px]" />}
+              confirmTitle={copy.shell.signOutConfirmTitle}
+              confirmDescription={copy.shell.signOutConfirmDescription}
+              confirmActionLabel={copy.shell.signOutConfirmAction}
+              cancelLabel={copy.common.cancel}
+              onTrigger={() => setIsOpen(false)}
+              className="flex w-full items-center gap-3 rounded-xl px-2.5 py-2.5 text-[15px] font-medium text-rose-600 transition hover:bg-rose-50"
+            />
+          </div>
+      </div>
+    </div>
   );
 }
 

@@ -13,5 +13,7 @@ export async function GET() {
     fullName: viewer.full_name,
     email: viewer.email,
     role: viewer.role,
+    title: viewer.title,
+    department: viewer.department,
   });
 }

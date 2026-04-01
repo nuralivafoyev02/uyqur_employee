@@ -46,6 +46,7 @@ export type ReportListItem = {
 export type ReportsPageData = {
   editorDate: string;
   editorEmployeeId: string;
+  editorRequested: boolean;
   canManageAllReports: boolean;
   viewer: {
     id: string;
@@ -118,6 +119,7 @@ export async function getReportsPageData(
   const editorDate = isValidIsoDate(filters.editorDate ?? "")
     ? filters.editorDate!
     : getTodayIsoDate();
+  const editorRequested = Boolean(filters.editorDate) || Boolean(filters.editorEmployeeId?.trim());
   const page = normalizePage(filters.page);
   const status = normalizeStatus(filters.status);
   const employeeId = filters.employeeId?.trim() ?? "";
@@ -188,6 +190,7 @@ export async function getReportsPageData(
   return {
     editorDate,
     editorEmployeeId,
+    editorRequested,
     canManageAllReports,
     viewer: {
       id: viewer.id,

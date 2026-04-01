@@ -40,7 +40,7 @@ const STATUSES: ReportStatus[] = ["done", "in_progress", "blocked"];
 
 export function ReportsContent({ data, action, deleteAction }: ReportsContentProps) {
   const editorPanelId = useId();
-  const [isEditorOpen, setIsEditorOpen] = useState(true);
+  const [isEditorOpen, setIsEditorOpen] = useState(Boolean(data.editorRequested));
   const { language } = usePreferences();
   const copy = getReportsCopy(language);
   const editorQueryBase = useMemo(
@@ -73,38 +73,46 @@ export function ReportsContent({ data, action, deleteAction }: ReportsContentPro
         eyebrow={copy.header.eyebrow}
         title={copy.header.title}
         description={copy.header.description}
-      />
-
-      <div className="grid gap-6 xl:grid-cols-[0.92fr_minmax(0,1.08fr)]">
-        <section className="app-panel p-6">
+        actions={(
           <button
             type="button"
-            aria-expanded={isEditorOpen}
-            aria-controls={editorPanelId}
-            className="flex w-full items-start justify-between gap-4 text-left"
+            className={isEditorOpen ? "app-button-secondary" : "app-button"}
             onClick={() => setIsEditorOpen((current) => !current)}
           >
+            {isEditorOpen ? copy.editor.closeComposer : copy.editor.openComposer}
+          </button>
+        )}
+      />
+
+      {isEditorOpen ? (
+        <section className="app-panel p-6">
+          <div className="flex flex-col gap-4 border-b border-app-border pb-5 md:flex-row md:items-start md:justify-between">
             <div className="space-y-2">
               <p className="app-kicker">{copy.editor.eyebrow}</p>
               <h2 className="text-xl font-semibold tracking-tight text-app-text">
                 {formatDate(data.editorDate, undefined, language)}
               </h2>
               <p className="text-sm text-app-text-muted">
-                {data.reportForEditor
-                  ? copy.editor.existingDescription
-                  : copy.editor.newDescription}
+                {data.reportForEditor ? copy.editor.existingDescription : copy.editor.newDescription}
               </p>
             </div>
 
-            <span className="app-button-secondary shrink-0 gap-2 px-3 py-2">
-              <span>{isEditorOpen ? copy.editor.collapse : copy.editor.expand}</span>
-              <ChevronDownIcon
-                className={`h-4 w-4 transition-transform duration-200 ${isEditorOpen ? "rotate-180" : ""}`}
-              />
-            </span>
-          </button>
+            <button
+              type="button"
+              aria-expanded={isEditorOpen}
+              aria-controls={editorPanelId}
+              className="app-button-secondary shrink-0 gap-2 self-start px-3 py-2"
+              onClick={() => setIsEditorOpen(false)}
+            >
+              <span>{copy.editor.collapse}</span>
+              <ChevronDownIcon className="h-4 w-4 rotate-180" />
+            </button>
+          </div>
 
-          <form action="/reports" className="mt-5 grid gap-4 border-t border-app-border pt-5 md:grid-cols-4">
+          <form
+            action="/reports"
+            className="mt-5 grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]"
+          >
             <input type="hidden" name="date" value={data.filters.date} />
             <input type="hidden" name="status" value={data.filters.status} />
             <input type="hidden" name="employeeId" value={data.filters.employeeId} />
@@ -124,7 +132,10 @@ export function ReportsContent({ data, action, deleteAction }: ReportsContentPro
 
             {data.canManageAllReports ? (
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-app-text" htmlFor="editorEmployeeId">
+                <label
+                  className="block text-sm font-medium text-app-text"
+                  htmlFor="editorEmployeeId"
+                >
                   {copy.editor.employee}
                 </label>
                 <select
@@ -141,7 +152,9 @@ export function ReportsContent({ data, action, deleteAction }: ReportsContentPro
                   ))}
                 </select>
               </div>
-            ) : null}
+            ) : (
+              <div className="hidden md:block" />
+            )}
 
             <div className="flex items-end">
               <button type="submit" className="app-button w-full md:w-auto">
@@ -152,7 +165,7 @@ export function ReportsContent({ data, action, deleteAction }: ReportsContentPro
 
           <div
             id={editorPanelId}
-            className={isEditorOpen ? "mt-6" : "mt-0 hidden"}
+            className="mt-6"
           >
             <ReportForm
               action={action}
@@ -162,71 +175,71 @@ export function ReportsContent({ data, action, deleteAction }: ReportsContentPro
             />
           </div>
         </section>
+      ) : null}
+
+      <div className={data.isLeadView ? "grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)]" : "space-y-6"}>
+        {data.isLeadView ? (
+          <div className="app-panel h-fit p-6">
+            <form className="grid gap-4">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-app-text" htmlFor="date">
+                  {copy.filters.date}
+                </label>
+                <input
+                  id="date"
+                  name="date"
+                  type="date"
+                  className="app-field"
+                  defaultValue={data.filters.date}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-app-text" htmlFor="employeeId">
+                  {copy.filters.employee}
+                </label>
+                <select
+                  id="employeeId"
+                  name="employeeId"
+                  className="app-field"
+                  defaultValue={data.filters.employeeId}
+                >
+                  <option value="">{copy.filters.all}</option>
+                  {data.employees.map((employee) => (
+                    <option key={employee.id} value={employee.id}>
+                      {employee.full_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-app-text" htmlFor="status">
+                  {copy.filters.status}
+                </label>
+                <select
+                  id="status"
+                  name="status"
+                  className="app-field"
+                  defaultValue={data.filters.status}
+                >
+                  <option value="">{copy.filters.all}</option>
+                  {STATUSES.map((status) => (
+                    <option key={status} value={status}>
+                      {getReportStatusLabel(status, language)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <button type="submit" className="app-button mt-2 w-full">
+                {copy.filters.submit}
+              </button>
+            </form>
+          </div>
+        ) : null}
 
         <section className="space-y-6">
-          {data.isLeadView ? (
-            <div className="app-panel p-6">
-              <form className="grid gap-4 md:grid-cols-4">
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-app-text" htmlFor="date">
-                    {copy.filters.date}
-                  </label>
-                  <input
-                    id="date"
-                    name="date"
-                    type="date"
-                    className="app-field"
-                    defaultValue={data.filters.date}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-app-text" htmlFor="employeeId">
-                    {copy.filters.employee}
-                  </label>
-                  <select
-                    id="employeeId"
-                    name="employeeId"
-                    className="app-field"
-                    defaultValue={data.filters.employeeId}
-                  >
-                    <option value="">{copy.filters.all}</option>
-                    {data.employees.map((employee) => (
-                      <option key={employee.id} value={employee.id}>
-                        {employee.full_name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-app-text" htmlFor="status">
-                    {copy.filters.status}
-                  </label>
-                  <select
-                    id="status"
-                    name="status"
-                    className="app-field"
-                    defaultValue={data.filters.status}
-                  >
-                    <option value="">{copy.filters.all}</option>
-                    {STATUSES.map((status) => (
-                      <option key={status} value={status}>
-                        {getReportStatusLabel(status, language)}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="flex items-end">
-                  <button type="submit" className="app-button w-full">
-                    {copy.filters.submit}
-                  </button>
-                </div>
-              </form>
-            </div>
-          ) : null}
-
           <div className="app-panel p-6">
             <div className="flex items-center justify-between gap-4">
               <div>

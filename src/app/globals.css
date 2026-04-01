@@ -196,4 +196,26 @@
     @apply animate-pulse rounded-xl;
     background: var(--surface-muted);
   }
+
+  .app-popover-panel {
+    transform-origin: top right;
+    transition:
+      opacity 180ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 180ms step-end;
+  }
+
+  .app-popover-panel[data-state="open"] {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .app-popover-panel[data-state="closed"] {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+    visibility: hidden;
+    pointer-events: none;
+  }
 }

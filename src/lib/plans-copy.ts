@@ -15,6 +15,8 @@ type PlansCopy = {
   create: {
     eyebrow: string;
     title: string;
+    openComposer: string;
+    closeComposer: string;
   };
   filters: {
     employee: string;
@@ -70,6 +72,8 @@ const COPY: Record<AppLanguage, PlansCopy> = {
     create: {
       eyebrow: "Yangi vazifa",
       title: "Vazifa qo'shish",
+      openComposer: "Vazifa qo'shish",
+      closeComposer: "Yopish",
     },
     filters: {
       employee: "Xodim",
@@ -123,6 +127,8 @@ const COPY: Record<AppLanguage, PlansCopy> = {
     create: {
       eyebrow: "Create task",
       title: "New task",
+      openComposer: "Create task",
+      closeComposer: "Close",
     },
     filters: {
       employee: "Employee",

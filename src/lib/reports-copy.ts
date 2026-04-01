@@ -8,6 +8,8 @@ type ReportsCopy = {
   };
   editor: {
     eyebrow: string;
+    openComposer: string;
+    closeComposer: string;
     existingDescription: string;
     newDescription: string;
     collapse: string;
@@ -69,6 +71,8 @@ const COPY: Record<AppLanguage, ReportsCopy> = {
     },
     editor: {
       eyebrow: "Hisobot yaratish",
+      openComposer: "Hisobot yaratish",
+      closeComposer: "Editorni yopish",
       existingDescription: "Mavjud report tahrirlash holatida ochildi.",
       newDescription: "Tanlangan sana uchun yangi hisobot yarating.",
       collapse: "Yopish",
@@ -128,6 +132,8 @@ const COPY: Record<AppLanguage, ReportsCopy> = {
     },
     editor: {
       eyebrow: "Editor",
+      openComposer: "Create report",
+      closeComposer: "Close editor",
       existingDescription: "An existing report was opened in edit mode.",
       newDescription: "Create a new report for the selected date.",
       collapse: "Collapse",

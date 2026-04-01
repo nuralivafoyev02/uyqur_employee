@@ -1,5 +1,8 @@
 "use client";
 
+import { useState } from "react";
+
+import { ChevronDownIcon } from "@/components/layout/dashboard-icons";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
 import { PageHeader } from "@/components/ui/page-header";
@@ -42,6 +45,7 @@ export function PlansContent({
   saveAction,
   updateStatusAction,
 }: PlansContentProps) {
+  const [isComposerOpen, setIsComposerOpen] = useState(false);
   const { language } = usePreferences();
   const copy = getPlansCopy(language);
 
@@ -51,6 +55,17 @@ export function PlansContent({
         eyebrow={copy.header.eyebrow}
         title={copy.header.title}
         description={copy.header.description}
+        actions={
+          data.isLeadView ? (
+            <button
+              type="button"
+              className={isComposerOpen ? "app-button-secondary" : "app-button"}
+              onClick={() => setIsComposerOpen((current) => !current)}
+            >
+              {isComposerOpen ? copy.create.closeComposer : copy.create.openComposer}
+            </button>
+          ) : undefined
+        }
       />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -80,9 +95,9 @@ export function PlansContent({
         </div>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[0.95fr_minmax(0,1.05fr)]">
-        {data.isLeadView ? (
-          <section className="app-panel p-6">
+      {data.isLeadView && isComposerOpen ? (
+        <section className="app-panel p-6">
+          <div className="flex flex-col gap-4 border-b border-app-border pb-5 md:flex-row md:items-start md:justify-between">
             <div className="space-y-2">
               <p className="app-kicker">{copy.create.eyebrow}</p>
               <h2 className="text-xl font-semibold tracking-tight text-app-text">
@@ -90,35 +105,51 @@ export function PlansContent({
               </h2>
             </div>
 
-            <div className="mt-6">
-              <PlanForm action={saveAction} employees={data.employees} />
-            </div>
-          </section>
-        ) : null}
+            <button
+              type="button"
+              className="app-button-secondary shrink-0 gap-2 self-start px-3 py-2"
+              onClick={() => setIsComposerOpen(false)}
+            >
+              <span>{copy.create.closeComposer}</span>
+              <ChevronDownIcon className="h-4 w-4 rotate-180" />
+            </button>
+          </div>
 
-        <section className="space-y-6">
-          <div className="app-panel p-6">
-            <form className="grid gap-4 md:grid-cols-4">
-              {data.isLeadView ? (
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-app-text" htmlFor="employeeId">
-                    {copy.filters.employee}
-                  </label>
-                  <select
-                    id="employeeId"
-                    name="employeeId"
-                    className="app-field"
-                    defaultValue={data.filters.employeeId}
-                  >
-                    <option value="">{copy.filters.all}</option>
-                    {data.employees.map((employee) => (
-                      <option key={employee.id} value={employee.id}>
-                        {employee.full_name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ) : null}
+          <div className="mt-6">
+            <PlanForm action={saveAction} employees={data.employees} />
+          </div>
+        </section>
+      ) : null}
+
+      <div className={data.isLeadView ? "grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]" : "space-y-6"}>
+        {data.isLeadView ? (
+          <aside className="app-panel h-fit p-5">
+            <form className="grid gap-4">
+              <div className="space-y-1">
+                <p className="app-kicker">{copy.filters.submit}</p>
+                <h2 className="text-lg font-semibold tracking-tight text-app-text">
+                  {copy.filters.status}
+                </h2>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-app-text" htmlFor="employeeId">
+                  {copy.filters.employee}
+                </label>
+                <select
+                  id="employeeId"
+                  name="employeeId"
+                  className="app-field"
+                  defaultValue={data.filters.employeeId}
+                >
+                  <option value="">{copy.filters.all}</option>
+                  {data.employees.map((employee) => (
+                    <option key={employee.id} value={employee.id}>
+                      {employee.full_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-app-text" htmlFor="status">
@@ -158,13 +189,42 @@ export function PlansContent({
                 </select>
               </div>
 
-              <div className="flex items-end">
-                <button type="submit" className="app-button w-full">
+              <button type="submit" className="app-button mt-2 w-full">
+                {copy.filters.submit}
+              </button>
+            </form>
+          </aside>
+        ) : null}
+
+        <section className="space-y-6">
+          {!data.isLeadView ? (
+            <div className="app-panel p-4 sm:p-5">
+              <form className="flex flex-col gap-3 sm:flex-row sm:items-end">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-app-text" htmlFor="status">
+                    {copy.filters.status}
+                  </label>
+                  <select
+                    id="status"
+                    name="status"
+                    className="app-field min-w-48"
+                    defaultValue={data.filters.status}
+                  >
+                    <option value="">{copy.filters.all}</option>
+                    {STATUSES.map((status) => (
+                      <option key={status} value={status}>
+                        {getPlanStatusLabel(status, language)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <button type="submit" className="app-button w-full sm:w-auto">
                   {copy.filters.submit}
                 </button>
-              </div>
-            </form>
-          </div>
+              </form>
+            </div>
+          ) : null}
 
           <div className="app-panel p-6">
             {data.plans.length > 0 ? (
@@ -228,6 +288,17 @@ export function PlansContent({
               <EmptyState
                 title={copy.list.emptyTitle}
                 description={copy.list.emptyDescription}
+                action={
+                  data.isLeadView && !isComposerOpen ? (
+                    <button
+                      type="button"
+                      className="app-button"
+                      onClick={() => setIsComposerOpen(true)}
+                    >
+                      {copy.create.openComposer}
+                    </button>
+                  ) : undefined
+                }
               />
             )}
 
