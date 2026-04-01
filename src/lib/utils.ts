@@ -118,7 +118,7 @@ export function getReportStatusLabel(
     uz: {
       done: "Bajarildi",
       in_progress: "Jarayonda",
-      blocked: "To'siq bor",
+      blocked: "Bekor qilindi",
     },
     en: {
       done: "Done",
@@ -136,7 +136,7 @@ export function getPlanStatusLabel(status: PlanStatus, language: AppLanguage = "
       todo: "Boshlanmagan",
       in_progress: "Jarayonda",
       done: "Yakunlangan",
-      blocked: "To'siq bor",
+      blocked: "Bekor qilindi",
     },
     en: {
       todo: "Not started",

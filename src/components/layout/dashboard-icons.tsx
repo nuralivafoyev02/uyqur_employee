@@ -102,6 +102,27 @@ export function UserIcon({ className }: IconProps) {
   );
 }
 
+export function AccountIcon({ className }: IconProps) {
+  return (
+    <IconBase className={className}>
+      <rect x="3.75" y="5.25" width="16.5" height="13.5" rx="2.5" />
+      <path d="m5.75 8 6.25 4.75L18.25 8" />
+    </IconBase>
+  );
+}
+
+export function InterfaceIcon({ className }: IconProps) {
+  return (
+    <IconBase className={className}>
+      <rect x="3.75" y="4.5" width="16.5" height="11.5" rx="2.25" />
+      <path d="M9 19.5h6" />
+      <path d="M12 16v3.5" />
+      <path d="M7.75 8.75h8.5" />
+      <path d="M7.75 11.75h4.5" />
+    </IconBase>
+  );
+}
+
 export function CloseIcon({ className }: IconProps) {
   return (
     <IconBase className={className}>
@@ -123,6 +144,14 @@ export function SidebarExpandIcon({ className }: IconProps) {
   return (
     <IconBase className={className}>
       <path d="m9.5 6.75 5.25 5.25-5.25 5.25" />
+    </IconBase>
+  );
+}
+
+export function ChevronDownIcon({ className }: IconProps) {
+  return (
+    <IconBase className={className}>
+      <path d="m6.75 9.5 5.25 5.25 5.25-5.25" />
     </IconBase>
   );
 }

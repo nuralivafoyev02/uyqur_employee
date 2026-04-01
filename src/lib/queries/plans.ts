@@ -126,7 +126,8 @@ export async function getPlansPageData(
         count: "exact",
       },
     )
-    .order("due_date", { ascending: true })
+    .order("due_date", { ascending: true, nullsFirst: false })
+    .order("updated_at", { ascending: false })
     .range(from, to);
 
   if (isLeadView) {

@@ -301,7 +301,7 @@ export function DashboardShell({
   const settingsItem = buildSettingsItem(copy.shell.nav);
   const mobileItems = [...primaryItems, settingsItem];
   const desktopLayoutStyle = {
-    "--sidebar-width": isSidebarExpanded ? "260px" : "88px",
+    "--sidebar-width": isSidebarExpanded ? "260px" : "104px",
   } as CSSProperties;
 
   useEffect(() => {
@@ -339,18 +339,18 @@ export function DashboardShell({
   return (
     <div className="h-screen overflow-hidden">
       <div
-        className="mx-auto grid h-screen max-w-7xl transition-[grid-template-columns] duration-300 ease-out lg:grid-cols-[var(--sidebar-width)_minmax(0,1fr)]"
+        className="mx-auto grid h-screen w-full transition-[grid-template-columns] duration-300 ease-out lg:grid-cols-[var(--sidebar-width)_minmax(0,1fr)]"
         style={desktopLayoutStyle}
       >
         <aside
-          className="hidden h-screen border-r border-app-border bg-app-surface px-4 py-6 backdrop-blur transition-[padding] duration-300 lg:flex lg:flex-col"
+          className="hidden h-screen border-r border-app-border bg-app-surface px-4 py-6 backdrop-blur lg:flex lg:flex-col"
         >
           <Link
             href="/dashboard"
             aria-label="Uyqur Support"
             className={cx(
-              "flex items-center gap-2 px-3 text-sm font-bold text-app-text transition",
-              isSidebarExpanded ? "justify-start" : "justify-center px-0",
+              "flex min-h-11 items-center text-sm font-bold text-app-text",
+              isSidebarExpanded ? "justify-start gap-3 px-2" : "justify-center px-0",
             )}
           >
             <Image
@@ -363,11 +363,11 @@ export function DashboardShell({
             {isSidebarExpanded ? <span>Uyqur Support</span> : null}
           </Link>
 
-          <div className="mt-8">
+          <div className="mt-8 flex-1">
             <DashboardNav items={primaryItems} collapsed={!isSidebarExpanded} />
           </div>
 
-          <div className="mt-auto space-y-4 pt-6">
+          <div className="mt-auto space-y-3 pt-6">
             <button
               type="button"
               aria-label={
@@ -375,10 +375,10 @@ export function DashboardShell({
               }
               title={isSidebarExpanded ? copy.shell.collapseSidebar : copy.shell.expandSidebar}
               className={cx(
-                "app-button-secondary hidden items-center gap-2 transition lg:inline-flex",
+                "hidden h-12 w-full items-center rounded-2xl text-sm font-semibold text-app-text-muted transition-colors duration-200 hover:bg-app-surface-muted hover:text-app-text lg:inline-flex",
                 isSidebarExpanded
-                  ? "w-full justify-start px-3"
-                  : "mx-auto h-11 w-11 justify-center rounded-full px-0",
+                  ? "justify-start gap-2 px-3"
+                  : "justify-center px-0",
               )}
               onClick={() => setIsSidebarExpanded((current) => !current)}
             >
@@ -398,7 +398,7 @@ export function DashboardShell({
           </div>
         </aside>
 
-        <div className="flex h-screen min-h-0 flex-col overflow-hidden">
+        <div className="flex h-screen min-h-0 flex-col overflow-hidden w-full">
           <header className="border-b border-app-border bg-app-surface backdrop-blur">
             <div className="app-shell flex flex-col gap-4 py-1 md:flex-row md:items-center md:justify-between">
               <div>

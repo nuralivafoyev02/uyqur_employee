@@ -1,6 +1,10 @@
 "use client";
 
+import Link from "next/link";
+import { useId, useMemo, useState } from "react";
+
 import { usePreferences } from "@/components/providers/preferences-provider";
+import { ChevronDownIcon } from "@/components/layout/dashboard-icons";
 import { PageHeader } from "@/components/ui/page-header";
 import { Pagination } from "@/components/ui/pagination";
 import { ReportStatusBadge } from "@/components/ui/badges";
@@ -24,16 +28,44 @@ type SaveReportAction = (
   formData: FormData,
 ) => Promise<ActionState<ReportField>>;
 
+type DeleteReportAction = (formData: FormData) => Promise<void>;
+
 type ReportsContentProps = {
   data: ReportsPageData;
   action: SaveReportAction;
+  deleteAction: DeleteReportAction;
 };
 
 const STATUSES: ReportStatus[] = ["done", "in_progress", "blocked"];
 
-export function ReportsContent({ data, action }: ReportsContentProps) {
+export function ReportsContent({ data, action, deleteAction }: ReportsContentProps) {
+  const editorPanelId = useId();
+  const [isEditorOpen, setIsEditorOpen] = useState(true);
   const { language } = usePreferences();
   const copy = getReportsCopy(language);
+  const editorQueryBase = useMemo(
+    () => ({
+      ...(data.filters.date ? { date: data.filters.date } : {}),
+      ...(data.filters.status ? { status: data.filters.status } : {}),
+      ...(data.filters.employeeId ? { employeeId: data.filters.employeeId } : {}),
+      ...(data.filters.page > 1 ? { page: String(data.filters.page) } : {}),
+    }),
+    [data.filters.date, data.filters.employeeId, data.filters.page, data.filters.status],
+  );
+
+  function buildEditorHref(reportDate: string, employeeId: string) {
+    const params = new URLSearchParams(editorQueryBase);
+    params.set("editorDate", reportDate);
+
+    if (data.canManageAllReports) {
+      params.set("editorEmployeeId", employeeId);
+    } else {
+      params.delete("editorEmployeeId");
+    }
+
+    const serialized = params.toString();
+    return serialized ? `/reports?${serialized}` : "/reports";
+  }
 
   return (
     <div className="space-y-6">
@@ -45,21 +77,86 @@ export function ReportsContent({ data, action }: ReportsContentProps) {
 
       <div className="grid gap-6 xl:grid-cols-[0.92fr_minmax(0,1.08fr)]">
         <section className="app-panel p-6">
-          <div className="space-y-2">
-            <p className="app-kicker">{copy.editor.eyebrow}</p>
-            <h2 className="text-xl font-semibold tracking-tight text-app-text">
-              {formatDate(data.editorDate, undefined, language)}
-            </h2>
-            <p className="text-sm text-app-text-muted">
-              {data.reportForEditor
-                ? copy.editor.existingDescription
-                : copy.editor.newDescription}
-            </p>
-          </div>
+          <button
+            type="button"
+            aria-expanded={isEditorOpen}
+            aria-controls={editorPanelId}
+            className="flex w-full items-start justify-between gap-4 text-left"
+            onClick={() => setIsEditorOpen((current) => !current)}
+          >
+            <div className="space-y-2">
+              <p className="app-kicker">{copy.editor.eyebrow}</p>
+              <h2 className="text-xl font-semibold tracking-tight text-app-text">
+                {formatDate(data.editorDate, undefined, language)}
+              </h2>
+              <p className="text-sm text-app-text-muted">
+                {data.reportForEditor
+                  ? copy.editor.existingDescription
+                  : copy.editor.newDescription}
+              </p>
+            </div>
 
-          <div className="mt-6">
+            <span className="app-button-secondary shrink-0 gap-2 px-3 py-2">
+              <span>{isEditorOpen ? copy.editor.collapse : copy.editor.expand}</span>
+              <ChevronDownIcon
+                className={`h-4 w-4 transition-transform duration-200 ${isEditorOpen ? "rotate-180" : ""}`}
+              />
+            </span>
+          </button>
+
+          <form action="/reports" className="mt-5 grid gap-4 border-t border-app-border pt-5 md:grid-cols-4">
+            <input type="hidden" name="date" value={data.filters.date} />
+            <input type="hidden" name="status" value={data.filters.status} />
+            <input type="hidden" name="employeeId" value={data.filters.employeeId} />
+
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-app-text" htmlFor="editorDate">
+                {copy.editor.date}
+              </label>
+              <input
+                id="editorDate"
+                name="editorDate"
+                type="date"
+                className="app-field"
+                defaultValue={data.editorDate}
+              />
+            </div>
+
+            {data.canManageAllReports ? (
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-app-text" htmlFor="editorEmployeeId">
+                  {copy.editor.employee}
+                </label>
+                <select
+                  id="editorEmployeeId"
+                  name="editorEmployeeId"
+                  className="app-field"
+                  defaultValue={data.editorEmployeeId}
+                >
+                  <option value="">{copy.editor.employeePlaceholder}</option>
+                  {data.employees.map((employee) => (
+                    <option key={employee.id} value={employee.id}>
+                      {employee.full_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
+
+            <div className="flex items-end">
+              <button type="submit" className="app-button w-full md:w-auto">
+                {copy.editor.openSelected}
+              </button>
+            </div>
+          </form>
+
+          <div
+            id={editorPanelId}
+            className={isEditorOpen ? "mt-6" : "mt-0 hidden"}
+          >
             <ReportForm
               action={action}
+              employeeId={data.editorEmployeeId}
               initialValue={data.reportForEditor}
               selectedDate={data.editorDate}
             />
@@ -167,7 +264,26 @@ export function ReportsContent({ data, action }: ReportsContentProps) {
                             : formatDateTime(report.updatedAt, language)}
                         </p>
                       </div>
-                      <ReportStatusBadge status={report.status} language={language} />
+                      <div className="flex flex-wrap items-center gap-2">
+                        {(data.viewer.id === report.employeeId || data.viewer.role === "admin") ? (
+                          <>
+                            <Link
+                              href={buildEditorHref(report.reportDate, report.employeeId)}
+                              className="app-button-secondary px-3 py-2 text-xs"
+                              onClick={() => setIsEditorOpen(true)}
+                            >
+                              {copy.history.edit}
+                            </Link>
+                            <form action={deleteAction}>
+                              <input type="hidden" name="reportId" value={report.id} />
+                              <button type="submit" className="app-button-secondary px-3 py-2 text-xs text-rose-700">
+                                {copy.history.delete}
+                              </button>
+                            </form>
+                          </>
+                        ) : null}
+                        <ReportStatusBadge status={report.status} language={language} />
+                      </div>
                     </div>
                     <div className="mt-4 grid gap-3 md:grid-cols-3">
                       <div>

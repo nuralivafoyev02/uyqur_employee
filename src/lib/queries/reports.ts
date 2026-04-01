@@ -26,6 +26,8 @@ export type ReportsFilters = {
   status?: string;
   employeeId?: string;
   page?: string;
+  editorDate?: string;
+  editorEmployeeId?: string;
 };
 
 export type ReportListItem = {
@@ -43,6 +45,12 @@ export type ReportListItem = {
 
 export type ReportsPageData = {
   editorDate: string;
+  editorEmployeeId: string;
+  canManageAllReports: boolean;
+  viewer: {
+    id: string;
+    role: Viewer["role"];
+  };
   filters: {
     date: string;
     status: ReportStatus | "";
@@ -106,17 +114,24 @@ export async function getReportsPageData(
   }
 
   const isLeadView = hasRole(viewer.role, ["admin", "manager"]);
-  const editorDate = isValidIsoDate(filters.date ?? "") ? filters.date! : getTodayIsoDate();
+  const canManageAllReports = viewer.role === "admin";
+  const editorDate = isValidIsoDate(filters.editorDate ?? "")
+    ? filters.editorDate!
+    : getTodayIsoDate();
   const page = normalizePage(filters.page);
   const status = normalizeStatus(filters.status);
   const employeeId = filters.employeeId?.trim() ?? "";
+  const editorEmployeeId =
+    canManageAllReports && filters.editorEmployeeId?.trim()
+      ? filters.editorEmployeeId.trim()
+      : viewer.id;
 
   const reportForEditorPromise = supabase
     .from("daily_reports")
     .select(
       "id, report_date, completed_work, current_work, next_plan, blockers, status, updated_at",
     )
-    .eq("employee_id", viewer.id)
+    .eq("employee_id", editorEmployeeId)
     .eq("report_date", editorDate)
     .maybeSingle();
 
@@ -172,6 +187,12 @@ export async function getReportsPageData(
 
   return {
     editorDate,
+    editorEmployeeId,
+    canManageAllReports,
+    viewer: {
+      id: viewer.id,
+      role: viewer.role,
+    },
     filters: {
       date: isValidIsoDate(filters.date ?? "") ? filters.date! : "",
       status,

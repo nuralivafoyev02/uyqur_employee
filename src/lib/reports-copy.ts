@@ -10,6 +10,12 @@ type ReportsCopy = {
     eyebrow: string;
     existingDescription: string;
     newDescription: string;
+    collapse: string;
+    expand: string;
+    date: string;
+    employee: string;
+    openSelected: string;
+    employeePlaceholder: string;
   };
   filters: {
     date: string;
@@ -30,6 +36,8 @@ type ReportsCopy = {
     currentWork: string;
     nextPlan: string;
     empty: string;
+    edit: string;
+    delete: string;
   };
   form: {
     completedWork: string;
@@ -60,9 +68,15 @@ const COPY: Record<AppLanguage, ReportsCopy> = {
         "Bugungi progress, joriy ishlar va keyingi reja server action orqali saqlanadi.",
     },
     editor: {
-      eyebrow: "Editor",
+      eyebrow: "Hisobot yaratish",
       existingDescription: "Mavjud report tahrirlash holatida ochildi.",
       newDescription: "Tanlangan sana uchun yangi hisobot yarating.",
+      collapse: "Yopish",
+      expand: "Ochish",
+      date: "Hisobot sanasi",
+      employee: "Xodim",
+      openSelected: "Ochish",
+      employeePlaceholder: "Xodim tanlang",
     },
     filters: {
       date: "Sana",
@@ -72,7 +86,7 @@ const COPY: Record<AppLanguage, ReportsCopy> = {
       submit: "Filtrlash",
     },
     history: {
-      leadEyebrow: "Report feed",
+      leadEyebrow: "Yuborilgan hisobotlar",
       employeeEyebrow: "History",
       leadTitle: "Jamoa hisobotlari",
       employeeTitle: "Mening hisobotlarim",
@@ -83,6 +97,8 @@ const COPY: Record<AppLanguage, ReportsCopy> = {
       currentWork: "Joriy ish",
       nextPlan: "Keyingi reja",
       empty: "Tanlangan filter bo'yicha hisobot topilmadi.",
+      edit: "Tahrirlash",
+      delete: "O'chirish",
     },
     form: {
       completedWork: "Bugun nimalarni yakunladingiz?",
@@ -114,6 +130,12 @@ const COPY: Record<AppLanguage, ReportsCopy> = {
       eyebrow: "Editor",
       existingDescription: "An existing report was opened in edit mode.",
       newDescription: "Create a new report for the selected date.",
+      collapse: "Collapse",
+      expand: "Expand",
+      date: "Report date",
+      employee: "Employee",
+      openSelected: "Open",
+      employeePlaceholder: "Select an employee",
     },
     filters: {
       date: "Date",
@@ -134,6 +156,8 @@ const COPY: Record<AppLanguage, ReportsCopy> = {
       currentWork: "Current work",
       nextPlan: "Next plan",
       empty: "No reports found for the selected filters.",
+      edit: "Edit",
+      delete: "Delete",
     },
     form: {
       completedWork: "What did you complete today?",
@@ -188,6 +212,22 @@ const REPORT_MESSAGE_COPY: Record<string, Record<AppLanguage, string>> = {
   "Holat noto'g'ri tanlangan.": {
     uz: "Holat noto'g'ri tanlangan.",
     en: "The selected status is invalid.",
+  },
+  "Bu hisobotni tahrirlash huquqi yo'q.": {
+    uz: "Bu hisobotni tahrirlash huquqi yo'q.",
+    en: "You do not have permission to edit this report.",
+  },
+  "Bu hisobotni o'chirish huquqi yo'q.": {
+    uz: "Bu hisobotni o'chirish huquqi yo'q.",
+    en: "You do not have permission to delete this report.",
+  },
+  "Hisobot topilmadi.": {
+    uz: "Hisobot topilmadi.",
+    en: "Report not found.",
+  },
+  "Hisobot o'chirildi.": {
+    uz: "Hisobot o'chirildi.",
+    en: "Report deleted.",
   },
 };
 

@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { startTransition, useActionState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 
 import { usePreferences } from "@/components/providers/preferences-provider";
 import { ReportStatusBadge } from "@/components/ui/badges";
@@ -25,6 +26,7 @@ type ReportFormAction = (
 
 type ReportFormProps = {
   action: ReportFormAction;
+  employeeId: string;
   initialValue?: Pick<
     DailyReport,
     | "id"
@@ -42,16 +44,41 @@ const reportStatuses: ReportStatus[] = ["done", "in_progress", "blocked"];
 
 export function ReportForm({
   action,
+  employeeId,
   initialValue,
   selectedDate,
 }: ReportFormProps) {
+  const formRef = useRef<HTMLFormElement>(null);
+  const handledRedirectRef = useRef<string | null>(null);
   const [state, formAction] = useActionState(action, undefined);
+  const router = useRouter();
   const { language } = usePreferences();
   const copy = getReportsCopy(language);
 
+  useEffect(() => {
+    if (!state?.success || !state.redirectTo) {
+      return;
+    }
+
+    const redirectKey = `${state.redirectTo}:${state.message ?? ""}`;
+
+    if (handledRedirectRef.current === redirectKey) {
+      return;
+    }
+
+    handledRedirectRef.current = redirectKey;
+    formRef.current?.reset();
+
+    startTransition(() => {
+      router.replace(state.redirectTo!);
+      router.refresh();
+    });
+  }, [router, state]);
+
   return (
-    <form action={formAction} className="space-y-5">
+    <form ref={formRef} action={formAction} className="space-y-5">
       {initialValue?.id ? <input type="hidden" name="reportId" value={initialValue.id} /> : null}
+      <input type="hidden" name="employeeId" value={employeeId} />
       <input
         type="hidden"
         name="reportDate"

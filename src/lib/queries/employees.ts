@@ -229,12 +229,14 @@ export async function getEmployeeProfileData(
       )
       .eq("employee_id", employeeId)
       .order("report_date", { ascending: false })
+      .order("updated_at", { ascending: false })
       .limit(12),
     supabase
       .from("plans")
       .select("id, title, description, due_date, status, priority")
       .eq("assignee_id", employeeId)
-      .order("due_date", { ascending: true })
+      .order("due_date", { ascending: true, nullsFirst: false })
+      .order("updated_at", { ascending: false })
       .limit(12),
   ]);
 

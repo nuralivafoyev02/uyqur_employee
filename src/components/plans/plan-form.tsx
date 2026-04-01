@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { startTransition, useActionState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 
 import { usePreferences } from "@/components/providers/preferences-provider";
 import { SubmitButton } from "@/components/ui/submit-button";
@@ -35,12 +36,35 @@ const priorities: PlanPriority[] = ["low", "medium", "high"];
 const statuses: PlanStatus[] = ["todo", "in_progress", "blocked", "done"];
 
 export function PlanForm({ action, employees, initialValue }: PlanFormProps) {
+  const formRef = useRef<HTMLFormElement>(null);
+  const handledRedirectRef = useRef<string | null>(null);
   const [state, formAction] = useActionState(action, undefined);
+  const router = useRouter();
   const { language } = usePreferences();
   const copy = getPlansCopy(language);
 
+  useEffect(() => {
+    if (!state?.success || !state.redirectTo) {
+      return;
+    }
+
+    const redirectKey = `${state.redirectTo}:${state.message ?? ""}`;
+
+    if (handledRedirectRef.current === redirectKey) {
+      return;
+    }
+
+    handledRedirectRef.current = redirectKey;
+    formRef.current?.reset();
+
+    startTransition(() => {
+      router.replace(state.redirectTo!);
+      router.refresh();
+    });
+  }, [router, state]);
+
   return (
-    <form action={formAction} className="space-y-5">
+    <form ref={formRef} action={formAction} className="space-y-5">
       {initialValue?.id ? <input type="hidden" name="planId" value={initialValue.id} /> : null}
 
       {state?.message ? (

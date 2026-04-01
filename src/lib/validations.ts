@@ -6,6 +6,7 @@ export type ActionState<TField extends string = string> = {
   success: boolean;
   message?: string;
   fieldErrors?: FieldErrors<TField>;
+  redirectTo?: string;
 };
 
 type ValidationResult<TData, TField extends string> = {

@@ -156,7 +156,8 @@ export async function getDashboardData(viewer: Viewer): Promise<DashboardData> {
           "id, assignee_id, title, due_date, status, priority, profiles!plans_assignee_id_fkey(id, full_name, title)",
         )
         .neq("status", "done")
-        .order("due_date", { ascending: true })
+        .order("due_date", { ascending: true, nullsFirst: false })
+        .order("updated_at", { ascending: false })
         .limit(8),
     ]);
 
@@ -188,6 +189,7 @@ export async function getDashboardData(viewer: Viewer): Promise<DashboardData> {
       )
       .eq("employee_id", viewer.id)
       .order("report_date", { ascending: false })
+      .order("updated_at", { ascending: false })
       .limit(6),
   ]);
 

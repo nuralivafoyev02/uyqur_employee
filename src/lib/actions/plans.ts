@@ -77,10 +77,14 @@ export async function savePlanAction(
   revalidatePath("/dashboard");
   revalidatePath("/plans");
   revalidatePath("/employees");
+  revalidatePath(`/employees/${validation.data.assigneeId}`);
+  revalidatePath("/api/employees");
+  revalidatePath("/api/reports");
 
   return {
     success: true,
     message: "Vazifa saqlandi.",
+    redirectTo: "/plans",
   };
 }
 
@@ -141,4 +145,6 @@ export async function updatePlanStatusAction(formData: FormData) {
   revalidatePath("/dashboard");
   revalidatePath("/plans");
   revalidatePath("/employees");
+  revalidatePath(`/employees/${plan.assignee_id}`);
+  revalidatePath("/api/employees");
 }

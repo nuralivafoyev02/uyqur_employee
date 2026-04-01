@@ -30,9 +30,28 @@ type SettingsCopy = {
   eyebrow: string;
   title: string;
   description: string;
+  navigationEyebrow: string;
+  navigationTitle: string;
+  navigationDescription: string;
+  sections: {
+    account: {
+      label: string;
+      description: string;
+    };
+    preferences: {
+      label: string;
+      description: string;
+    };
+    profile: {
+      label: string;
+      description: string;
+    };
+  };
   accountEyebrow: string;
   accountTitle: string;
+  accountDescription: string;
   emailLabel: string;
+  roleLabel: string;
   updatedAtLabel: string;
   preferencesEyebrow: string;
   preferencesTitle: string;
@@ -106,14 +125,35 @@ const COPY: Record<AppLanguage, AppCopy> = {
         settings: "Sozlamalar",
       },
     },
-    settings: {
+  settings: {
       eyebrow: "Sozlamalar",
       title: "Profil sozlamalari",
       description:
         "Asosiy profilingizni yangilang. Role boshqaruvi manager/admin tomonidan amalga oshiriladi.",
+      navigationEyebrow: "Kategoriyalar",
+      navigationTitle: "Sozlamalar xaritasi",
+      navigationDescription:
+        "Kerakli bo'limni tez topish uchun sozlamalar kategoriyalar bo'yicha ajratildi.",
+      sections: {
+        account: {
+          label: "Akkaunt",
+          description: "Email, rol va so'nggi yangilanish holati.",
+        },
+        preferences: {
+          label: "Interfeys",
+          description: "Til va yorug'lik mavzusini boshqaring.",
+        },
+        profile: {
+          label: "Profil",
+          description: "Ism, lavozim va bo'lim ma'lumotlarini yangilang.",
+        },
+      },
       accountEyebrow: "Akkaunt",
       accountTitle: "Asosiy ma'lumot",
+      accountDescription:
+        "Login uchun ishlatiladigan email, joriy rol va oxirgi yangilanish holatini ko'ring.",
       emailLabel: "Email",
+      roleLabel: "Rol",
       updatedAtLabel: "Oxirgi yangilanish",
       preferencesEyebrow: "Interfeys",
       preferencesTitle: "Til va ko'rinish",
@@ -196,9 +236,30 @@ const COPY: Record<AppLanguage, AppCopy> = {
       title: "Profile settings",
       description:
         "Update your primary profile details. Role management is handled by managers and admins.",
+      navigationEyebrow: "Categories",
+      navigationTitle: "Settings map",
+      navigationDescription:
+        "Each area is grouped into clear categories so the right control is easier to find.",
+      sections: {
+        account: {
+          label: "Account",
+          description: "Email, role, and the latest update status.",
+        },
+        preferences: {
+          label: "Interface",
+          description: "Manage language and light or dark theme.",
+        },
+        profile: {
+          label: "Profile",
+          description: "Update your name, title, and department details.",
+        },
+      },
       accountEyebrow: "Account",
       accountTitle: "Primary information",
+      accountDescription:
+        "Review your sign-in email, current role, and the latest profile update timestamp.",
       emailLabel: "Email",
+      roleLabel: "Role",
       updatedAtLabel: "Last updated",
       preferencesEyebrow: "Preferences",
       preferencesTitle: "Language and theme",
