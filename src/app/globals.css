@@ -138,6 +138,14 @@
     color: white;
   }
 
+  .exit-btn {
+    background: var(--danger) !important;
+  }
+
+  .exit-btn:hover {
+    background: #9b3a38 !important;
+  }
+
   .app-button:hover {
     background: #183d51;
   }

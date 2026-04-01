@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { useAppCopy, usePreferences } from "@/components/providers/preferences-provider";
 import { DashboardNav, type DashboardNavItem } from "@/components/layout/dashboard-nav";
@@ -13,6 +14,15 @@ type ViewerSummary = {
   fullName: string;
   email: string;
   role: "admin" | "manager" | "employee";
+};
+
+type SignOutButtonProps = {
+  label: string;
+  confirmTitle: string;
+  confirmDescription: string;
+  confirmActionLabel: string;
+  cancelLabel: string;
+  className: string;
 };
 
 function buildItems(
@@ -37,6 +47,102 @@ function buildItems(
   }
 
   return baseItems;
+}
+
+function SignOutButton({
+  label,
+  confirmTitle,
+  confirmDescription,
+  confirmActionLabel,
+  cancelLabel,
+  className,
+}: SignOutButtonProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const titleId = useId();
+  const descriptionId = useId();
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen]);
+
+  function handleConfirm() {
+    setIsOpen(false);
+    formRef.current?.requestSubmit();
+  }
+
+  return (
+    <>
+      <form ref={formRef} action={signOutAction}>
+        <button type="button" className={className} onClick={() => setIsOpen(true)}>
+          {label}
+        </button>
+      </form>
+
+      {isOpen
+        ? createPortal(
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/40 px-4 backdrop-blur-[2px]"
+            onClick={() => setIsOpen(false)}
+          >
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={titleId}
+              aria-describedby={descriptionId}
+              className="app-panel w-full max-w-md p-6"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="space-y-2">
+                <p id={titleId} className="text-lg font-semibold tracking-tight text-app-text">
+                  {confirmTitle}
+                </p>
+                <p id={descriptionId} className="text-sm leading-6 text-app-text-muted">
+                  {confirmDescription}
+                </p>
+              </div>
+
+              <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                <button
+                  type="button"
+                  className="app-button-secondary justify-center"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {cancelLabel}
+                </button>
+                <button
+                  type="button"
+                  className="app-button justify-center exit-btn"
+                  onClick={handleConfirm}
+                >
+                  {confirmActionLabel}
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )
+        : null}
+    </>
+  );
 }
 
 export function DashboardShell({
@@ -105,11 +211,14 @@ export function DashboardShell({
               </p>
               {viewer ? <RoleBadge role={viewer.role} language={language} /> : null}
             </div>
-            <form action={signOutAction}>
-              <button type="submit" className="app-button-secondary w-full justify-center">
-                {copy.shell.signOut}
-              </button>
-            </form>
+            <SignOutButton
+              label={copy.shell.signOut}
+              confirmTitle={copy.shell.signOutConfirmTitle}
+              confirmDescription={copy.shell.signOutConfirmDescription}
+              confirmActionLabel={copy.shell.signOutConfirmAction}
+              cancelLabel={copy.common.cancel}
+              className="app-button-secondary w-full justify-center"
+            />
           </div>
         </aside>
 
@@ -143,11 +252,14 @@ export function DashboardShell({
                     </p>
                     <div className="mt-3 flex items-center justify-between gap-3">
                       {viewer ? <RoleBadge role={viewer.role} language={language} /> : <span />}
-                      <form action={signOutAction}>
-                        <button type="submit" className="app-button-secondary px-3 py-2">
-                          {copy.shell.signOut}
-                        </button>
-                      </form>
+                      <SignOutButton
+                        label={copy.shell.signOut}
+                        confirmTitle={copy.shell.signOutConfirmTitle}
+                        confirmDescription={copy.shell.signOutConfirmDescription}
+                        confirmActionLabel={copy.shell.signOutConfirmAction}
+                        cancelLabel={copy.common.cancel}
+                        className="app-button-secondary px-3 py-2"
+                      />
                     </div>
                   </div>
                 </div>

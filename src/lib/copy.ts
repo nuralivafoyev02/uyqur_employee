@@ -6,6 +6,9 @@ type ShellCopy = {
   loadingName: string;
   loadingProfile: string;
   signOut: string;
+  signOutConfirmTitle: string;
+  signOutConfirmDescription: string;
+  signOutConfirmAction: string;
   nav: {
     dashboard: string;
     reports: string;
@@ -55,6 +58,7 @@ type SettingsCopy = {
 export type AppCopy = {
   common: {
     active: string;
+    cancel: string;
   };
   shell: ShellCopy;
   settings: SettingsCopy;
@@ -64,38 +68,43 @@ const COPY: Record<AppLanguage, AppCopy> = {
   uz: {
     common: {
       active: "Faol",
+      cancel: "Bekor qilish",
     },
     shell: {
-      subtitle: "Ichki employee tracking tizimi",
+      subtitle: "Uyqur Support ERP tizimi",
       menuAndProfile: "Menyu va profil",
       loadingName: "Yuklanmoqda...",
       loadingProfile: "Profil ma'lumoti yuklanmoqda",
       signOut: "Chiqish",
+      signOutConfirmTitle: "Rostdan ham hisobdan chiqmoqchimisiz?",
+      signOutConfirmDescription:
+        "Joriy sessiya yakunlanadi va tizimga qayta kirish talab qilinadi.",
+      signOutConfirmAction: "Ha, aniq chiqaman",
       nav: {
-        dashboard: "Dashboard",
-        reports: "Daily Reports",
-        plans: "Plans / Tasks",
-        employees: "Employees",
-        settings: "Settings",
+        dashboard: "Asosiy",
+        reports: "Kunlik hisobotlar",
+        plans: "Vazifalar",
+        employees: "Xodimlar",
+        settings: "Sozlamalar",
       },
     },
     settings: {
-      eyebrow: "Settings",
+      eyebrow: "Sozlamalar",
       title: "Profil sozlamalari",
       description:
         "Asosiy profilingizni yangilang. Role boshqaruvi manager/admin tomonidan amalga oshiriladi.",
-      accountEyebrow: "Account",
+      accountEyebrow: "Akkaunt",
       accountTitle: "Asosiy ma'lumot",
       emailLabel: "Email",
       updatedAtLabel: "Oxirgi yangilanish",
-      preferencesEyebrow: "Preferences",
+      preferencesEyebrow: "Interfeys",
       preferencesTitle: "Til va ko'rinish",
       preferencesDescription:
         "Interfeys tilini va mavzusini tanlang. Tanlov shu brauzerda local storage orqali saqlanadi.",
       currentSelection: "Tanlangan",
       languageLabel: "Til",
       themeLabel: "Mavzu",
-      profileEyebrow: "Profile",
+      profileEyebrow: "Profil",
       profileTitle: "Tahrirlash",
       profileForm: {
         fullName: "F.I.Sh.",
@@ -135,17 +144,22 @@ const COPY: Record<AppLanguage, AppCopy> = {
   en: {
     common: {
       active: "Active",
+      cancel: "Cancel",
     },
     shell: {
-      subtitle: "Internal employee tracking system",
+      subtitle: "Uyqur Support ERP system",
       menuAndProfile: "Menu and profile",
       loadingName: "Loading...",
       loadingProfile: "Profile data is loading",
       signOut: "Sign out",
+      signOutConfirmTitle: "Are you sure you want to sign out?",
+      signOutConfirmDescription:
+        "Your current session will end and you will need to sign in again.",
+      signOutConfirmAction: "Yes, sign out",
       nav: {
-        dashboard: "Dashboard",
+        dashboard: "Home",
         reports: "Daily Reports",
-        plans: "Plans / Tasks",
+        plans: "Tasks",
         employees: "Employees",
         settings: "Settings",
       },
