@@ -9,6 +9,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import {
   PlanStatusBadge,
   PriorityBadge,
+  ProfileStatusBadge,
   ReportStatusBadge,
   RoleBadge,
 } from "@/components/ui/badges";
@@ -30,7 +31,15 @@ export function EmployeeProfileContent({ data }: EmployeeProfileContentProps) {
         eyebrow={copy.profile.headerEyebrow}
         title={data.profile.full_name}
         description={data.profile.title ?? copy.profile.noTitle}
-        actions={<RoleBadge role={data.profile.role} language={language} />}
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            <ProfileStatusBadge
+              status={data.profile.profile_status ?? copy.profile.statusEmpty}
+              className="max-w-48 truncate"
+            />
+            <RoleBadge role={data.profile.role} language={language} />
+          </div>
+        }
       />
 
       <div className="grid gap-4 md:grid-cols-3">

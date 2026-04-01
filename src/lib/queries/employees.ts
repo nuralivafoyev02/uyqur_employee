@@ -15,7 +15,7 @@ type EmployeeFilters = {
 
 type EmployeeListItem = Pick<
   Profile,
-  "id" | "full_name" | "title" | "department" | "role"
+  "id" | "full_name" | "title" | "department" | "profile_status" | "role"
 > & {
   lastReportDate: string | null;
   openPlanCount: number;
@@ -104,7 +104,7 @@ export async function getEmployeesPageData(
 
   let employeesQuery = supabase
     .from("profiles")
-    .select("id, full_name, title, department, role", {
+    .select("id, full_name, title, department, profile_status, role", {
       count: "exact",
     })
     .order("full_name")
@@ -113,7 +113,7 @@ export async function getEmployeesPageData(
   if (q) {
     const safeQuery = escapeLikeQuery(q);
     employeesQuery = employeesQuery.or(
-      `full_name.ilike.%${safeQuery}%,title.ilike.%${safeQuery}%,department.ilike.%${safeQuery}%`,
+      `full_name.ilike.%${safeQuery}%,title.ilike.%${safeQuery}%,department.ilike.%${safeQuery}%,profile_status.ilike.%${safeQuery}%`,
     );
   }
 
@@ -135,7 +135,7 @@ export async function getEmployeesPageData(
   ]);
 
   const employees = (employeesRes.data ?? []) as Array<
-    Pick<Profile, "id" | "full_name" | "title" | "department" | "role">
+    Pick<Profile, "id" | "full_name" | "title" | "department" | "profile_status" | "role">
   >;
 
   const ids = employees.map((employee) => employee.id);
@@ -219,7 +219,7 @@ export async function getEmployeeProfileData(
   const [profileRes, reportsRes, plansRes] = await Promise.all([
     supabase
       .from("profiles")
-      .select("id, full_name, title, department, role, created_at, updated_at")
+      .select("id, full_name, title, department, profile_status, role, created_at, updated_at")
       .eq("id", employeeId)
       .maybeSingle(),
     supabase

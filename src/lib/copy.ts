@@ -11,8 +11,15 @@ type ShellCopy = {
   expandSidebarShort: string;
   profileTitle: string;
   profileDescription: string;
+  profileSettings: string;
   loadingName: string;
   loadingProfile: string;
+  noStatus: string;
+  addStatus: string;
+  statusLabel: string;
+  statusPlaceholder: string;
+  statusSubmit: string;
+  statusPending: string;
   signOut: string;
   signOutConfirmTitle: string;
   signOutConfirmDescription: string;
@@ -65,8 +72,10 @@ type SettingsCopy = {
     fullName: string;
     title: string;
     department: string;
+    profileStatus: string;
     titlePlaceholder: string;
     departmentPlaceholder: string;
+    profileStatusPlaceholder: string;
     submit: string;
     pending: string;
   };
@@ -110,8 +119,15 @@ const COPY: Record<AppLanguage, AppCopy> = {
       expandSidebarShort: "Ochish",
       profileTitle: "Profil",
       profileDescription: "Hisob ma'lumoti va sessiya boshqaruvi.",
+      profileSettings: "Profil sozlamalari",
       loadingName: "Yuklanmoqda...",
       loadingProfile: "Profil ma'lumoti yuklanmoqda",
+      noStatus: "Status belgilanmagan",
+      addStatus: "Status qo'shish",
+      statusLabel: "Profil statusi",
+      statusPlaceholder: "Masalan, Ofisda ishlayapman",
+      statusSubmit: "Statusni saqlash",
+      statusPending: "Saqlanmoqda...",
       signOut: "Chiqish",
       signOutConfirmTitle: "Rostdan ham hisobdan chiqmoqchimisiz?",
       signOutConfirmDescription:
@@ -145,7 +161,7 @@ const COPY: Record<AppLanguage, AppCopy> = {
         },
         profile: {
           label: "Profil",
-          description: "Ism, lavozim va bo'lim ma'lumotlarini yangilang.",
+          description: "Ism, ish lavozimi, status va bo'lim ma'lumotlarini yangilang.",
         },
       },
       accountEyebrow: "Akkaunt",
@@ -166,10 +182,12 @@ const COPY: Record<AppLanguage, AppCopy> = {
       profileTitle: "Tahrirlash",
       profileForm: {
         fullName: "F.I.Sh.",
-        title: "Lavozim",
+        title: "Ish lavozimi",
         department: "Bo'lim",
+        profileStatus: "Profil statusi",
         titlePlaceholder: "Masalan, Product Manager",
         departmentPlaceholder: "Masalan, Operations",
+        profileStatusPlaceholder: "Masalan, Ofisda ishlayapman",
         submit: "Profilni yangilash",
         pending: "Yangilanmoqda...",
       },
@@ -216,8 +234,15 @@ const COPY: Record<AppLanguage, AppCopy> = {
       expandSidebarShort: "Expand",
       profileTitle: "Profile",
       profileDescription: "Account details and session controls.",
+      profileSettings: "Profile settings",
       loadingName: "Loading...",
       loadingProfile: "Profile data is loading",
+      noStatus: "No status set",
+      addStatus: "Add status",
+      statusLabel: "Profile status",
+      statusPlaceholder: "For example, Working from the office",
+      statusSubmit: "Save status",
+      statusPending: "Saving...",
       signOut: "Sign out",
       signOutConfirmTitle: "Are you sure you want to sign out?",
       signOutConfirmDescription:
@@ -251,7 +276,7 @@ const COPY: Record<AppLanguage, AppCopy> = {
         },
         profile: {
           label: "Profile",
-          description: "Update your name, title, and department details.",
+          description: "Update your name, job title, status, and department details.",
         },
       },
       accountEyebrow: "Account",
@@ -272,10 +297,12 @@ const COPY: Record<AppLanguage, AppCopy> = {
       profileTitle: "Edit profile",
       profileForm: {
         fullName: "Full name",
-        title: "Title",
+        title: "Job title",
         department: "Department",
+        profileStatus: "Profile status",
         titlePlaceholder: "For example, Product Manager",
         departmentPlaceholder: "For example, Operations",
+        profileStatusPlaceholder: "For example, Working from the office",
         submit: "Update profile",
         pending: "Updating...",
       },
@@ -320,9 +347,21 @@ const PROFILE_MESSAGE_COPY: Record<string, Record<AppLanguage, string>> = {
     uz: "Profil yangilandi.",
     en: "Profile updated.",
   },
+  "Status yangilandi.": {
+    uz: "Status yangilandi.",
+    en: "Status updated.",
+  },
+  "Status maydonini tekshiring.": {
+    uz: "Status maydonini tekshiring.",
+    en: "Please review the status field.",
+  },
   "Ism kamida 2 ta belgidan iborat bo'lsin.": {
     uz: "Ism kamida 2 ta belgidan iborat bo'lsin.",
     en: "Full name must be at least 2 characters long.",
+  },
+  "Profil statusi 60 ta belgidan oshmasin.": {
+    uz: "Profil statusi 60 ta belgidan oshmasin.",
+    en: "Profile status must be 60 characters or fewer.",
   },
 };
 

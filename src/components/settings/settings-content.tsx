@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   AccountIcon,
@@ -15,7 +15,7 @@ import type { ActionState } from "@/lib/validations";
 import { cx, formatDateTime } from "@/lib/utils";
 import type { Viewer } from "@/types/database";
 
-type ProfileField = "fullName" | "title" | "department";
+type ProfileField = "fullName" | "title" | "department" | "profileStatus";
 type SettingsSectionId = "account" | "preferences" | "profile";
 
 type ProfileFormAction = (
@@ -26,12 +26,21 @@ type ProfileFormAction = (
 type SettingsContentProps = {
   action: ProfileFormAction;
   viewer: Viewer;
+  initialSection?: SettingsSectionId;
 };
 
-export function SettingsContent({ action, viewer }: SettingsContentProps) {
+export function SettingsContent({
+  action,
+  viewer,
+  initialSection = "account",
+}: SettingsContentProps) {
   const { language } = usePreferences();
   const copy = useAppCopy();
-  const [activeSection, setActiveSection] = useState<SettingsSectionId>("account");
+  const [activeSection, setActiveSection] = useState<SettingsSectionId>(initialSection);
+
+  useEffect(() => {
+    setActiveSection(initialSection);
+  }, [initialSection]);
 
   const sections = useMemo(
     () => [

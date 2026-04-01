@@ -18,7 +18,7 @@ type ReportRow = Pick<
   | "status"
   | "updated_at"
 > & {
-  profiles: Pick<Profile, "id" | "full_name" | "title" | "department"> | null;
+  profiles: Pick<Profile, "id" | "full_name" | "title" | "department" | "profile_status"> | null;
 };
 
 export type ReportsFilters = {
@@ -40,7 +40,7 @@ export type ReportListItem = {
   blockers: string | null;
   status: ReportStatus;
   updatedAt: string;
-  employee: Pick<Profile, "id" | "full_name" | "title" | "department"> | null;
+  employee: Pick<Profile, "id" | "full_name" | "title" | "department" | "profile_status"> | null;
 };
 
 export type ReportsPageData = {
@@ -154,7 +154,7 @@ export async function getReportsPageData(
   let historyQuery = supabase
     .from("daily_reports")
     .select(
-      "id, employee_id, report_date, completed_work, current_work, next_plan, blockers, status, updated_at, profiles!daily_reports_employee_id_fkey(id, full_name, title, department)",
+      "id, employee_id, report_date, completed_work, current_work, next_plan, blockers, status, updated_at, profiles!daily_reports_employee_id_fkey(id, full_name, title, department, profile_status)",
       {
         count: "exact",
       },

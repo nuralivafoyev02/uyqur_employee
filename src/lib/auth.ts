@@ -4,7 +4,8 @@ import { redirect } from "next/navigation";
 import { createServerComponentClient } from "@/lib/supabase/server";
 import type { Profile, UserRole, Viewer } from "@/types/database";
 
-const PROFILE_COLUMNS = "id, full_name, title, department, role, created_at, updated_at";
+const PROFILE_COLUMNS =
+  "id, full_name, title, department, profile_status, role, created_at, updated_at";
 
 function canAutoCreateProfile(email: string | undefined, userId: string) {
   return userId.length > 0 && Boolean(email);

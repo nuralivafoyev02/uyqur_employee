@@ -8,7 +8,7 @@ import { translateProfileMessage } from "@/lib/copy";
 import type { ActionState } from "@/lib/validations";
 import type { Profile } from "@/types/database";
 
-type ProfileField = "fullName" | "title" | "department";
+type ProfileField = "fullName" | "title" | "department" | "profileStatus";
 
 type ProfileFormAction = (
   state: ActionState<ProfileField> | undefined,
@@ -17,7 +17,7 @@ type ProfileFormAction = (
 
 type ProfileFormProps = {
   action: ProfileFormAction;
-  profile: Pick<Profile, "full_name" | "title" | "department">;
+  profile: Pick<Profile, "full_name" | "title" | "department" | "profile_status">;
 };
 
 export function ProfileForm({ action, profile }: ProfileFormProps) {
@@ -52,6 +52,25 @@ export function ProfileForm({ action, profile }: ProfileFormProps) {
         {state?.fieldErrors?.fullName ? (
           <p className="text-sm text-rose-700">
             {translateProfileMessage(state.fieldErrors.fullName[0], language)}
+          </p>
+        ) : null}
+      </div>
+
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-app-text" htmlFor="profileStatus">
+          {copy.settings.profileForm.profileStatus}
+        </label>
+        <input
+          id="profileStatus"
+          name="profileStatus"
+          className="app-field"
+          defaultValue={profile.profile_status ?? ""}
+          placeholder={copy.settings.profileForm.profileStatusPlaceholder}
+          maxLength={60}
+        />
+        {state?.fieldErrors?.profileStatus ? (
+          <p className="text-sm text-rose-700">
+            {translateProfileMessage(state.fieldErrors.profileStatus[0], language)}
           </p>
         ) : null}
       </div>

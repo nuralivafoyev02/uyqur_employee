@@ -15,5 +15,6 @@ export async function GET() {
     role: viewer.role,
     title: viewer.title,
     department: viewer.department,
+    profileStatus: viewer.profile_status,
   });
 }

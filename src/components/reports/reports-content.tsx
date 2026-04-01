@@ -7,7 +7,7 @@ import { usePreferences } from "@/components/providers/preferences-provider";
 import { ChevronDownIcon } from "@/components/layout/dashboard-icons";
 import { PageHeader } from "@/components/ui/page-header";
 import { Pagination } from "@/components/ui/pagination";
-import { ReportStatusBadge } from "@/components/ui/badges";
+import { ProfileStatusBadge, ReportStatusBadge } from "@/components/ui/badges";
 import { ReportForm } from "@/components/reports/report-form";
 import { getReportsCopy } from "@/lib/reports-copy";
 import { formatDate, formatDateTime, getReportStatusLabel, truncate } from "@/lib/utils";
@@ -276,6 +276,14 @@ export function ReportsContent({ data, action, deleteAction }: ReportsContentPro
                               }`
                             : formatDateTime(report.updatedAt, language)}
                         </p>
+                        {data.isLeadView && report.employee?.profile_status ? (
+                          <div className="mt-2">
+                            <ProfileStatusBadge
+                              status={report.employee.profile_status}
+                              className="max-w-44 truncate"
+                            />
+                          </div>
+                        ) : null}
                       </div>
                       <div className="flex flex-wrap items-center gap-2">
                         {(data.viewer.id === report.employeeId || data.viewer.role === "admin") ? (

@@ -2,8 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useId, useMemo, useRef, useState, type CSSProperties } from "react";
-import { usePathname } from "next/navigation";
+import {
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+  type CSSProperties,
+} from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 
 import { useAppCopy, usePreferences } from "@/components/providers/preferences-provider";
@@ -16,18 +24,22 @@ import {
   SignOutIcon,
   SidebarCollapseIcon,
   SidebarExpandIcon,
+  StatusIcon,
   SettingsIcon,
   UserIcon,
 } from "@/components/layout/dashboard-icons";
 import { DashboardNav, type DashboardNavItem } from "@/components/layout/dashboard-nav";
 import { signOutAction } from "@/lib/actions/auth";
-import type { AppCopy } from "@/lib/copy";
+import { updateProfileStatusAction } from "@/lib/actions/profile";
+import { type AppCopy, translateProfileMessage } from "@/lib/copy";
 import { getDashboardCopy } from "@/lib/dashboard-copy";
 import { getEmployeesCopy } from "@/lib/employees-copy";
 import type { AppLanguage } from "@/lib/preferences";
 import { getPlansCopy } from "@/lib/plans-copy";
 import { getReportsCopy } from "@/lib/reports-copy";
+import { ProfileStatusBadge } from "@/components/ui/badges";
 import { cx, getInitials, getRoleLabel } from "@/lib/utils";
+import type { ActionState } from "@/lib/validations";
 import type { ComponentType } from "react";
 
 type ViewerSummary = {
@@ -36,6 +48,7 @@ type ViewerSummary = {
   role: "admin" | "manager" | "employee";
   title: string | null;
   department: string | null;
+  profileStatus: string | null;
 };
 
 type SignOutButtonProps = {
@@ -264,14 +277,61 @@ function ProfileButton({
   copy: AppCopy;
   language: AppLanguage;
 }) {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [isStatusEditorOpen, setIsStatusEditorOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
   const descriptionId = useId();
+  const [statusState, setStatusState] = useState<ActionState<"profileStatus"> | undefined>();
+  const [statusDraft, setStatusDraft] = useState("");
+  const [statusOverride, setStatusOverride] = useState<string | null>(null);
+  const [isSavingStatus, startSavingStatus] = useTransition();
   const initials = viewer?.fullName ? getInitials(viewer.fullName) : null;
   const profileMeta = [viewer?.department, viewer?.title].filter(Boolean).join(" · ");
   const profileSubtitle =
     profileMeta || (viewer ? getRoleLabel(viewer.role, language) : copy.shell.loadingProfile);
+  const currentStatus = statusOverride ?? viewer?.profileStatus ?? "";
+
+  function closePopover() {
+    setIsStatusEditorOpen(false);
+    setIsOpen(false);
+  }
+
+  function toggleStatusEditor() {
+    setStatusState(undefined);
+    setStatusDraft(currentStatus);
+    setIsStatusEditorOpen((current) => !current);
+  }
+
+  function handleStatusCancel() {
+    setStatusDraft(currentStatus);
+    setStatusState(undefined);
+    setIsStatusEditorOpen(false);
+  }
+
+  function handleStatusSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const nextStatus = typeof formData.get("profileStatus") === "string"
+      ? formData.get("profileStatus")!.toString().trim()
+      : "";
+
+    startSavingStatus(async () => {
+      const result = await updateProfileStatusAction(undefined, formData);
+      setStatusState(result);
+
+      if (!result.success) {
+        return;
+      }
+
+      setStatusOverride(nextStatus);
+      setStatusDraft(nextStatus);
+      setIsStatusEditorOpen(false);
+      router.refresh();
+    });
+  }
 
   useEffect(() => {
     if (!isOpen) {
@@ -280,13 +340,13 @@ function ProfileButton({
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setIsOpen(false);
+        closePopover();
       }
     };
 
     const handlePointerDown = (event: MouseEvent | PointerEvent) => {
       if (!wrapperRef.current?.contains(event.target as Node)) {
-        setIsOpen(false);
+        closePopover();
       }
     };
 
@@ -307,7 +367,14 @@ function ProfileButton({
         aria-expanded={isOpen}
         aria-label={copy.shell.openProfile}
         className="app-icon-button h-11 w-11"
-        onClick={() => setIsOpen((current) => !current)}
+        onClick={() => {
+          if (isOpen) {
+            closePopover();
+            return;
+          }
+
+          setIsOpen(true);
+        }}
       >
         <UserIcon className="h-5 w-5" />
       </button>
@@ -346,29 +413,91 @@ function ProfileButton({
                     {profileSubtitle}
                   </p>
                 </div>
+                <div className="mt-2">
+                  <ProfileStatusBadge
+                    status={currentStatus || copy.shell.noStatus}
+                    className="max-w-48 truncate"
+                  />
+                </div>
               </div>
             </div>
 
             <div className="my-3 border-t border-app-border" />
 
             <div className="space-y-1">
-              <Link
-                href="/reports"
-                className="flex items-center gap-3 rounded-xl px-2.5 py-2.5 text-[15px] font-medium text-app-text transition hover:bg-app-surface-muted"
-                onClick={() => setIsOpen(false)}
+              <button
+                type="button"
+                className="flex w-full items-center gap-3 rounded-xl px-2.5 py-2.5 text-left text-[15px] font-medium text-app-text transition hover:bg-app-surface-muted"
+                onClick={toggleStatusEditor}
               >
-                <ReportsIcon className="h-[18px] w-[18px] text-app-text-subtle" />
-                <span>{copy.shell.nav.reports}</span>
-              </Link>
+                <StatusIcon className="h-[18px] w-[18px] text-app-text-subtle" />
+                <span>{copy.shell.addStatus}</span>
+              </button>
               <Link
-                href="/settings"
+                href="/settings?section=profile"
                 className="flex items-center gap-3 rounded-xl px-2.5 py-2.5 text-[15px] font-medium text-app-text transition hover:bg-app-surface-muted"
-                onClick={() => setIsOpen(false)}
+                onClick={closePopover}
               >
                 <SettingsIcon className="h-[18px] w-[18px] text-app-text-subtle" />
-                <span>{copy.shell.nav.settings}</span>
+                <span>{copy.shell.profileSettings}</span>
               </Link>
             </div>
+
+            {isStatusEditorOpen ? (
+              <div className="mt-3 rounded-2xl border border-app-border bg-app-bg-elevated p-3">
+                <form className="space-y-3" onSubmit={handleStatusSubmit}>
+                  <div className="space-y-2">
+                    <label
+                      className="block text-sm font-medium text-app-text"
+                      htmlFor="profileStatus"
+                    >
+                      {copy.shell.statusLabel}
+                    </label>
+                    <input
+                      id="profileStatus"
+                      name="profileStatus"
+                      className="app-field h-11 text-sm"
+                      value={statusDraft}
+                      placeholder={copy.shell.statusPlaceholder}
+                      maxLength={60}
+                      onChange={(event) => setStatusDraft(event.target.value)}
+                    />
+                    {statusState?.fieldErrors?.profileStatus ? (
+                      <p className="text-sm text-rose-700">
+                        {translateProfileMessage(statusState.fieldErrors.profileStatus[0], language)}
+                      </p>
+                    ) : null}
+                    {statusState?.message ? (
+                      <p
+                        className={cx(
+                          "text-sm",
+                          statusState.success ? "text-emerald-700" : "text-rose-700",
+                        )}
+                      >
+                        {translateProfileMessage(statusState.message, language)}
+                      </p>
+                    ) : null}
+                  </div>
+
+                  <div className="flex items-center justify-end gap-2">
+                    <button
+                      type="button"
+                      className="app-button-secondary px-3 py-2 text-sm"
+                      onClick={handleStatusCancel}
+                    >
+                      {copy.common.cancel}
+                    </button>
+                    <button
+                      type="submit"
+                      className="app-button px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-60"
+                      disabled={isSavingStatus}
+                    >
+                      {isSavingStatus ? copy.shell.statusPending : copy.shell.statusSubmit}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            ) : null}
 
             <div className="my-3 border-t border-app-border" />
 

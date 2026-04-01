@@ -6,7 +6,12 @@ import { usePreferences } from "@/components/providers/preferences-provider";
 import { EmptyState } from "@/components/ui/empty-state";
 import { MetricCard } from "@/components/ui/metric-card";
 import { PageHeader } from "@/components/ui/page-header";
-import { PlanStatusBadge, PriorityBadge, ReportStatusBadge } from "@/components/ui/badges";
+import {
+  PlanStatusBadge,
+  PriorityBadge,
+  ProfileStatusBadge,
+  ReportStatusBadge,
+} from "@/components/ui/badges";
 import { getDashboardCopy } from "@/lib/dashboard-copy";
 import { formatDate, formatDateTime, truncate } from "@/lib/utils";
 import type { DashboardData } from "@/lib/queries/dashboard";
@@ -96,9 +101,17 @@ export function DashboardContent({
                         <p className="font-semibold text-app-text">
                           {report.employee?.full_name ?? copy.reports.unknownEmployee}
                         </p>
-                        <p className="text-sm text-app-text-muted">
-                          {report.employee?.title ?? copy.reports.noTitle}
-                        </p>
+                        <div className="mt-1 flex flex-wrap items-center gap-2">
+                          <p className="text-sm text-app-text-muted">
+                            {report.employee?.title ?? copy.reports.noTitle}
+                          </p>
+                          {report.employee?.profile_status ? (
+                            <ProfileStatusBadge
+                              status={report.employee.profile_status}
+                              className="max-w-40 truncate"
+                            />
+                          ) : null}
+                        </div>
                       </div>
                       <ReportStatusBadge status={report.status} language={language} />
                     </div>
@@ -157,9 +170,17 @@ export function DashboardContent({
                     >
                       <div>
                         <p className="font-medium text-app-text">{employee.full_name}</p>
-                        <p className="text-sm text-app-text-muted">
-                          {employee.title ?? copy.coverage.noTitle}
-                        </p>
+                        <div className="mt-1 flex flex-wrap items-center gap-2">
+                          <p className="text-sm text-app-text-muted">
+                            {employee.title ?? copy.coverage.noTitle}
+                          </p>
+                          {employee.profile_status ? (
+                            <ProfileStatusBadge
+                              status={employee.profile_status}
+                              className="max-w-40 truncate"
+                            />
+                          ) : null}
+                        </div>
                       </div>
                       <Link
                         href={`/employees/${employee.id}`}

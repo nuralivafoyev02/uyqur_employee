@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePreferences } from "@/components/providers/preferences-provider";
 import { PageHeader } from "@/components/ui/page-header";
 import { Pagination } from "@/components/ui/pagination";
-import { RoleBadge } from "@/components/ui/badges";
+import { ProfileStatusBadge, RoleBadge } from "@/components/ui/badges";
 import { getEmployeesCopy } from "@/lib/employees-copy";
 import { formatDate, getRoleLabel } from "@/lib/utils";
 import type { EmployeesPageData } from "@/lib/queries/employees";
@@ -105,6 +105,19 @@ export function EmployeesContent({ data }: EmployeesContentProps) {
                   <span className="font-medium text-app-text">
                     {employee.department ?? copy.list.cards.unassigned}
                   </span>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <span>{copy.list.cards.status}</span>
+                  {employee.profile_status ? (
+                    <ProfileStatusBadge
+                      status={employee.profile_status}
+                      className="max-w-40 truncate"
+                    />
+                  ) : (
+                    <span className="font-medium text-app-text">
+                      {copy.list.cards.statusEmpty}
+                    </span>
+                  )}
                 </div>
                 <div className="flex items-center justify-between gap-3">
                   <span>{copy.list.cards.lastReport}</span>

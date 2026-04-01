@@ -29,7 +29,7 @@ type PlanFields =
   | "dueDate"
   | "priority"
   | "status";
-type ProfileFields = "fullName" | "title" | "department";
+type ProfileFields = "fullName" | "title" | "department" | "profileStatus";
 
 export type AuthPayload = {
   fullName?: string;
@@ -59,6 +59,7 @@ export type ProfilePayload = {
   fullName: string;
   title: string;
   department: string;
+  profileStatus: string;
 };
 
 function getValue(formData: FormData, key: string) {
@@ -219,11 +220,16 @@ export function validateProfileForm(
   const fullName = getValue(formData, "fullName");
   const title = getValue(formData, "title");
   const department = getValue(formData, "department");
+  const profileStatus = getValue(formData, "profileStatus");
 
   const errors: FieldErrors<ProfileFields> = {};
 
   if (fullName.length < 2) {
     pushError(errors, "fullName", "Ism kamida 2 ta belgidan iborat bo'lsin.");
+  }
+
+  if (profileStatus.length > 60) {
+    pushError(errors, "profileStatus", "Profil statusi 60 ta belgidan oshmasin.");
   }
 
   if (hasErrors(errors)) {
@@ -235,6 +241,28 @@ export function validateProfileForm(
       fullName,
       title,
       department,
+      profileStatus,
+    },
+  };
+}
+
+export function validateProfileStatusForm(
+  formData: FormData,
+): ValidationResult<Pick<ProfilePayload, "profileStatus">, "profileStatus"> {
+  const profileStatus = getValue(formData, "profileStatus");
+  const errors: FieldErrors<"profileStatus"> = {};
+
+  if (profileStatus.length > 60) {
+    pushError(errors, "profileStatus", "Profil statusi 60 ta belgidan oshmasin.");
+  }
+
+  if (hasErrors(errors)) {
+    return { fieldErrors: errors };
+  }
+
+  return {
+    data: {
+      profileStatus,
     },
   };
 }

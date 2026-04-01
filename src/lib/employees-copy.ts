@@ -14,6 +14,8 @@ type EmployeesCopy = {
     cards: {
       noTitle: string;
       department: string;
+      status: string;
+      statusEmpty: string;
       unassigned: string;
       lastReport: string;
       none: string;
@@ -29,6 +31,7 @@ type EmployeesCopy = {
   profile: {
     headerEyebrow: string;
     noTitle: string;
+    statusEmpty: string;
     metrics: {
       totalReports: { label: string; helper: string };
       blockedReports: { label: string; helper: string };
@@ -65,7 +68,7 @@ const COPY: Record<AppLanguage, EmployeesCopy> = {
       },
       filters: {
         search: "Qidiruv",
-        searchPlaceholder: "Ism, lavozim yoki bo'lim",
+        searchPlaceholder: "Ism, lavozim, status yoki bo'lim",
         role: "Role",
         department: "Bo'lim",
         all: "Barchasi",
@@ -74,6 +77,8 @@ const COPY: Record<AppLanguage, EmployeesCopy> = {
       cards: {
         noTitle: "Lavozim ko'rsatilmagan",
         department: "Bo'lim",
+        status: "Status",
+        statusEmpty: "Belgilanmagan",
         unassigned: "Belgilanmagan",
         lastReport: "Oxirgi report",
         none: "Yo'q",
@@ -89,6 +94,7 @@ const COPY: Record<AppLanguage, EmployeesCopy> = {
     profile: {
       headerEyebrow: "Xodim profili",
       noTitle: "Lavozim ko'rsatilmagan",
+      statusEmpty: "Status belgilanmagan",
       metrics: {
         totalReports: { label: "Jami hisobotlar", helper: "Ko'rinib turgan hisobotlar soni" },
         blockedReports: { label: "Blocked reportlar", helper: "Muammo qayd etilgan hisobotlar" },
@@ -123,7 +129,7 @@ const COPY: Record<AppLanguage, EmployeesCopy> = {
       },
       filters: {
         search: "Search",
-        searchPlaceholder: "Name, title, or department",
+        searchPlaceholder: "Name, title, status, or department",
         role: "Role",
         department: "Department",
         all: "All",
@@ -132,6 +138,8 @@ const COPY: Record<AppLanguage, EmployeesCopy> = {
       cards: {
         noTitle: "Title not provided",
         department: "Department",
+        status: "Status",
+        statusEmpty: "Not set",
         unassigned: "Unassigned",
         lastReport: "Last report",
         none: "None",
@@ -147,6 +155,7 @@ const COPY: Record<AppLanguage, EmployeesCopy> = {
     profile: {
       headerEyebrow: "Employee profile",
       noTitle: "Title not provided",
+      statusEmpty: "No status set",
       metrics: {
         totalReports: { label: "Total reports", helper: "Number of visible reports" },
         blockedReports: { label: "Blocked reports", helper: "Reports with recorded issues" },

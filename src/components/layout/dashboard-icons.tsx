@@ -173,3 +173,15 @@ export function SignOutIcon({ className }: IconProps) {
     </IconBase>
   );
 }
+
+export function StatusIcon({ className }: IconProps) {
+  return (
+    <IconBase className={className}>
+      <circle cx="12" cy="12" r="3.5" />
+      <path d="M12 3.75v2.5" />
+      <path d="M12 17.75v2.5" />
+      <path d="M20.25 12h-2.5" />
+      <path d="M6.25 12h-2.5" />
+    </IconBase>
+  );
+}

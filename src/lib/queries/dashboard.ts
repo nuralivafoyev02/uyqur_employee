@@ -15,7 +15,7 @@ type ReportFeedRow = Pick<
   | "status"
   | "updated_at"
 > & {
-  profiles: Pick<Profile, "id" | "full_name" | "title" | "department"> | null;
+  profiles: Pick<Profile, "id" | "full_name" | "title" | "department" | "profile_status"> | null;
 };
 
 type PlanFeedRow = Pick<
@@ -27,7 +27,7 @@ type PlanFeedRow = Pick<
 
 type SummaryProfile = Pick<
   Profile,
-  "id" | "full_name" | "title" | "department" | "role"
+  "id" | "full_name" | "title" | "department" | "profile_status" | "role"
 >;
 
 export type ReportFeedItem = {
@@ -40,7 +40,7 @@ export type ReportFeedItem = {
   blockers: string | null;
   status: DailyReport["status"];
   updatedAt: string;
-  employee: Pick<Profile, "id" | "full_name" | "title" | "department"> | null;
+  employee: Pick<Profile, "id" | "full_name" | "title" | "department" | "profile_status"> | null;
 };
 
 export type PlanFeedItem = {
@@ -136,7 +136,7 @@ export async function getDashboardData(viewer: Viewer): Promise<DashboardData> {
     await Promise.all([
       supabase
         .from("profiles")
-        .select("id, full_name, title, department, role")
+        .select("id, full_name, title, department, profile_status, role")
         .order("full_name"),
       supabase
         .from("daily_reports")
@@ -145,7 +145,7 @@ export async function getDashboardData(viewer: Viewer): Promise<DashboardData> {
       supabase
         .from("daily_reports")
         .select(
-          "id, employee_id, report_date, completed_work, current_work, next_plan, blockers, status, updated_at, profiles!daily_reports_employee_id_fkey(id, full_name, title, department)",
+          "id, employee_id, report_date, completed_work, current_work, next_plan, blockers, status, updated_at, profiles!daily_reports_employee_id_fkey(id, full_name, title, department, profile_status)",
         )
         .order("updated_at", { ascending: false })
         .limit(8),

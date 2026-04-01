@@ -65,3 +65,13 @@ export function PriorityBadge({
 
   return <Badge tone={tone}>{getPriorityLabel(priority, language)}</Badge>;
 }
+
+export function ProfileStatusBadge({
+  status,
+  className,
+}: {
+  status: string;
+  className?: string;
+}) {
+  return <Badge className={className}>{status}</Badge>;
+}
