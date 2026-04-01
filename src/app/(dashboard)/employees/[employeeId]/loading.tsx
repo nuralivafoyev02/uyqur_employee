@@ -1,11 +1,5 @@
-import { RouteLoading } from "@/components/ui/route-loading";
+import { LocalizedRouteLoading } from "@/components/ui/route-loading";
 
 export default function EmployeeProfileLoading() {
-  return (
-    <RouteLoading
-      title="Employee Profile"
-      description="Xodim profili yuklanmoqda"
-      stats={3}
-    />
-  );
+  return <LocalizedRouteLoading section="employeeProfile" stats={3} />;
 }

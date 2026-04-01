@@ -7,6 +7,9 @@ type PaginationProps = {
   page: number;
   pageCount: number;
   query: Record<string, string>;
+  summaryLabel?: string;
+  previousLabel?: string;
+  nextLabel?: string;
 };
 
 function buildHref(pathname: string, page: number, query: Record<string, string>) {
@@ -27,6 +30,9 @@ export function Pagination({
   page,
   pageCount,
   query,
+  summaryLabel,
+  previousLabel = "Oldingi",
+  nextLabel = "Keyingi",
 }: PaginationProps) {
   if (pageCount <= 1) {
     return null;
@@ -35,7 +41,7 @@ export function Pagination({
   return (
     <div className="flex items-center justify-between border-t border-app-border pt-4">
       <p className="text-sm text-app-text-muted">
-        Sahifa {page} / {pageCount}
+        {summaryLabel ?? `Sahifa ${page} / ${pageCount}`}
       </p>
       <div className="flex items-center gap-2">
         <Link
@@ -45,7 +51,7 @@ export function Pagination({
             page <= 1 && "pointer-events-none opacity-50",
           )}
         >
-          Oldingi
+          {previousLabel}
         </Link>
         <Link
           href={buildHref(pathname, Math.min(pageCount, page + 1), query)}
@@ -54,7 +60,7 @@ export function Pagination({
             page >= pageCount && "pointer-events-none opacity-50",
           )}
         >
-          Keyingi
+          {nextLabel}
         </Link>
       </div>
     </div>

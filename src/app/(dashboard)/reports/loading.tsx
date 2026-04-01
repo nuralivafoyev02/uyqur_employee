@@ -1,11 +1,5 @@
-import { RouteLoading } from "@/components/ui/route-loading";
+import { LocalizedRouteLoading } from "@/components/ui/route-loading";
 
 export default function ReportsPageLoading() {
-  return (
-    <RouteLoading
-      title="Daily Reports"
-      description="Hisobotlar yuklanmoqda"
-      stats={0}
-    />
-  );
+  return <LocalizedRouteLoading section="reports" stats={0} />;
 }

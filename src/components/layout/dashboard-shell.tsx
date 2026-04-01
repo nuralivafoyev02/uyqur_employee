@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -193,9 +194,10 @@ export function DashboardShell({
         <aside className="hidden border-r border-app-border bg-app-surface px-4 py-6 backdrop-blur lg:flex lg:flex-col">
           <Link
             href="/dashboard"
-            className="px-3 text-sm font-semibold tracking-[0.18em] text-app-text"
+            className="flex items-center gap-2 px-3 text-sm font-bold text-app-text"
           >
-            UYQUR
+            <Image src="/uyqur-logo.jpg" alt="Logo" width={20} height={20} />
+            Uyqur Support
           </Link>
           <div className="mt-8">
             <DashboardNav items={items} />
@@ -230,7 +232,7 @@ export function DashboardShell({
                   href="/dashboard"
                   className="text-sm font-semibold tracking-[0.18em] text-app-text lg:hidden"
                 >
-                  UYQUR
+                  Uyqur Support
                 </Link>
                 <p className="mt-1 text-sm text-app-text-muted">
                   {copy.shell.subtitle}

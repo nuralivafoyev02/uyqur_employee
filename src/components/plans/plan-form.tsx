@@ -2,7 +2,9 @@
 
 import { useActionState } from "react";
 
+import { usePreferences } from "@/components/providers/preferences-provider";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { getPlansCopy, translatePlanMessage } from "@/lib/plans-copy";
 import { getPlanStatusLabel, getPriorityLabel } from "@/lib/utils";
 import type { ActionState } from "@/lib/validations";
 import type { Plan, PlanPriority, PlanStatus, Profile } from "@/types/database";
@@ -34,6 +36,8 @@ const statuses: PlanStatus[] = ["todo", "in_progress", "blocked", "done"];
 
 export function PlanForm({ action, employees, initialValue }: PlanFormProps) {
   const [state, formAction] = useActionState(action, undefined);
+  const { language } = usePreferences();
+  const copy = getPlansCopy(language);
 
   return (
     <form action={formAction} className="space-y-5">
@@ -41,48 +45,49 @@ export function PlanForm({ action, employees, initialValue }: PlanFormProps) {
 
       {state?.message ? (
         <div
-          className={`rounded-2xl border px-4 py-3 text-sm ${
-            state.success
+          className={`rounded-2xl border px-4 py-3 text-sm ${state.success
               ? "border-emerald-200 bg-emerald-50 text-emerald-800"
               : "border-rose-200 bg-rose-50 text-rose-800"
-          }`}
+            }`}
         >
-          {state.message}
+          {translatePlanMessage(state.message, language)}
         </div>
       ) : null}
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-app-text" htmlFor="title">
-          Vazifa nomi
+          {copy.form.title}
         </label>
         <input
           id="title"
           name="title"
           className="app-field"
           defaultValue={initialValue?.title ?? ""}
-          placeholder="Masalan, Yangi hisobot oqimini tayyorlash"
+          placeholder={copy.form.titlePlaceholder}
         />
         {state?.fieldErrors?.title ? (
-          <p className="text-sm text-rose-700">{state.fieldErrors.title[0]}</p>
+          <p className="text-sm text-rose-700">
+            {translatePlanMessage(state.fieldErrors.title[0], language)}
+          </p>
         ) : null}
       </div>
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-app-text" htmlFor="description">
-          Tavsif
+          {copy.form.description}
         </label>
         <textarea
           id="description"
           name="description"
           className="app-field app-textarea"
           defaultValue={initialValue?.description ?? ""}
-          placeholder="Kutilayotgan natija, eslatmalar yoki kontekst."
+          placeholder={copy.form.descriptionPlaceholder}
         />
       </div>
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-app-text" htmlFor="assigneeId">
-          Ijrochi
+          {copy.form.assignee}
         </label>
         <select
           id="assigneeId"
@@ -90,7 +95,7 @@ export function PlanForm({ action, employees, initialValue }: PlanFormProps) {
           className="app-field"
           defaultValue={initialValue?.assignee_id ?? ""}
         >
-          <option value="">Xodim tanlang</option>
+          <option value="">{copy.form.assigneePlaceholder}</option>
           {employees.map((employee) => (
             <option key={employee.id} value={employee.id}>
               {employee.full_name}
@@ -99,14 +104,16 @@ export function PlanForm({ action, employees, initialValue }: PlanFormProps) {
           ))}
         </select>
         {state?.fieldErrors?.assigneeId ? (
-          <p className="text-sm text-rose-700">{state.fieldErrors.assigneeId[0]}</p>
+          <p className="text-sm text-rose-700">
+            {translatePlanMessage(state.fieldErrors.assigneeId[0], language)}
+          </p>
         ) : null}
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
           <label className="block text-sm font-medium text-app-text" htmlFor="dueDate">
-            Deadline
+            {copy.form.dueDate}
           </label>
           <input
             id="dueDate"
@@ -119,7 +126,7 @@ export function PlanForm({ action, employees, initialValue }: PlanFormProps) {
 
         <div className="space-y-2">
           <label className="block text-sm font-medium text-app-text" htmlFor="priority">
-            Prioritet
+            {copy.form.priority}
           </label>
           <select
             id="priority"
@@ -129,7 +136,7 @@ export function PlanForm({ action, employees, initialValue }: PlanFormProps) {
           >
             {priorities.map((priority) => (
               <option key={priority} value={priority}>
-                {getPriorityLabel(priority)}
+                {getPriorityLabel(priority, language)}
               </option>
             ))}
           </select>
@@ -138,7 +145,7 @@ export function PlanForm({ action, employees, initialValue }: PlanFormProps) {
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-app-text" htmlFor="status">
-          {"Boshlang'ich status"}
+          {copy.form.initialStatus}
         </label>
         <select
           id="status"
@@ -148,13 +155,13 @@ export function PlanForm({ action, employees, initialValue }: PlanFormProps) {
         >
           {statuses.map((status) => (
             <option key={status} value={status}>
-              {getPlanStatusLabel(status)}
+              {getPlanStatusLabel(status, language)}
             </option>
           ))}
         </select>
       </div>
 
-      <SubmitButton label="Vazifani saqlash" pendingLabel="Saqlanmoqda..." />
+      <SubmitButton label={copy.form.submit} pendingLabel={copy.form.pending} />
     </form>
   );
 }

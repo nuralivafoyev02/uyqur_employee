@@ -68,7 +68,7 @@ const COPY: Record<AppLanguage, AppCopy> = {
   uz: {
     common: {
       active: "Faol",
-      cancel: "Bekor qilish",
+      cancel: "Fikrimdan qaytdim",
     },
     shell: {
       subtitle: "Uyqur Support ERP tizimi",
@@ -100,7 +100,7 @@ const COPY: Record<AppLanguage, AppCopy> = {
       preferencesEyebrow: "Interfeys",
       preferencesTitle: "Til va ko'rinish",
       preferencesDescription:
-        "Interfeys tilini va mavzusini tanlang. Tanlov shu brauzerda local storage orqali saqlanadi.",
+        "Interfeys tilini va mavzusini tanlang.",
       currentSelection: "Tanlangan",
       languageLabel: "Til",
       themeLabel: "Mavzu",
@@ -176,7 +176,7 @@ const COPY: Record<AppLanguage, AppCopy> = {
       preferencesEyebrow: "Preferences",
       preferencesTitle: "Language and theme",
       preferencesDescription:
-        "Choose your interface language and theme. The selection is stored in this browser via local storage.",
+        "Choose your interface language and theme.",
       currentSelection: "Selected",
       languageLabel: "Language",
       themeLabel: "Theme",

@@ -1,11 +1,5 @@
-import { RouteLoading } from "@/components/ui/route-loading";
+import { LocalizedRouteLoading } from "@/components/ui/route-loading";
 
 export default function PlansPageLoading() {
-  return (
-    <RouteLoading
-      title="Plans / Tasks"
-      description="Vazifalar oqimi yuklanmoqda"
-      stats={4}
-    />
-  );
+  return <LocalizedRouteLoading section="plans" stats={4} />;
 }

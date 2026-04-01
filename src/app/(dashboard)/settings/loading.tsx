@@ -1,11 +1,5 @@
-import { RouteLoading } from "@/components/ui/route-loading";
+import { LocalizedRouteLoading } from "@/components/ui/route-loading";
 
 export default function SettingsPageLoading() {
-  return (
-    <RouteLoading
-      title="Settings"
-      description="Profil sozlamalari yuklanmoqda"
-      stats={0}
-    />
-  );
+  return <LocalizedRouteLoading section="settings" stats={0} />;
 }

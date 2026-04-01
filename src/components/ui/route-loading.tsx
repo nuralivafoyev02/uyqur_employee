@@ -1,3 +1,11 @@
+"use client";
+
+import { usePreferences } from "@/components/providers/preferences-provider";
+import {
+  getRouteLoadingCopy,
+  type RouteLoadingSection,
+} from "@/lib/route-loading-copy";
+
 type RouteLoadingProps = {
   title: string;
   description: string;
@@ -68,4 +76,19 @@ export function RouteLoading({
       </div>
     </div>
   );
+}
+
+type LocalizedRouteLoadingProps = {
+  section: RouteLoadingSection;
+  stats?: number;
+};
+
+export function LocalizedRouteLoading({
+  section,
+  stats = 4,
+}: LocalizedRouteLoadingProps) {
+  const { language } = usePreferences();
+  const copy = getRouteLoadingCopy(section, language);
+
+  return <RouteLoading title={copy.title} description={copy.description} stats={stats} />;
 }

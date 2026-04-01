@@ -2,8 +2,10 @@
 
 import { useActionState } from "react";
 
+import { usePreferences } from "@/components/providers/preferences-provider";
 import { ReportStatusBadge } from "@/components/ui/badges";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { getReportsCopy, translateReportMessage } from "@/lib/reports-copy";
 import { getReportStatusLabel } from "@/lib/utils";
 import type { ActionState } from "@/lib/validations";
 import type { DailyReport, ReportStatus } from "@/types/database";
@@ -44,6 +46,8 @@ export function ReportForm({
   selectedDate,
 }: ReportFormProps) {
   const [state, formAction] = useActionState(action, undefined);
+  const { language } = usePreferences();
+  const copy = getReportsCopy(language);
 
   return (
     <form action={formAction} className="space-y-5">
@@ -62,74 +66,80 @@ export function ReportForm({
               : "border-rose-200 bg-rose-50 text-rose-800"
           }`}
         >
-          {state.message}
+          {translateReportMessage(state.message, language)}
         </div>
       ) : null}
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-app-text" htmlFor="completedWork">
-          Bugun nimalarni yakunladingiz?
+          {copy.form.completedWork}
         </label>
         <textarea
           id="completedWork"
           name="completedWork"
           className="app-field app-textarea"
           defaultValue={initialValue?.completed_work ?? ""}
-          placeholder="Qisqa, aniq va natijaga yo'naltirilgan yozing."
+          placeholder={copy.form.completedWorkPlaceholder}
         />
         {state?.fieldErrors?.completedWork ? (
-          <p className="text-sm text-rose-700">{state.fieldErrors.completedWork[0]}</p>
+          <p className="text-sm text-rose-700">
+            {translateReportMessage(state.fieldErrors.completedWork[0], language)}
+          </p>
         ) : null}
       </div>
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-app-text" htmlFor="currentWork">
-          Hozir nima ustida ishlayapsiz?
+          {copy.form.currentWork}
         </label>
         <textarea
           id="currentWork"
           name="currentWork"
           className="app-field app-textarea"
           defaultValue={initialValue?.current_work ?? ""}
-          placeholder="Joriy fokusni kiriting."
+          placeholder={copy.form.currentWorkPlaceholder}
         />
         {state?.fieldErrors?.currentWork ? (
-          <p className="text-sm text-rose-700">{state.fieldErrors.currentWork[0]}</p>
+          <p className="text-sm text-rose-700">
+            {translateReportMessage(state.fieldErrors.currentWork[0], language)}
+          </p>
         ) : null}
       </div>
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-app-text" htmlFor="nextPlan">
-          Keyingi reja
+          {copy.form.nextPlan}
         </label>
         <textarea
           id="nextPlan"
           name="nextPlan"
           className="app-field app-textarea"
           defaultValue={initialValue?.next_plan ?? ""}
-          placeholder="Keyingi qadamlarni kiriting."
+          placeholder={copy.form.nextPlanPlaceholder}
         />
         {state?.fieldErrors?.nextPlan ? (
-          <p className="text-sm text-rose-700">{state.fieldErrors.nextPlan[0]}</p>
+          <p className="text-sm text-rose-700">
+            {translateReportMessage(state.fieldErrors.nextPlan[0], language)}
+          </p>
         ) : null}
       </div>
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-app-text" htmlFor="blockers">
-          {"To'siq yoki muammo"}
+          {copy.form.blockers}
         </label>
         <textarea
           id="blockers"
           name="blockers"
           className="app-field app-textarea min-h-24"
           defaultValue={initialValue?.blockers ?? ""}
-          placeholder="Agar muammo bo'lsa, shu yerga yozing."
+          placeholder={copy.form.blockersPlaceholder}
         />
       </div>
 
       <div className="space-y-3">
         <label className="block text-sm font-medium text-app-text" htmlFor="status">
-          Umumiy holat
+          {copy.form.status}
         </label>
         <select
           id="status"
@@ -139,21 +149,23 @@ export function ReportForm({
         >
           {reportStatuses.map((status) => (
             <option key={status} value={status}>
-              {getReportStatusLabel(status)}
+              {getReportStatusLabel(status, language)}
             </option>
           ))}
         </select>
         <div className="flex flex-wrap gap-2">
           {reportStatuses.map((status) => (
-            <ReportStatusBadge key={status} status={status} />
+            <ReportStatusBadge key={status} status={status} language={language} />
           ))}
         </div>
         {state?.fieldErrors?.status ? (
-          <p className="text-sm text-rose-700">{state.fieldErrors.status[0]}</p>
+          <p className="text-sm text-rose-700">
+            {translateReportMessage(state.fieldErrors.status[0], language)}
+          </p>
         ) : null}
       </div>
 
-      <SubmitButton label="Hisobotni saqlash" pendingLabel="Saqlanmoqda..." />
+      <SubmitButton label={copy.form.submit} pendingLabel={copy.form.pending} />
     </form>
   );
 }

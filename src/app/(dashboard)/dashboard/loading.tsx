@@ -1,11 +1,5 @@
-import { RouteLoading } from "@/components/ui/route-loading";
+import { LocalizedRouteLoading } from "@/components/ui/route-loading";
 
 export default function DashboardPageLoading() {
-  return (
-    <RouteLoading
-      title="Dashboard"
-      description="Overview yuklanmoqda"
-      stats={4}
-    />
-  );
+  return <LocalizedRouteLoading section="dashboard" stats={4} />;
 }
