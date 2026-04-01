@@ -155,3 +155,11 @@ export function ChevronDownIcon({ className }: IconProps) {
     </IconBase>
   );
 }
+
+export function BreadcrumbChevronIcon({ className }: IconProps) {
+  return (
+    <IconBase className={className}>
+      <path d="m10 7.5 4 4.5-4 4.5" />
+    </IconBase>
+  );
+}

@@ -2,11 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type CSSProperties } from "react";
+import { usePathname } from "next/navigation";
 import { createPortal } from "react-dom";
 
 import { useAppCopy, usePreferences } from "@/components/providers/preferences-provider";
 import {
+  BreadcrumbChevronIcon,
   CloseIcon,
   DashboardIcon,
   EmployeesIcon,
@@ -21,8 +23,13 @@ import { DashboardNav, type DashboardNavItem } from "@/components/layout/dashboa
 import { RoleBadge } from "@/components/ui/badges";
 import { signOutAction } from "@/lib/actions/auth";
 import type { AppCopy } from "@/lib/copy";
+import { getDashboardCopy } from "@/lib/dashboard-copy";
+import { getEmployeesCopy } from "@/lib/employees-copy";
 import type { AppLanguage } from "@/lib/preferences";
+import { getPlansCopy } from "@/lib/plans-copy";
+import { getReportsCopy } from "@/lib/reports-copy";
 import { cx, getInitials } from "@/lib/utils";
+import type { ComponentType } from "react";
 
 type ViewerSummary = {
   fullName: string;
@@ -37,6 +44,12 @@ type SignOutButtonProps = {
   confirmActionLabel: string;
   cancelLabel: string;
   className: string;
+};
+
+type HeaderMeta = {
+  title: string;
+  segments: string[];
+  icon: ComponentType<{ className?: string }>;
 };
 
 function buildPrimaryItems(
@@ -61,6 +74,75 @@ function buildSettingsItem(navCopy: AppCopy["shell"]["nav"]): DashboardNavItem {
     href: "/settings",
     label: navCopy.settings,
     icon: SettingsIcon,
+  };
+}
+
+function buildHeaderMeta({
+  pathname,
+  language,
+  viewer,
+  copy,
+}: {
+  pathname: string;
+  language: AppLanguage;
+  viewer: ViewerSummary | null;
+  copy: AppCopy;
+}): HeaderMeta {
+  const dashboardCopy = getDashboardCopy(language);
+  const reportsCopy = getReportsCopy(language);
+  const plansCopy = getPlansCopy(language);
+  const employeesCopy = getEmployeesCopy(language);
+  const normalizedPath = pathname === "/" ? "/dashboard" : pathname;
+
+  if (normalizedPath.startsWith("/employees/")) {
+    return {
+      title: employeesCopy.profile.headerEyebrow,
+      segments: [copy.shell.nav.employees],
+      icon: EmployeesIcon,
+    };
+  }
+
+  if (normalizedPath.startsWith("/employees")) {
+    return {
+      title: employeesCopy.list.header.title,
+      segments: [copy.shell.nav.employees],
+      icon: EmployeesIcon,
+    };
+  }
+
+  if (normalizedPath.startsWith("/reports")) {
+    return {
+      title: reportsCopy.header.title,
+      segments: [copy.shell.nav.reports],
+      icon: ReportsIcon,
+    };
+  }
+
+  if (normalizedPath.startsWith("/plans")) {
+    return {
+      title: plansCopy.header.title,
+      segments: [copy.shell.nav.plans],
+      icon: PlansIcon,
+    };
+  }
+
+  if (normalizedPath.startsWith("/settings")) {
+    return {
+      title: copy.settings.title,
+      segments: [copy.shell.nav.settings],
+      icon: SettingsIcon,
+    };
+  }
+
+  const firstName = viewer?.fullName.trim().split(/\s+/)[0];
+
+  return {
+    title:
+      viewer?.role === "employee" && firstName
+        ? dashboardCopy.header.employeeTitle(firstName)
+        : dashboardCopy.header.leadTitle,
+    segments: [copy.shell.nav.dashboard],
+    icon: DashboardIcon,
   };
 }
 
@@ -294,12 +376,18 @@ export function DashboardShell({
   children: React.ReactNode;
 }>) {
   const { language } = usePreferences();
+  const pathname = usePathname();
   const copy = useAppCopy();
   const [viewer, setViewer] = useState<ViewerSummary | null>(null);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const primaryItems = buildPrimaryItems(viewer?.role ?? null, copy.shell.nav);
   const settingsItem = buildSettingsItem(copy.shell.nav);
   const mobileItems = [...primaryItems, settingsItem];
+  const headerMeta = useMemo(
+    () => buildHeaderMeta({ pathname, language, viewer, copy }),
+    [pathname, language, viewer, copy],
+  );
+  const HeaderIcon = headerMeta.icon;
   const desktopLayoutStyle = {
     "--sidebar-width": isSidebarExpanded ? "260px" : "104px",
   } as CSSProperties;
@@ -401,14 +489,39 @@ export function DashboardShell({
         <div className="flex h-screen min-h-0 flex-col overflow-hidden w-full">
           <header className="border-b border-app-border bg-app-surface backdrop-blur">
             <div className="app-shell flex flex-col gap-4 py-1 md:flex-row md:items-center md:justify-between">
-              <div>
+              <div className="min-w-0">
                 <Link
                   href="/dashboard"
                   className="text-sm font-semibold tracking-[0.18em] text-app-text lg:hidden"
                 >
                   Uyqur Support
                 </Link>
-                <p className="mt-1 text-sm text-app-text-muted">{copy.shell.subtitle}</p>
+                <div className="mt-1 flex min-w-0 flex-wrap items-center gap-2 text-sm text-app-text-muted">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-app-bg-elevated text-app-text-subtle">
+                    <HeaderIcon className="h-4 w-4" />
+                  </span>
+                  <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+                    {headerMeta.segments.map((segment, index) => (
+                      <div
+                        key={`${segment}-${index}`}
+                        className="flex min-w-0 items-center gap-1.5"
+                      >
+                        <BreadcrumbChevronIcon className="h-3.5 w-3.5 shrink-0 text-app-text-subtle" />
+                        <span
+                          className="truncate font-medium text-app-text-muted"
+                        >
+                          {segment}
+                        </span>
+                      </div>
+                    ))}
+                    <div className="flex min-w-0 items-center gap-1.5">
+                      <BreadcrumbChevronIcon className="h-3.5 w-3.5 shrink-0 text-app-text-subtle" />
+                      <span className="min-w-0 max-w-full truncate rounded-2xl bg-app-bg-elevated px-3 py-1.5 text-sm font-semibold tracking-tight text-app-text">
+                        {headerMeta.title}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div className="flex items-center gap-2 self-end md:self-auto">
