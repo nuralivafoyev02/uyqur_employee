@@ -51,6 +51,8 @@ type PlansCopy = {
   list: {
     boardTitle: string;
     boardDescription: string;
+    quickAddTitle: (statusLabel: string) => string;
+    quickAddDescription: string;
     collapsedState: string;
     expandColumn: string;
     collapseColumn: string;
@@ -128,6 +130,9 @@ const COPY: Record<AppLanguage, PlansCopy> = {
       boardTitle: "Vazifalar board",
       boardDescription:
         "Status bo'yicha tez ko'ring, drag-drop bilan o'tkazing va ustun ichidan mini form bilan yangi task qo'shing.",
+      quickAddTitle: (statusLabel) => `${statusLabel} uchun tezkor vazifa`,
+      quickAddDescription:
+        "Tezkor qo'shishda avval task nomi va tavsifini yozing, so'ng kerak bo'lsa ijrochi va deadline kiriting.",
       collapsedState: "Yopiq ko'rinish",
       expandColumn: "Ochish",
       collapseColumn: "Yopish",
@@ -203,6 +208,9 @@ const COPY: Record<AppLanguage, PlansCopy> = {
       boardTitle: "Task board",
       boardDescription:
         "Review by status, move cards with drag and drop, and add new tasks directly inside each column.",
+      quickAddTitle: (statusLabel) => `Quick task for ${statusLabel}`,
+      quickAddDescription:
+        "Start with the task title and description, then add assignee and deadline if needed.",
       collapsedState: "Collapsed",
       expandColumn: "Expand",
       collapseColumn: "Collapse",
@@ -278,6 +286,9 @@ const COPY: Record<AppLanguage, PlansCopy> = {
       boardTitle: "Доска задач",
       boardDescription:
         "Смотрите задачи по статусам, переносите drag-and-drop и добавляйте новые прямо из колонки.",
+      quickAddTitle: (statusLabel) => `Быстрая задача для статуса «${statusLabel}»`,
+      quickAddDescription:
+        "Сначала укажите название и описание задачи, затем при необходимости выберите исполнителя и срок.",
       collapsedState: "Свернуто",
       expandColumn: "Открыть",
       collapseColumn: "Скрыть",

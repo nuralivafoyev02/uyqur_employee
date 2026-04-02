@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { ChevronDownIcon, PlusIcon } from "@/components/layout/dashboard-icons";
 import { QuickPlanForm } from "@/components/plans/quick-plan-form";
+import { QuickPlanModal } from "@/components/plans/quick-plan-modal";
 import { PlanForm } from "@/components/plans/plan-form";
 import { usePreferences } from "@/components/providers/preferences-provider";
 import { useToast } from "@/components/providers/toast-provider";
@@ -140,10 +141,6 @@ function PlansBoardSection({
   );
 
   function handleQuickAddToggle(status: PlanStatus) {
-    if (status === "done") {
-      setIsDoneColumnOpen(true);
-    }
-
     setQuickAddStatus((current) => (current === status ? null : status));
   }
 
@@ -338,17 +335,6 @@ function PlansBoardSection({
 
                 {!isCollapsed ? (
                   <>
-                    {isLeadView && quickAddStatus === status ? (
-                      <div className="mt-3">
-                        <QuickPlanForm
-                          action={saveAction}
-                          employees={employees}
-                          defaultStatus={status}
-                          onClose={() => setQuickAddStatus(null)}
-                        />
-                      </div>
-                    ) : null}
-
                     {items.length > 0 ? (
                       <div className="mt-3 space-y-2.5">
                         {items.map((plan) => (
@@ -431,7 +417,7 @@ function PlansBoardSection({
                           </article>
                         ))}
                       </div>
-                    ) : quickAddStatus === status ? null : (
+                    ) : (
                       <div className="mt-3 rounded-[20px] border border-dashed border-app-border bg-app-surface px-3 py-5 text-center text-[12px] text-app-text-muted">
                         {copy.list.emptyColumn}
                       </div>
@@ -473,6 +459,27 @@ function PlansBoardSection({
           query={paginationQuery}
         />
       </div>
+
+      <QuickPlanModal
+        isOpen={quickAddStatus !== null}
+        title={
+          quickAddStatus
+            ? copy.list.quickAddTitle(getPlanStatusLabel(quickAddStatus, language))
+            : copy.list.quickAddTitle(copy.list.boardTitle)
+        }
+        description={copy.list.quickAddDescription}
+        closeLabel={copy.filters.close}
+        onClose={() => setQuickAddStatus(null)}
+      >
+        {quickAddStatus ? (
+          <QuickPlanForm
+            action={saveAction}
+            employees={employees}
+            defaultStatus={quickAddStatus}
+            onClose={() => setQuickAddStatus(null)}
+          />
+        ) : null}
+      </QuickPlanModal>
     </section>
   );
 }

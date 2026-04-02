@@ -67,7 +67,7 @@ export function QuickPlanForm({
   }, [onClose, router, state]);
 
   return (
-    <form ref={formRef} action={formAction} className="space-y-2.5 rounded-[18px] border border-app-border bg-app-surface p-3">
+    <form ref={formRef} action={formAction} className="space-y-4">
       <input type="hidden" name="priority" value={defaultPriority} />
       <input type="hidden" name="status" value={defaultStatus} />
       <ActionStateToast
@@ -75,22 +75,51 @@ export function QuickPlanForm({
         message={state?.message ? translatePlanMessage(state.message, language) : undefined}
       />
 
-      <div className="grid gap-2 md:grid-cols-[minmax(0,1.2fr)_minmax(170px,0.8fr)_140px_auto_auto]">
-        <div className="space-y-1">
-          <input
-            name="title"
-            className="app-field"
-            placeholder={copy.form.titlePlaceholder}
-          />
-          {state?.fieldErrors?.title ? (
-            <p className="text-[11px] text-rose-700">
-              {translatePlanMessage(state.fieldErrors.title[0], language)}
-            </p>
-          ) : null}
-        </div>
+      <div className="space-y-1.5">
+        <label
+          className="block text-xs font-semibold uppercase tracking-[0.12em] text-app-text-subtle"
+          htmlFor="quickPlanTitle"
+        >
+          {copy.form.title}
+        </label>
+        <input
+          id="quickPlanTitle"
+          name="title"
+          className="app-field"
+          placeholder={copy.form.titlePlaceholder}
+        />
+        {state?.fieldErrors?.title ? (
+          <p className="text-[11px] text-rose-700">
+            {translatePlanMessage(state.fieldErrors.title[0], language)}
+          </p>
+        ) : null}
+      </div>
 
+      <div className="space-y-1.5">
+        <label
+          className="block text-xs font-semibold uppercase tracking-[0.12em] text-app-text-subtle"
+          htmlFor="quickPlanDescription"
+        >
+          {copy.form.descriptionOptional}
+        </label>
+        <textarea
+          id="quickPlanDescription"
+          name="description"
+          className="app-field app-textarea min-h-28"
+          placeholder={copy.form.descriptionPlaceholder}
+        />
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_140px]">
         <div className="space-y-1">
+          <label
+            className="block text-xs font-semibold uppercase tracking-[0.12em] text-app-text-subtle"
+            htmlFor="quickPlanAssignee"
+          >
+            {copy.form.assignee}
+          </label>
           <select
+            id="quickPlanAssignee"
             name="assigneeId"
             className="app-field"
             defaultValue=""
@@ -110,7 +139,14 @@ export function QuickPlanForm({
         </div>
 
         <div className="space-y-1">
+          <label
+            className="block text-xs font-semibold uppercase tracking-[0.12em] text-app-text-subtle"
+            htmlFor="quickPlanDueDate"
+          >
+            {copy.form.dueDate}
+          </label>
           <input
+            id="quickPlanDueDate"
             name="dueDate"
             type="date"
             className="app-field"
@@ -121,20 +157,21 @@ export function QuickPlanForm({
             </p>
           ) : null}
         </div>
+      </div>
 
-        <SubmitButton
-          label={copy.form.quickSubmit}
-          pendingLabel={copy.form.pending}
-          className="w-full justify-center px-3 md:w-auto"
-        />
-
+      <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
         <button
           type="button"
-          className="app-button-secondary justify-center px-3 md:w-auto"
+          className="app-button-secondary justify-center px-4"
           onClick={() => onClose?.()}
         >
           {copy.filters.close}
         </button>
+        <SubmitButton
+          label={copy.form.quickSubmit}
+          pendingLabel={copy.form.pending}
+          className="w-full justify-center px-4 sm:w-auto"
+        />
       </div>
     </form>
   );
