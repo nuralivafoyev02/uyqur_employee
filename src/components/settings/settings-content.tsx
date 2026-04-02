@@ -119,10 +119,10 @@ export function SettingsContent({
 
   return (
     <div className="-mx-4 -mt-6 min-h-screen md:-mx-6">
-      <div className="min-h-screen overflow-hidden border-y border-app-border bg-app-surface lg:grid lg:grid-cols-[260px_minmax(0,1fr)] lg:border">
-        <aside className="border-b border-app-border bg-app-surface px-4 py-5 lg:min-h-full lg:border-b-0 lg:border-r lg:px-5 lg:py-6">
-          <div className="px-2 pb-4">
-            <p className="text-sm font-semibold tracking-tight text-app-text-subtle">
+      <div className="min-h-screen overflow-hidden border-y border-app-border bg-app-surface lg:grid lg:grid-cols-[232px_minmax(0,1fr)] lg:border">
+        <aside className="border-b border-app-border bg-app-surface px-3.5 py-4 lg:min-h-full lg:border-b-0 lg:border-r lg:px-4 lg:py-5">
+          <div className="px-2 pb-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-app-text-subtle">
               {copy.settings.eyebrow}
             </p>
           </div>
@@ -137,7 +137,7 @@ export function SettingsContent({
                   key={section.id}
                   type="button"
                   className={cx(
-                    "flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left transition-colors duration-200",
+                    "flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2.5 text-left transition-colors duration-200",
                     isActive
                       ? "bg-app-accent-muted text-app-text"
                       : "text-app-text-muted hover:bg-app-surface-muted hover:text-app-text",
@@ -146,15 +146,15 @@ export function SettingsContent({
                 >
                   <span
                     className={cx(
-                      "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors duration-200",
+                      "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors duration-200",
                       isActive
                         ? "bg-app-accent text-white"
                         : "bg-app-bg-elevated text-app-text-subtle",
                     )}
                   >
-                    <Icon className="h-[18px] w-[18px]" />
+                    <Icon className="h-4 w-4" />
                   </span>
-                  <span className="min-w-0 text-base font-semibold">{section.label}</span>
+                  <span className="min-w-0 text-sm font-semibold">{section.label}</span>
                 </button>
               );
             })}
@@ -162,18 +162,18 @@ export function SettingsContent({
         </aside>
 
         <section className="min-w-0 bg-app-surface">
-          <div className="border-b border-app-border bg-app-bg-elevated/40 px-5 py-5 md:px-6 md:py-6">
-            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-              <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-app-accent-muted text-app-accent">
-                  <CurrentSectionIcon className="h-5 w-5" />
+          <div className="border-b border-app-border bg-app-bg-elevated/40 px-4 py-4 md:px-5 md:py-5">
+            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-app-accent-muted text-app-accent">
+                  <CurrentSectionIcon className="h-[18px] w-[18px]" />
                 </div>
                 <div className="min-w-0">
                   <p className="app-kicker">{currentEyebrow}</p>
-                  <h1 className="mt-2 text-3xl font-semibold tracking-tight text-app-text">
+                  <h1 className="mt-1.5 text-2xl font-semibold tracking-tight text-app-text md:text-[28px]">
                     {currentTitle}
                   </h1>
-                  <p className="mt-2 max-w-2xl text-sm leading-6 text-app-text-muted">
+                  <p className="mt-1.5 max-w-2xl text-[13px] leading-5 text-app-text-muted">
                     {currentDescription}
                   </p>
                 </div>
@@ -183,24 +183,24 @@ export function SettingsContent({
             </div>
           </div>
 
-          <div className="px-5 py-6 md:px-6 md:py-7">
+          <div className="px-4 py-5 md:px-5 md:py-5">
             {activeSection === "account" ? (
               <div className="divide-y divide-app-border">
-                <div className="grid gap-2 py-4 md:grid-cols-[180px_minmax(0,1fr)] md:items-center">
-                  <p className="text-sm font-medium text-app-text">{copy.settings.emailLabel}</p>
-                  <p className="text-sm text-app-text-muted">{viewer.email}</p>
+                <div className="grid gap-1.5 py-3 md:grid-cols-[160px_minmax(0,1fr)] md:items-center">
+                  <p className="text-[13px] font-medium text-app-text">{copy.settings.emailLabel}</p>
+                  <p className="text-[13px] text-app-text-muted">{viewer.email}</p>
                 </div>
-                <div className="grid gap-2 py-4 md:grid-cols-[180px_minmax(0,1fr)] md:items-center">
-                  <p className="text-sm font-medium text-app-text">{copy.settings.roleLabel}</p>
+                <div className="grid gap-1.5 py-3 md:grid-cols-[160px_minmax(0,1fr)] md:items-center">
+                  <p className="text-[13px] font-medium text-app-text">{copy.settings.roleLabel}</p>
                   <div>
                     <RoleBadge role={viewer.role} language={language} />
                   </div>
                 </div>
-                <div className="grid gap-2 py-4 md:grid-cols-[180px_minmax(0,1fr)] md:items-center">
-                  <p className="text-sm font-medium text-app-text">
+                <div className="grid gap-1.5 py-3 md:grid-cols-[160px_minmax(0,1fr)] md:items-center">
+                  <p className="text-[13px] font-medium text-app-text">
                     {copy.settings.updatedAtLabel}
                   </p>
-                  <p className="text-sm text-app-text-muted">
+                  <p className="text-[13px] text-app-text-muted">
                     {formatDateTime(viewer.updated_at, language)}
                   </p>
                 </div>

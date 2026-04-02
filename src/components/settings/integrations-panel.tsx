@@ -62,22 +62,22 @@ export function IntegrationsPanel({
     : null;
 
   return (
-    <div className="space-y-6">
-      <section className="rounded-3xl border border-app-border bg-app-surface p-5">
+    <div className="space-y-5">
+      <section className="rounded-2xl border border-app-border bg-app-surface p-4">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <p className="app-kicker">{copy.panelEyebrow}</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-app-text">
+            <h2 className="mt-1.5 text-xl font-semibold tracking-tight text-app-text">
               {copy.panelTitle}
             </h2>
-            <p className="mt-3 max-w-3xl text-sm leading-6 text-app-text-muted">
+            <p className="mt-2 max-w-3xl text-[13px] leading-5 text-app-text-muted">
               {copy.panelDescription}
             </p>
           </div>
 
           <button
             type="button"
-            className="app-icon-button h-9 w-9 shrink-0"
+            className="app-icon-button h-8 w-8 shrink-0"
             aria-label={copy.privacyTriggerLabel}
             title={copy.privacyTriggerLabel}
             onClick={() => setIsPrivacyOpen(true)}
@@ -86,7 +86,7 @@ export function IntegrationsPanel({
           </button>
         </div>
 
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="mt-3 flex flex-wrap gap-1.5">
           <Badge tone={canManage ? "info" : "neutral"}>
             {canManage ? copy.manageHint : copy.readOnlyHint}
           </Badge>
@@ -94,16 +94,16 @@ export function IntegrationsPanel({
         </div>
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-3">
         <div className="flex items-center justify-between gap-3">
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             <p className="app-kicker">{copy.panelEyebrow}</p>
-            <h3 className="text-xl font-semibold tracking-tight text-app-text">{copy.availableTitle}</h3>
+            <h3 className="text-lg font-semibold tracking-tight text-app-text">{copy.availableTitle}</h3>
           </div>
           <Badge tone="neutral">{INTEGRATION_PROVIDERS.length}</Badge>
         </div>
 
-        <div className="grid gap-4 xl:grid-cols-2">
+        <div className="grid gap-3 xl:grid-cols-2">
           {INTEGRATION_PROVIDERS.map((provider) => {
             const connection = connectionMap.get(provider.slug);
             const summary = connection
@@ -113,21 +113,21 @@ export function IntegrationsPanel({
             return (
               <article
                 key={provider.slug}
-                className="rounded-3xl border border-app-border bg-app-surface p-5"
+                className="rounded-2xl border border-app-border bg-app-surface p-4"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
                     <div className="flex items-center gap-3">
                       <IntegrationProviderBadge
                         provider={provider.slug}
-                        className="h-11 w-11 shrink-0"
-                        iconClassName="h-5 w-5"
+                        className="h-10 w-10 shrink-0"
+                        iconClassName="h-[18px] w-[18px]"
                       />
                       <div className="min-w-0">
-                        <p className="truncate text-lg font-semibold tracking-tight text-app-text">
+                        <p className="truncate text-base font-semibold tracking-tight text-app-text">
                           {provider.displayName}
                         </p>
-                        <p className="mt-1 text-[13px] leading-5 text-app-text-muted">
+                        <p className="mt-1 text-[12px] leading-5 text-app-text-muted">
                           {provider.summary[language]}
                         </p>
                       </div>
@@ -140,15 +140,15 @@ export function IntegrationsPanel({
                 </div>
 
                 {summary.length > 0 ? (
-                  <div className="mt-4 rounded-2xl border border-app-border bg-app-bg-elevated p-3">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-app-text-subtle">
+                  <div className="mt-3 rounded-xl border border-app-border bg-app-bg-elevated p-2.5">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-app-text-subtle">
                       {copy.publicConfigLabel}
                     </p>
-                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                    <div className="mt-2.5 grid gap-2 sm:grid-cols-2">
                       {summary.map((item) => (
                         <div key={`${provider.slug}-${item.key}`}>
-                          <p className="text-[11px] text-app-text-subtle">{item.label}</p>
-                          <p className="mt-1 truncate text-[13px] font-medium text-app-text">
+                          <p className="text-[10px] text-app-text-subtle">{item.label}</p>
+                          <p className="mt-1 truncate text-[12px] font-medium text-app-text">
                             {item.value}
                           </p>
                         </div>
@@ -157,7 +157,7 @@ export function IntegrationsPanel({
                   </div>
                 ) : null}
 
-                <div className="mt-5 flex flex-wrap items-center gap-2">
+                <div className="mt-4 flex flex-wrap items-center gap-2">
                   {connection ? (
                     <Link
                       href={`/integrations/${provider.slug}`}
@@ -182,7 +182,7 @@ export function IntegrationsPanel({
                 </div>
 
                 {connection ? (
-                  <p className="mt-3 text-[12px] leading-5 text-app-text-muted">
+                  <p className="mt-2.5 text-[11px] leading-5 text-app-text-muted">
                     {copy.updatedAtLabel}: {formatDateTime(connection.updatedAt, language)}
                   </p>
                 ) : null}
@@ -192,24 +192,24 @@ export function IntegrationsPanel({
         </div>
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-3">
         <div className="flex items-center justify-between gap-3">
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             <p className="app-kicker">{copy.panelEyebrow}</p>
-            <h3 className="text-xl font-semibold tracking-tight text-app-text">{copy.connectedTitle}</h3>
+            <h3 className="text-lg font-semibold tracking-tight text-app-text">{copy.connectedTitle}</h3>
           </div>
           <Badge tone="neutral">{connections.length}</Badge>
         </div>
 
         {connections.length === 0 ? (
-          <article className="rounded-3xl border border-dashed border-app-border bg-app-surface p-6">
-            <p className="text-base font-semibold text-app-text">{copy.connectedEmptyTitle}</p>
-            <p className="mt-2 text-sm leading-6 text-app-text-muted">
+          <article className="rounded-2xl border border-dashed border-app-border bg-app-surface p-5">
+            <p className="text-sm font-semibold text-app-text">{copy.connectedEmptyTitle}</p>
+            <p className="mt-1.5 text-[13px] leading-5 text-app-text-muted">
               {copy.connectedEmptyDescription}
             </p>
           </article>
         ) : (
-          <div className="grid gap-4">
+          <div className="grid gap-3">
             {connections.map((connection) => {
               const summary = getIntegrationPublicSummary(
                 connection.provider,
@@ -220,21 +220,21 @@ export function IntegrationsPanel({
               return (
                 <article
                   key={connection.id}
-                  className="rounded-3xl border border-app-border bg-app-surface p-5"
+                  className="rounded-2xl border border-app-border bg-app-surface p-4"
                 >
                   <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                     <div className="min-w-0">
                       <div className="flex items-center gap-3">
                         <IntegrationProviderBadge
                           provider={connection.provider}
-                          className="h-11 w-11 shrink-0"
-                          iconClassName="h-5 w-5"
+                          className="h-10 w-10 shrink-0"
+                          iconClassName="h-[18px] w-[18px]"
                         />
                         <div className="min-w-0">
-                          <p className="truncate text-lg font-semibold tracking-tight text-app-text">
+                          <p className="truncate text-base font-semibold tracking-tight text-app-text">
                             {connection.displayName}
                           </p>
-                          <p className="mt-1 text-[12px] leading-5 text-app-text-muted">
+                          <p className="mt-1 text-[11px] leading-5 text-app-text-muted">
                             {copy.updatedAtLabel}: {formatDateTime(connection.updatedAt, language)}
                           </p>
                         </div>
@@ -261,11 +261,11 @@ export function IntegrationsPanel({
                   </div>
 
                   {summary.length > 0 ? (
-                    <div className="mt-4 flex flex-wrap gap-2">
+                    <div className="mt-3 flex flex-wrap gap-1.5">
                       {summary.map((item) => (
                         <span
                           key={`${connection.id}-${item.key}`}
-                          className="rounded-full border border-app-border bg-app-bg-elevated px-3 py-1.5 text-[12px] font-medium text-app-text"
+                          className="rounded-full border border-app-border bg-app-bg-elevated px-2.5 py-1 text-[11px] font-medium text-app-text"
                         >
                           {item.label}: {item.value}
                         </span>
@@ -287,10 +287,10 @@ export function IntegrationsPanel({
         closeLabel={copy.close}
       >
         <div className="space-y-3">
-          <div className="rounded-2xl border border-app-border bg-app-bg-elevated p-4">
+          <div className="rounded-xl border border-app-border bg-app-bg-elevated p-3">
             <div className="space-y-2">
               {copy.privacyPoints.map((point, index) => (
-                <p key={`privacy-point-${index}`} className="text-sm leading-6 text-app-text-muted">
+                <p key={`privacy-point-${index}`} className="text-[13px] leading-5 text-app-text-muted">
                   {String(index + 1).padStart(2, "0")}. {point}
                 </p>
               ))}

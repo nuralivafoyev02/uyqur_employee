@@ -27,14 +27,14 @@ export function ProfileForm({ action, profile }: ProfileFormProps) {
   const copy = useAppCopy();
 
   return (
-    <form action={formAction} className="space-y-5">
+    <form action={formAction} className="space-y-4">
       <ActionStateToast
         state={state}
         message={state?.message ? translateProfileMessage(state.message, language) : undefined}
       />
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-app-text" htmlFor="fullName">
+        <label className="block text-[13px] font-semibold text-app-text" htmlFor="fullName">
           {copy.settings.profileForm.fullName}
         </label>
         <input
@@ -44,14 +44,14 @@ export function ProfileForm({ action, profile }: ProfileFormProps) {
           defaultValue={profile.full_name}
         />
         {state?.fieldErrors?.fullName ? (
-          <p className="text-sm text-rose-700">
+          <p className="text-[12px] text-rose-700">
             {translateProfileMessage(state.fieldErrors.fullName[0], language)}
           </p>
         ) : null}
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-app-text" htmlFor="profileStatus">
+        <label className="block text-[13px] font-semibold text-app-text" htmlFor="profileStatus">
           {copy.settings.profileForm.profileStatus}
         </label>
         <input
@@ -63,15 +63,15 @@ export function ProfileForm({ action, profile }: ProfileFormProps) {
           maxLength={60}
         />
         {state?.fieldErrors?.profileStatus ? (
-          <p className="text-sm text-rose-700">
+          <p className="text-[12px] text-rose-700">
             {translateProfileMessage(state.fieldErrors.profileStatus[0], language)}
           </p>
         ) : null}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-3 md:grid-cols-2">
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-app-text" htmlFor="title">
+          <label className="block text-[13px] font-semibold text-app-text" htmlFor="title">
             {copy.settings.profileForm.title}
           </label>
           <input
@@ -84,7 +84,7 @@ export function ProfileForm({ action, profile }: ProfileFormProps) {
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-app-text" htmlFor="department">
+          <label className="block text-[13px] font-semibold text-app-text" htmlFor="department">
             {copy.settings.profileForm.department}
           </label>
           <input
@@ -100,6 +100,7 @@ export function ProfileForm({ action, profile }: ProfileFormProps) {
       <SubmitButton
         label={copy.settings.profileForm.submit}
         pendingLabel={copy.settings.profileForm.pending}
+        className="px-4 py-2 text-[13px]"
       />
     </form>
   );
