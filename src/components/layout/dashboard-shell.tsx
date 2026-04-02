@@ -15,6 +15,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 
 import { useAppCopy, usePreferences } from "@/components/providers/preferences-provider";
+import { getIntegrationIconComponent } from "@/components/integrations/provider-icon";
 import {
   BreadcrumbChevronIcon,
   DashboardIcon,
@@ -36,6 +37,7 @@ import { updateProfileStatusAction } from "@/lib/actions/profile";
 import { type AppCopy, translateProfileMessage } from "@/lib/copy";
 import { getDashboardCopy } from "@/lib/dashboard-copy";
 import { getEmployeesCopy } from "@/lib/employees-copy";
+import { getIntegrationProvider, INTEGRATIONS_EVENT } from "@/lib/integration-providers";
 import type { AppLanguage } from "@/lib/preferences";
 import { getPlansCopy } from "@/lib/plans-copy";
 import { getReportsCopy } from "@/lib/reports-copy";
@@ -75,6 +77,7 @@ type HeaderMeta = {
 
 function buildPrimaryItems(
   role: ViewerSummary["role"] | null,
+  integrations: NavigationIntegration[],
   navCopy: AppCopy["shell"]["nav"],
 ): DashboardNavItem[] {
   const baseItems: DashboardNavItem[] = [
@@ -84,11 +87,21 @@ function buildPrimaryItems(
     { href: "/suggestions", label: navCopy.suggestions, icon: SuggestionsIcon },
   ];
 
+  const integrationItems: DashboardNavItem[] = integrations.map((integration) => ({
+    href: `/integrations/${integration.provider}`,
+    label: integration.displayName,
+    icon: getIntegrationIconComponent(integration.provider),
+  }));
+
   if (role === "admin" || role === "manager") {
-    return [...baseItems, { href: "/employees", label: navCopy.employees, icon: EmployeesIcon }];
+    return [
+      ...baseItems,
+      { href: "/employees", label: navCopy.employees, icon: EmployeesIcon },
+      ...integrationItems,
+    ];
   }
 
-  return baseItems;
+  return [...baseItems, ...integrationItems];
 }
 
 function buildSettingsItem(navCopy: AppCopy["shell"]["nav"]): DashboardNavItem {
@@ -103,11 +116,13 @@ function buildHeaderMeta({
   pathname,
   language,
   viewer,
+  integrations,
   copy,
 }: {
   pathname: string;
   language: AppLanguage;
   viewer: ViewerSummary | null;
+  integrations: NavigationIntegration[];
   copy: AppCopy;
 }): HeaderMeta {
   const dashboardCopy = getDashboardCopy(language);
@@ -157,6 +172,23 @@ function buildHeaderMeta({
     };
   }
 
+  if (normalizedPath.startsWith("/integrations/")) {
+    const providerSlug = normalizedPath.split("/")[2] ?? "";
+    const matchedIntegration = integrations.find(
+      (integration) => integration.provider === providerSlug,
+    );
+    const providerDefinition = getIntegrationProvider(providerSlug);
+
+    return {
+      title:
+        matchedIntegration?.displayName ??
+        providerDefinition?.displayName ??
+        providerSlug.replace(/[-_]/g, " "),
+      segments: [copy.shell.nav.integrations],
+      icon: getIntegrationIconComponent(providerSlug),
+    };
+  }
+
   if (normalizedPath.startsWith("/settings")) {
     return {
       title: copy.settings.title,
@@ -176,6 +208,11 @@ function buildHeaderMeta({
     icon: DashboardIcon,
   };
 }
+
+type NavigationIntegration = {
+  provider: string;
+  displayName: string;
+};
 
 function SignOutButton({
   label,
@@ -538,13 +575,14 @@ export function DashboardShell({
   const pathname = usePathname();
   const copy = useAppCopy();
   const [viewer, setViewer] = useState<ViewerSummary | null>(null);
+  const [integrations, setIntegrations] = useState<NavigationIntegration[]>([]);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
-  const primaryItems = buildPrimaryItems(viewer?.role ?? null, copy.shell.nav);
+  const primaryItems = buildPrimaryItems(viewer?.role ?? null, integrations, copy.shell.nav);
   const settingsItem = buildSettingsItem(copy.shell.nav);
   const mobileItems = [...primaryItems, settingsItem];
   const headerMeta = useMemo(
-    () => buildHeaderMeta({ pathname, language, viewer, copy }),
-    [pathname, language, viewer, copy],
+    () => buildHeaderMeta({ pathname, language, viewer, integrations, copy }),
+    [pathname, language, viewer, integrations, copy],
   );
   const HeaderIcon = headerMeta.icon;
   const desktopLayoutStyle = {
@@ -554,34 +592,54 @@ export function DashboardShell({
   useEffect(() => {
     let active = true;
 
-    async function loadViewer() {
+    async function loadShellData() {
       try {
-        const response = await fetch("/api/me", {
-          method: "GET",
-          cache: "no-store",
-          credentials: "same-origin",
-        });
+        const [viewerResponse, integrationsResponse] = await Promise.all([
+          fetch("/api/me", {
+            method: "GET",
+            cache: "no-store",
+            credentials: "same-origin",
+          }),
+          fetch("/api/integrations", {
+            method: "GET",
+            cache: "no-store",
+            credentials: "same-origin",
+          }),
+        ]);
 
-        if (!response.ok) {
+        if (!active) {
           return;
         }
 
-        const payload = (await response.json()) as ViewerSummary;
+        if (viewerResponse.ok) {
+          const viewerPayload = (await viewerResponse.json()) as ViewerSummary;
+          setViewer(viewerPayload);
+        }
 
-        if (active) {
-          setViewer(payload);
+        if (integrationsResponse.ok) {
+          const integrationsPayload = (await integrationsResponse.json()) as NavigationIntegration[];
+          setIntegrations(integrationsPayload ?? []);
         }
       } catch {
         // Keep the shell responsive even if the profile request fails.
       }
     }
 
-    void loadViewer();
+    void loadShellData();
+
+    const handleIntegrationsChange = () => {
+      void loadShellData();
+    };
+
+    window.addEventListener(INTEGRATIONS_EVENT, handleIntegrationsChange);
+    window.addEventListener("focus", handleIntegrationsChange);
 
     return () => {
       active = false;
+      window.removeEventListener(INTEGRATIONS_EVENT, handleIntegrationsChange);
+      window.removeEventListener("focus", handleIntegrationsChange);
     };
-  }, []);
+  }, [pathname]);
 
   return (
     <div className="h-screen overflow-hidden">

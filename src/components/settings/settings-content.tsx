@@ -4,34 +4,52 @@ import { useEffect, useMemo, useState } from "react";
 
 import {
   AccountIcon,
+  IntegrationIcon,
   InterfaceIcon,
   UserIcon,
 } from "@/components/layout/dashboard-icons";
 import { useAppCopy, usePreferences } from "@/components/providers/preferences-provider";
+import { IntegrationsPanel } from "@/components/settings/integrations-panel";
 import { PreferencesPanel } from "@/components/settings/preferences-panel";
 import { ProfileForm } from "@/components/settings/profile-form";
 import { RoleBadge } from "@/components/ui/badges";
 import type { ActionState } from "@/lib/validations";
 import { cx, formatDateTime } from "@/lib/utils";
 import type { Viewer } from "@/types/database";
+import type { ActiveIntegrationSummary } from "@/lib/integration-providers";
 
 type ProfileField = "fullName" | "title" | "department" | "profileStatus";
-type SettingsSectionId = "account" | "preferences" | "profile";
+type SettingsSectionId = "account" | "preferences" | "profile" | "integrations";
 
 type ProfileFormAction = (
   state: ActionState<ProfileField> | undefined,
   formData: FormData,
 ) => Promise<ActionState<ProfileField>>;
 
+type SaveIntegrationAction = (
+  state: ActionState<string> | undefined,
+  formData: FormData,
+) => Promise<ActionState<string>>;
+
+type DisconnectIntegrationAction = (
+  formData: FormData,
+) => Promise<ActionState<string>>;
+
 type SettingsContentProps = {
   action: ProfileFormAction;
+  integrationAction: SaveIntegrationAction;
+  disconnectIntegrationAction: DisconnectIntegrationAction;
   viewer: Viewer;
+  integrations: ActiveIntegrationSummary[];
   initialSection?: SettingsSectionId;
 };
 
 export function SettingsContent({
   action,
+  integrationAction,
+  disconnectIntegrationAction,
   viewer,
+  integrations,
   initialSection = "account",
 }: SettingsContentProps) {
   const { language } = usePreferences();
@@ -62,6 +80,12 @@ export function SettingsContent({
         description: copy.settings.sections.profile.description,
         icon: UserIcon,
       },
+      {
+        id: "integrations" as const,
+        label: copy.settings.sections.integrations.label,
+        description: copy.settings.sections.integrations.description,
+        icon: IntegrationIcon,
+      },
     ],
     [copy],
   );
@@ -73,19 +97,25 @@ export function SettingsContent({
       ? copy.settings.accountEyebrow
       : activeSection === "preferences"
         ? copy.settings.preferencesEyebrow
-        : copy.settings.profileEyebrow;
+        : activeSection === "profile"
+          ? copy.settings.profileEyebrow
+          : copy.settings.integrationsEyebrow;
   const currentTitle =
     activeSection === "account"
       ? copy.settings.accountTitle
       : activeSection === "preferences"
         ? copy.settings.preferencesTitle
-        : copy.settings.profileTitle;
+        : activeSection === "profile"
+          ? copy.settings.profileTitle
+          : copy.settings.integrationsTitle;
   const currentDescription =
     activeSection === "account"
       ? copy.settings.accountDescription
       : activeSection === "preferences"
         ? copy.settings.preferencesDescription
-        : copy.settings.sections.profile.description;
+        : activeSection === "profile"
+          ? copy.settings.sections.profile.description
+          : copy.settings.integrationsDescription;
 
   return (
     <div className="-mx-4 -mt-6 min-h-screen md:-mx-6">
@@ -181,6 +211,15 @@ export function SettingsContent({
 
             {activeSection === "profile" ? (
               <ProfileForm action={action} profile={viewer} />
+            ) : null}
+
+            {activeSection === "integrations" ? (
+              <IntegrationsPanel
+                action={integrationAction}
+                disconnectAction={disconnectIntegrationAction}
+                viewer={viewer}
+                connections={integrations}
+              />
             ) : null}
           </div>
         </section>

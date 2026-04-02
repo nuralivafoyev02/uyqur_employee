@@ -45,6 +45,7 @@ type ShellCopy = {
     plans: string;
     suggestions: string;
     employees: string;
+    integrations: string;
     settings: string;
   };
 };
@@ -69,6 +70,10 @@ type SettingsCopy = {
       label: string;
       description: string;
     };
+    integrations: {
+      label: string;
+      description: string;
+    };
   };
   accountEyebrow: string;
   accountTitle: string;
@@ -84,6 +89,9 @@ type SettingsCopy = {
   themeLabel: string;
   profileEyebrow: string;
   profileTitle: string;
+  integrationsEyebrow: string;
+  integrationsTitle: string;
+  integrationsDescription: string;
   profileForm: {
     fullName: string;
     title: string;
@@ -170,6 +178,7 @@ const COPY: Record<AppLanguage, AppCopy> = {
         plans: "Vazifalar",
         suggestions: "Takliflar",
         employees: "Xodimlar",
+        integrations: "Integratsiyalar",
         settings: "Sozlamalar",
       },
     },
@@ -195,6 +204,10 @@ const COPY: Record<AppLanguage, AppCopy> = {
           label: "Profil",
           description: "Ism, ish lavozimi, status va bo'lim ma'lumotlarini yangilang.",
         },
+        integrations: {
+          label: "Integratsiya",
+          description: "Tashqi servislar, API credential va kelajak sync ulanishlari.",
+        },
       },
       accountEyebrow: "Akkaunt",
       accountTitle: "Asosiy ma'lumot",
@@ -211,6 +224,10 @@ const COPY: Record<AppLanguage, AppCopy> = {
       themeLabel: "Mavzu",
       profileEyebrow: "Profil",
       profileTitle: "Tahrirlash",
+      integrationsEyebrow: "Integratsiyalar",
+      integrationsTitle: "Servis ulanishlari",
+      integrationsDescription:
+        "ClickUp va boshqa servislar bilan kelajak integratsiyasi uchun credential hamda mapping ma'lumotlarini boshqaring.",
       profileForm: {
         fullName: "F.I.Sh.",
         title: "Ish lavozimi",
@@ -305,6 +322,7 @@ const COPY: Record<AppLanguage, AppCopy> = {
         plans: "Tasks",
         suggestions: "Suggestions",
         employees: "Employees",
+        integrations: "Integrations",
         settings: "Settings",
       },
     },
@@ -330,6 +348,10 @@ const COPY: Record<AppLanguage, AppCopy> = {
           label: "Profile",
           description: "Update your name, job title, status, and department details.",
         },
+        integrations: {
+          label: "Integrations",
+          description: "External services, API credentials, and future sync connections.",
+        },
       },
       accountEyebrow: "Account",
       accountTitle: "Primary information",
@@ -346,6 +368,10 @@ const COPY: Record<AppLanguage, AppCopy> = {
       themeLabel: "Theme",
       profileEyebrow: "Profile",
       profileTitle: "Edit profile",
+      integrationsEyebrow: "Integrations",
+      integrationsTitle: "Service connections",
+      integrationsDescription:
+        "Manage credentials and mapping details for future ClickUp and external service integrations.",
       profileForm: {
         fullName: "Full name",
         title: "Job title",
@@ -440,6 +466,7 @@ const COPY: Record<AppLanguage, AppCopy> = {
         plans: "Задачи",
         suggestions: "Предложения",
         employees: "Сотрудники",
+        integrations: "Интеграции",
         settings: "Настройки",
       },
     },
@@ -465,6 +492,10 @@ const COPY: Record<AppLanguage, AppCopy> = {
           label: "Профиль",
           description: "Обновите имя, должность, статус и отдел.",
         },
+        integrations: {
+          label: "Интеграция",
+          description: "Внешние сервисы, API credentials и будущие sync-подключения.",
+        },
       },
       accountEyebrow: "Аккаунт",
       accountTitle: "Основная информация",
@@ -481,6 +512,10 @@ const COPY: Record<AppLanguage, AppCopy> = {
       themeLabel: "Тема",
       profileEyebrow: "Профиль",
       profileTitle: "Редактирование",
+      integrationsEyebrow: "Интеграции",
+      integrationsTitle: "Подключения сервисов",
+      integrationsDescription:
+        "Управляйте credentials и mapping-данными для будущей интеграции с ClickUp и другими сервисами.",
       profileForm: {
         fullName: "Ф.И.О.",
         title: "Должность",

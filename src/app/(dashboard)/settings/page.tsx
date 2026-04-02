@@ -1,6 +1,8 @@
 import { SettingsContent } from "@/components/settings/settings-content";
+import { disconnectIntegrationAction, saveIntegrationAction } from "@/lib/actions/integrations";
 import { requireViewer } from "@/lib/auth";
 import { updateProfileAction } from "@/lib/actions/profile";
+import { getActiveIntegrations } from "@/lib/queries/integrations";
 
 export default async function SettingsPage({
   searchParams,
@@ -13,14 +15,21 @@ export default async function SettingsPage({
     ? resolvedSearchParams?.section[0]
     : resolvedSearchParams?.section;
   const initialSection =
-    rawSection === "account" || rawSection === "preferences" || rawSection === "profile"
+    rawSection === "account" ||
+    rawSection === "preferences" ||
+    rawSection === "profile" ||
+    rawSection === "integrations"
       ? rawSection
       : "account";
+  const integrations = await getActiveIntegrations();
 
   return (
     <SettingsContent
       action={updateProfileAction}
+      integrationAction={saveIntegrationAction}
+      disconnectIntegrationAction={disconnectIntegrationAction}
       viewer={viewer}
+      integrations={integrations}
       initialSection={initialSection}
     />
   );

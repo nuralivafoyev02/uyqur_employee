@@ -1,0 +1,112 @@
+"use client";
+
+import Link from "next/link";
+
+import { IntegrationProviderBadge } from "@/components/integrations/provider-icon";
+import { ArrowRightIcon } from "@/components/layout/dashboard-icons";
+import { usePreferences } from "@/components/providers/preferences-provider";
+import { IntegrationDisconnectButton } from "@/components/settings/integration-disconnect-button";
+import { Badge } from "@/components/ui/badge";
+import { getIntegrationsCopy } from "@/lib/integrations-copy";
+import {
+  getIntegrationProvider,
+  getIntegrationPublicSummary,
+  type ActiveIntegrationSummary,
+} from "@/lib/integration-providers";
+import { formatDateTime } from "@/lib/utils";
+import type { ActionState } from "@/lib/validations";
+
+type IntegrationPageContentProps = {
+  connection: ActiveIntegrationSummary;
+  disconnectAction: (formData: FormData) => Promise<ActionState<string>>;
+};
+
+export function IntegrationPageContent({
+  connection,
+  disconnectAction,
+}: IntegrationPageContentProps) {
+  const { language } = usePreferences();
+  const copy = getIntegrationsCopy(language);
+  const provider = getIntegrationProvider(connection.provider);
+  const summary = getIntegrationPublicSummary(
+    connection.provider,
+    connection.publicConfig,
+    language,
+  );
+
+  return (
+    <div className="space-y-5">
+      <section className="rounded-3xl border border-app-border bg-app-surface px-5 py-5 md:px-6">
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div className="flex items-start gap-4">
+            <IntegrationProviderBadge
+              provider={connection.provider}
+              className="h-12 w-12 shrink-0"
+              iconClassName="h-5 w-5"
+            />
+            <div className="min-w-0">
+              <p className="app-kicker">{copy.panelEyebrow}</p>
+              <h1 className="mt-2 text-3xl font-semibold tracking-tight text-app-text">
+                {provider?.displayName ?? connection.displayName}
+              </h1>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-app-text-muted">
+                {provider?.summary[language] ?? provider?.description[language] ?? copy.pageOverviewDescription}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge tone="success">{copy.connectedStatus}</Badge>
+            <IntegrationDisconnectButton
+              action={disconnectAction}
+              provider={connection.provider}
+              className="app-button-secondary px-3 py-2 text-xs text-rose-600"
+            />
+            <Link
+              href="/settings?section=integrations"
+              className="app-button-secondary gap-2 px-3 py-2 text-xs"
+            >
+              <span>{copy.pageBackToSettings}</span>
+              <ArrowRightIcon className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+
+        <div className="mt-5 flex flex-wrap gap-2">
+          <div className="rounded-full border border-app-border bg-app-bg-elevated px-3 py-1.5 text-[12px] font-medium text-app-text-muted">
+            {copy.connectedAtLabel}: {formatDateTime(connection.createdAt, language)}
+          </div>
+          <div className="rounded-full border border-app-border bg-app-bg-elevated px-3 py-1.5 text-[12px] font-medium text-app-text-muted">
+            {copy.updatedAtLabel}: {formatDateTime(connection.updatedAt, language)}
+          </div>
+        </div>
+      </section>
+
+      <section className="app-panel p-5">
+        <p className="app-kicker">{copy.publicConfigLabel}</p>
+        <h2 className="mt-2 text-xl font-semibold tracking-tight text-app-text">
+          {provider?.displayName ?? connection.displayName}
+        </h2>
+        <p className="mt-2 text-sm leading-6 text-app-text-muted">
+          {provider?.description[language] ?? copy.pageOverviewDescription}
+        </p>
+
+        {summary.length > 0 ? (
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {summary.map((item) => (
+              <div
+                key={`${connection.id}-${item.key}`}
+                className="rounded-2xl border border-app-border bg-app-bg-elevated p-4"
+              >
+                <p className="text-[11px] text-app-text-subtle">{item.label}</p>
+                <p className="mt-2 break-all text-sm font-semibold text-app-text">{item.value}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-4 text-sm leading-6 text-app-text-muted">{copy.publicConfigEmpty}</p>
+        )}
+      </section>
+    </div>
+  );
+}
