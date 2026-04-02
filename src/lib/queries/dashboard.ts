@@ -25,6 +25,8 @@ type PlanFeedRow = Pick<
   profiles: Pick<Profile, "id" | "full_name" | "title"> | null;
 };
 
+type OpenPlanSummaryRow = Pick<Plan, "id" | "assignee_id" | "due_date" | "status">;
+
 type SummaryProfile = Pick<
   Profile,
   "id" | "full_name" | "title" | "department" | "profile_status" | "role"
@@ -61,9 +63,23 @@ export type DashboardData = {
     pendingToday: number;
     blockedToday: number;
     openPlans: number;
+    overduePlans: number;
+    submissionRate: number;
+  };
+  reportStatus: {
+    done: number;
+    inProgress: number;
+    blocked: number;
+  };
+  planStatus: {
+    todo: number;
+    inProgress: number;
+    blocked: number;
   };
   latestReports: ReportFeedItem[];
+  blockedReports: ReportFeedItem[];
   activePlans: PlanFeedItem[];
+  urgentPlans: PlanFeedItem[];
   missingEmployees: SummaryProfile[];
   employees: SummaryProfile[];
   ownTodayReport: Pick<
@@ -90,6 +106,13 @@ export type DashboardData = {
       | "updated_at"
     >
   >;
+  ownActivePlans: PlanFeedItem[];
+  ownPlanMetrics: {
+    active: number;
+    blocked: number;
+    overdue: number;
+    dueSoon: number;
+  };
 };
 
 function mapReportFeed(rows: ReportFeedRow[]) {
@@ -123,6 +146,20 @@ function mapPlanFeed(rows: PlanFeedRow[]) {
   );
 }
 
+function shiftIsoDate(value: string, days: number) {
+  const date = new Date(`${value}T00:00:00`);
+  date.setDate(date.getDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
+function isOverdue(dueDate: string | null, today: string) {
+  return Boolean(dueDate && dueDate < today);
+}
+
+function isDueSoon(dueDate: string | null, today: string, threshold: string) {
+  return Boolean(dueDate && dueDate >= today && dueDate <= threshold);
+}
+
 export async function getDashboardData(viewer: Viewer): Promise<DashboardData> {
   const supabase = await createServerComponentClient();
 
@@ -131,8 +168,18 @@ export async function getDashboardData(viewer: Viewer): Promise<DashboardData> {
   }
 
   const today = getTodayIsoDate();
+  const dueSoonThreshold = shiftIsoDate(today, 3);
 
-  const [employeesRes, todayReportsRes, latestReportsRes, openPlansRes, activePlansRes] =
+  const [
+    employeesRes,
+    todayReportsRes,
+    latestReportsRes,
+    blockedReportsRes,
+    openPlansRes,
+    activePlansRes,
+    urgentPlansRes,
+    ownActivePlansRes,
+  ] =
     await Promise.all([
       supabase
         .from("profiles")
@@ -148,8 +195,19 @@ export async function getDashboardData(viewer: Viewer): Promise<DashboardData> {
           "id, employee_id, report_date, completed_work, current_work, next_plan, blockers, status, updated_at, profiles!daily_reports_employee_id_fkey(id, full_name, title, department, profile_status)",
         )
         .order("updated_at", { ascending: false })
-        .limit(8),
-      supabase.from("plans").select("id, status").neq("status", "done"),
+        .limit(6),
+      supabase
+        .from("daily_reports")
+        .select(
+          "id, employee_id, report_date, completed_work, current_work, next_plan, blockers, status, updated_at, profiles!daily_reports_employee_id_fkey(id, full_name, title, department, profile_status)",
+        )
+        .eq("status", "blocked")
+        .order("updated_at", { ascending: false })
+        .limit(4),
+      supabase
+        .from("plans")
+        .select("id, assignee_id, due_date, status")
+        .neq("status", "done"),
       supabase
         .from("plans")
         .select(
@@ -158,7 +216,27 @@ export async function getDashboardData(viewer: Viewer): Promise<DashboardData> {
         .neq("status", "done")
         .order("due_date", { ascending: true, nullsFirst: false })
         .order("updated_at", { ascending: false })
-        .limit(8),
+        .limit(6),
+      supabase
+        .from("plans")
+        .select(
+          "id, assignee_id, title, due_date, status, priority, profiles!plans_assignee_id_fkey(id, full_name, title)",
+        )
+        .neq("status", "done")
+        .or(`status.eq.blocked,due_date.lt.${today}`)
+        .order("due_date", { ascending: true, nullsFirst: false })
+        .order("updated_at", { ascending: false })
+        .limit(6),
+      supabase
+        .from("plans")
+        .select(
+          "id, assignee_id, title, due_date, status, priority, profiles!plans_assignee_id_fkey(id, full_name, title)",
+        )
+        .eq("assignee_id", viewer.id)
+        .neq("status", "done")
+        .order("due_date", { ascending: true, nullsFirst: false })
+        .order("updated_at", { ascending: false })
+        .limit(6),
     ]);
 
   const employees = (employeesRes.data ?? []) as SummaryProfile[];
@@ -168,10 +246,21 @@ export async function getDashboardData(viewer: Viewer): Promise<DashboardData> {
   const latestReports = mapReportFeed(
     (latestReportsRes.data ?? []) as unknown as ReportFeedRow[],
   );
+  const blockedReports = mapReportFeed(
+    (blockedReportsRes.data ?? []) as unknown as ReportFeedRow[],
+  );
+  const openPlanRows = (openPlansRes.data ?? []) as OpenPlanSummaryRow[];
   const activePlans = mapPlanFeed(
     (activePlansRes.data ?? []) as unknown as PlanFeedRow[],
   );
+  const urgentPlans = mapPlanFeed(
+    (urgentPlansRes.data ?? []) as unknown as PlanFeedRow[],
+  );
+  const ownActivePlans = mapPlanFeed(
+    (ownActivePlansRes.data ?? []) as unknown as PlanFeedRow[],
+  );
   const submittedEmployeeIds = new Set(todayReports.map((report) => report.employee_id));
+  const ownOpenPlanRows = openPlanRows.filter((plan) => plan.assignee_id === viewer.id);
 
   const [ownTodayReportRes, ownRecentReportsRes] = await Promise.all([
     supabase
@@ -201,15 +290,40 @@ export async function getDashboardData(viewer: Viewer): Promise<DashboardData> {
       pendingToday: employees.filter((employee) => !submittedEmployeeIds.has(employee.id))
         .length,
       blockedToday: todayReports.filter((report) => report.status === "blocked").length,
-      openPlans: (openPlansRes.data ?? []).length,
+      openPlans: openPlanRows.length,
+      overduePlans: openPlanRows.filter((plan) => isOverdue(plan.due_date, today)).length,
+      submissionRate: employees.length
+        ? Math.round((todayReports.length / employees.length) * 100)
+        : 0,
+    },
+    reportStatus: {
+      done: todayReports.filter((report) => report.status === "done").length,
+      inProgress: todayReports.filter((report) => report.status === "in_progress").length,
+      blocked: todayReports.filter((report) => report.status === "blocked").length,
+    },
+    planStatus: {
+      todo: openPlanRows.filter((plan) => plan.status === "todo").length,
+      inProgress: openPlanRows.filter((plan) => plan.status === "in_progress").length,
+      blocked: openPlanRows.filter((plan) => plan.status === "blocked").length,
     },
     latestReports,
+    blockedReports,
     activePlans,
+    urgentPlans,
     missingEmployees: employees.filter(
       (employee) => !submittedEmployeeIds.has(employee.id),
     ),
     employees,
     ownTodayReport: ownTodayReportRes.data,
     ownRecentReports: ownRecentReportsRes.data ?? [],
+    ownActivePlans,
+    ownPlanMetrics: {
+      active: ownOpenPlanRows.length,
+      blocked: ownOpenPlanRows.filter((plan) => plan.status === "blocked").length,
+      overdue: ownOpenPlanRows.filter((plan) => isOverdue(plan.due_date, today)).length,
+      dueSoon: ownOpenPlanRows.filter((plan) =>
+        isDueSoon(plan.due_date, today, dueSoonThreshold),
+      ).length,
+    },
   };
 }

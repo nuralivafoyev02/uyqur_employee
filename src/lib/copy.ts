@@ -28,6 +28,7 @@ type ShellCopy = {
     dashboard: string;
     reports: string;
     plans: string;
+    suggestions: string;
     employees: string;
     settings: string;
   };
@@ -137,6 +138,7 @@ const COPY: Record<AppLanguage, AppCopy> = {
         dashboard: "Asosiy",
         reports: "Kunlik hisobotlar",
         plans: "Vazifalar",
+        suggestions: "Takliflar",
         employees: "Xodimlar",
         settings: "Sozlamalar",
       },
@@ -252,6 +254,7 @@ const COPY: Record<AppLanguage, AppCopy> = {
         dashboard: "Home",
         reports: "Daily Reports",
         plans: "Tasks",
+        suggestions: "Suggestions",
         employees: "Employees",
         settings: "Settings",
       },

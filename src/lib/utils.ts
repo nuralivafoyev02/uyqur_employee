@@ -1,5 +1,11 @@
 import type { AppLanguage } from "@/lib/preferences";
-import type { PlanPriority, PlanStatus, ReportStatus, UserRole } from "@/types/database";
+import type {
+  PlanPriority,
+  PlanStatus,
+  ReportStatus,
+  SuggestionStatus,
+  UserRole,
+} from "@/types/database";
 
 export function cx(...parts: Array<string | false | null | undefined>) {
   return parts.filter(Boolean).join(" ");
@@ -164,6 +170,28 @@ export function getPriorityLabel(priority: PlanPriority, language: AppLanguage =
   };
 
   return labels[language][priority];
+}
+
+export function getSuggestionStatusLabel(
+  status: SuggestionStatus,
+  language: AppLanguage = "uz",
+) {
+  const labels: Record<AppLanguage, Record<SuggestionStatus, string>> = {
+    uz: {
+      new: "Yangi",
+      accepted: "Qabul qilindi",
+      prepared: "Tayyorlandi",
+      canceled: "Bekor qilindi",
+    },
+    en: {
+      new: "New",
+      accepted: "Accepted",
+      prepared: "Prepared",
+      canceled: "Canceled",
+    },
+  };
+
+  return labels[language][status];
 }
 
 export function truncate(value: string, max = 140) {

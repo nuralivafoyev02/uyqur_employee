@@ -10,6 +10,7 @@ export type UserRole = "admin" | "manager" | "employee";
 export type ReportStatus = "done" | "in_progress" | "blocked";
 export type PlanPriority = "low" | "medium" | "high";
 export type PlanStatus = "todo" | "in_progress" | "done" | "blocked";
+export type SuggestionStatus = "new" | "accepted" | "prepared" | "canceled";
 
 export type Database = {
   public: {
@@ -117,6 +118,33 @@ export type Database = {
         };
         Relationships: [];
       };
+      suggestions: {
+        Row: {
+          id: string;
+          employee_id: string;
+          title: string;
+          description: string | null;
+          status: SuggestionStatus;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          employee_id: string;
+          title: string;
+          description?: string | null;
+          status?: SuggestionStatus;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          title?: string;
+          description?: string | null;
+          status?: SuggestionStatus;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -133,6 +161,7 @@ export type Database = {
       report_status: ReportStatus;
       plan_priority: PlanPriority;
       plan_status: PlanStatus;
+      suggestion_status: SuggestionStatus;
     };
   };
 };
@@ -140,6 +169,7 @@ export type Database = {
 export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 export type DailyReport = Database["public"]["Tables"]["daily_reports"]["Row"];
 export type Plan = Database["public"]["Tables"]["plans"]["Row"];
+export type Suggestion = Database["public"]["Tables"]["suggestions"]["Row"];
 
 export type Viewer = Profile & {
   email: string;

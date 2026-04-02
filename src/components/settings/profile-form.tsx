@@ -4,6 +4,7 @@ import { useActionState } from "react";
 
 import { useAppCopy, usePreferences } from "@/components/providers/preferences-provider";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { ActionStateToast } from "@/components/ui/toast-effect";
 import { translateProfileMessage } from "@/lib/copy";
 import type { ActionState } from "@/lib/validations";
 import type { Profile } from "@/types/database";
@@ -27,17 +28,10 @@ export function ProfileForm({ action, profile }: ProfileFormProps) {
 
   return (
     <form action={formAction} className="space-y-5">
-      {state?.message ? (
-        <div
-          className={`rounded-2xl border px-4 py-3 text-sm ${
-            state.success
-              ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-              : "border-rose-200 bg-rose-50 text-rose-800"
-          }`}
-        >
-          {translateProfileMessage(state.message, language)}
-        </div>
-      ) : null}
+      <ActionStateToast
+        state={state}
+        message={state?.message ? translateProfileMessage(state.message, language) : undefined}
+      />
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-app-text" htmlFor="fullName">

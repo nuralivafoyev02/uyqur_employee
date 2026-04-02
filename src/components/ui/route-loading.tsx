@@ -314,84 +314,144 @@ function LoadingPagination() {
 
 function DashboardRouteLoading({ title, description, stats = 4 }: RouteLoadingProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <LoadingPageHeader
         title={title}
         description={description}
-        actionSkeletons={["h-10 w-36 rounded-2xl"]}
+        actionSkeletons={["h-10 w-24 rounded-2xl", "h-10 w-32 rounded-2xl"]}
       />
       <LoadingMetricGrid count={stats} />
 
-      <div className="grid gap-6 xl:grid-cols-[1.15fr_minmax(0,0.85fr)]">
-        <section className="app-panel p-6">
-          <LoadingSectionHeading meta={false} />
-          <div className="mt-6 space-y-4">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <article
-                key={index}
-                className="rounded-2xl border border-app-border bg-app-bg-elevated p-4"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="space-y-2">
-                    <div className="app-skeleton h-5 w-36" />
-                    <div className="app-skeleton h-4 w-24" />
-                  </div>
-                  <div className="app-skeleton h-7 w-24 rounded-full" />
-                </div>
-                <div className="mt-4 app-skeleton h-4 w-full" />
-                <div className="mt-2 app-skeleton h-4 w-11/12" />
-                <div className="mt-4 flex justify-between gap-3">
-                  <div className="app-skeleton h-4 w-24" />
-                  <div className="app-skeleton h-4 w-28" />
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
+      <section className="app-panel p-4 md:p-5">
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.35fr)_320px]">
+          <div className="rounded-[28px] border border-app-border bg-app-bg-elevated p-4 md:p-5">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              <div className="space-y-2">
+                <div className="app-skeleton h-4 w-24" />
+                <div className="app-skeleton h-7 w-40" />
+                <div className="app-skeleton h-4 w-full max-w-2xl" />
+                <div className="app-skeleton h-4 w-11/12 max-w-2xl" />
+              </div>
+              <div className="app-skeleton h-8 w-44 rounded-full" />
+            </div>
 
-        <div className="space-y-6">
-          <section className="app-panel p-6">
-            <LoadingSectionHeading meta={false} />
-            <div className="mt-6 space-y-3">
-              {Array.from({ length: 3 }).map((_, index) => (
+            <div className="mt-5 grid gap-4 lg:grid-cols-2">
+              {Array.from({ length: 2 }).map((_, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between rounded-2xl border border-app-border bg-app-bg-elevated px-4 py-3"
+                  className="rounded-2xl border border-app-border bg-app-surface p-4"
                 >
-                  <div className="space-y-2">
-                    <div className="app-skeleton h-5 w-32" />
-                    <div className="app-skeleton h-4 w-20" />
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="app-skeleton h-5 w-28" />
+                    <div className="app-skeleton h-4 w-8" />
                   </div>
-                  <div className="app-skeleton h-4 w-14" />
+                  <div className="mt-4 space-y-3">
+                    {Array.from({ length: 4 }).map((__, lineIndex) => (
+                      <div key={lineIndex} className="space-y-1.5">
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="app-skeleton h-4 w-20" />
+                          <div className="app-skeleton h-4 w-8" />
+                        </div>
+                        <div className="app-skeleton h-2 w-full rounded-full" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-5 grid gap-4 lg:grid-cols-2">
+              {Array.from({ length: 2 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="rounded-2xl border border-app-border bg-app-surface p-4"
+                >
+                  <LoadingSectionHeading meta={false} />
+                  <div className="mt-4 space-y-3">
+                    {Array.from({ length: 3 }).map((__, itemIndex) => (
+                      <div
+                        key={itemIndex}
+                        className="rounded-2xl border border-app-border bg-app-bg-elevated px-4 py-3"
+                      >
+                        <div className="app-skeleton h-4 w-28" />
+                        <div className="mt-2 app-skeleton h-4 w-20" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <section className="rounded-[28px] border border-app-border bg-app-surface p-4">
+              <LoadingSectionHeading meta={false} />
+              <div className="mt-4 grid gap-3">
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="rounded-2xl border border-app-border bg-app-bg-elevated p-4"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="app-skeleton h-9 w-9 rounded-full" />
+                      <div className="app-skeleton h-4 w-4" />
+                    </div>
+                    <div className="mt-3 app-skeleton h-5 w-24" />
+                    <div className="mt-2 app-skeleton h-4 w-full" />
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="rounded-[28px] border border-app-border bg-app-surface p-4">
+              <LoadingSectionHeading meta={false} />
+              <div className="mt-4 space-y-3">
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="rounded-2xl border border-app-border bg-app-bg-elevated px-4 py-3"
+                  >
+                    <div className="app-skeleton h-4 w-28" />
+                    <div className="mt-2 app-skeleton h-4 w-20" />
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
+        {Array.from({ length: 2 }).map((_, index) => (
+          <section key={index} className="app-panel p-4 md:p-5">
+            <div className="flex items-center justify-between gap-3 border-b border-app-border pb-4">
+              <div className="space-y-2">
+                <div className="app-skeleton h-4 w-24" />
+                <div className="app-skeleton h-6 w-36" />
+              </div>
+              <div className="app-skeleton h-4 w-24" />
+            </div>
+
+            <div className="mt-4 space-y-3">
+              {Array.from({ length: 4 }).map((__, itemIndex) => (
+                <div
+                  key={itemIndex}
+                  className="rounded-2xl border border-app-border bg-app-bg-elevated p-4"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="space-y-2">
+                      <div className="app-skeleton h-4 w-32" />
+                      <div className="app-skeleton h-4 w-24" />
+                    </div>
+                    <div className="app-skeleton h-7 w-20 rounded-full" />
+                  </div>
+                  <div className="mt-3 app-skeleton h-4 w-full" />
+                  <div className="mt-2 app-skeleton h-4 w-10/12" />
                 </div>
               ))}
             </div>
           </section>
-
-          <section className="app-panel p-6">
-            <LoadingSectionHeading meta={false} />
-            <div className="mt-6 space-y-3">
-              {Array.from({ length: 3 }).map((_, index) => (
-                <article
-                  key={index}
-                  className="rounded-2xl border border-app-border bg-app-bg-elevated p-4"
-                >
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="app-skeleton h-5 w-32" />
-                    <div className="flex gap-2">
-                      <div className="app-skeleton h-7 w-20 rounded-full" />
-                      <div className="app-skeleton h-7 w-24 rounded-full" />
-                    </div>
-                  </div>
-                  <div className="mt-3 flex justify-between gap-3">
-                    <div className="app-skeleton h-4 w-24" />
-                    <div className="app-skeleton h-4 w-24" />
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
-        </div>
+        ))}
       </div>
     </div>
   );
@@ -415,6 +475,94 @@ function ReportsRouteLoading({ title, description }: RouteLoadingProps) {
           ))}
         </div>
         <div className="mt-6">
+          <LoadingPagination />
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function SuggestionsRouteLoading({ title, description, stats = 5 }: RouteLoadingProps) {
+  return (
+    <div className="space-y-6">
+      <LoadingPageHeader
+        title={title}
+        description={description}
+        actionSkeletons={["h-8 w-24 rounded-xl", "h-8 w-28 rounded-xl"]}
+      />
+      <LoadingMetricGrid count={stats} />
+
+      <section className="app-panel p-4 md:p-5">
+        <div className="flex flex-col gap-4 border-b border-app-border pb-4 md:flex-row md:items-start md:justify-between">
+          <div className="space-y-2">
+            <div className="app-skeleton h-4 w-24" />
+            <div className="app-skeleton h-7 w-40" />
+            <div className="app-skeleton h-4 w-80 max-w-full" />
+          </div>
+        </div>
+
+        <div className="mt-5 space-y-4">
+          <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_auto_auto]">
+            <div className="app-skeleton h-10 w-full rounded-2xl" />
+            <div className="app-skeleton h-10 w-28 rounded-xl" />
+            <div className="app-skeleton h-10 w-32 rounded-xl" />
+          </div>
+          <div className="rounded-2xl border border-app-border bg-app-bg-elevated p-3">
+            <div className="app-skeleton h-4 w-24" />
+            <div className="mt-3 app-skeleton h-28 w-full rounded-2xl" />
+          </div>
+        </div>
+      </section>
+
+      <section className="app-panel p-4 md:p-5">
+        <div className="flex flex-col gap-3 border-b border-app-border pb-4 md:flex-row md:items-end md:justify-between">
+          <div className="space-y-2">
+            <div className="app-skeleton h-4 w-24" />
+            <div className="app-skeleton h-7 w-40" />
+            <div className="app-skeleton h-4 w-80 max-w-full" />
+          </div>
+          <div className="space-y-2 text-right">
+            <div className="app-skeleton h-4 w-24" />
+            <div className="app-skeleton h-4 w-28" />
+          </div>
+        </div>
+
+        <div className="mt-5 space-y-5">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <div className="app-skeleton h-5 w-28" />
+              <div className="app-skeleton h-4 w-10" />
+            </div>
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div
+                key={index}
+                className="rounded-2xl border border-app-border bg-app-bg-elevated p-4"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="space-y-2">
+                    <div className="app-skeleton h-5 w-48 max-w-full" />
+                    <div className="app-skeleton h-4 w-36" />
+                  </div>
+                  <div className="app-skeleton h-7 w-24 rounded-full" />
+                </div>
+                <div className="mt-3 app-skeleton h-4 w-full" />
+                <div className="mt-2 app-skeleton h-4 w-10/12" />
+              </div>
+            ))}
+          </div>
+
+          <div className="space-y-3">
+            <div className="rounded-2xl border border-app-border bg-app-surface px-4 py-3">
+              <div className="flex items-center justify-between gap-3">
+                <div className="space-y-2">
+                  <div className="app-skeleton h-5 w-24" />
+                  <div className="app-skeleton h-4 w-12" />
+                </div>
+                <div className="app-skeleton h-4 w-4" />
+              </div>
+            </div>
+          </div>
+
           <LoadingPagination />
         </div>
       </section>
@@ -614,6 +762,8 @@ export function RouteLoading({
   switch (section) {
     case "reports":
       return <ReportsRouteLoading section={section} title={title} description={description} stats={stats} />;
+    case "suggestions":
+      return <SuggestionsRouteLoading section={section} title={title} description={description} stats={stats} />;
     case "plans":
       return <PlansRouteLoading section={section} title={title} description={description} stats={stats} />;
     case "employees":

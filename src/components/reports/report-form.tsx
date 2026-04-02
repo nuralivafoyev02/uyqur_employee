@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { usePreferences } from "@/components/providers/preferences-provider";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { ActionStateToast } from "@/components/ui/toast-effect";
 import { getReportsCopy, translateReportMessage } from "@/lib/reports-copy";
 import { cx, formatDate, getReportStatusLabel } from "@/lib/utils";
 import type { ActionState } from "@/lib/validations";
@@ -129,18 +130,10 @@ export function ReportForm({
       <input type="hidden" name="employeeId" value={employeeId} />
       <input type="hidden" name="reportDate" value={initialValue?.report_date ?? selectedDate} />
       <input type="hidden" name="status" value={draft.status} />
-
-      {state?.message ? (
-        <div
-          className={`rounded-2xl border px-4 py-3 text-[13px] ${
-            state.success
-              ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-              : "border-rose-200 bg-rose-50 text-rose-800"
-          }`}
-        >
-          {translateReportMessage(state.message, language)}
-        </div>
-      ) : null}
+      <ActionStateToast
+        state={state}
+        message={state?.message ? translateReportMessage(state.message, language) : undefined}
+      />
 
       <div className="grid gap-4 xl:grid-cols-[260px_minmax(0,1fr)]">
         <aside className="space-y-4">

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import "@/app/globals.css";
 import { PreferencesProvider } from "@/components/providers/preferences-provider";
+import { ToastProvider } from "@/components/providers/toast-provider";
 import { DEFAULT_THEME, THEME_STORAGE_KEY } from "@/lib/preferences";
 
 export const metadata: Metadata = {
@@ -38,7 +39,9 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body suppressHydrationWarning>
-        <PreferencesProvider>{children}</PreferencesProvider>
+        <PreferencesProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </PreferencesProvider>
       </body>
     </html>
   );

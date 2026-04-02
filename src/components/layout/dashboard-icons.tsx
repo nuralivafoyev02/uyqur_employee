@@ -77,6 +77,16 @@ export function EmployeesIcon({ className }: IconProps) {
   );
 }
 
+export function SuggestionsIcon({ className }: IconProps) {
+  return (
+    <IconBase className={className}>
+      <path d="M12 3.75a4.75 4.75 0 0 1 2.85 8.55c-.8.6-1.35 1.1-1.6 1.95h-2.5c-.25-.85-.8-1.35-1.6-1.95A4.75 4.75 0 0 1 12 3.75Z" />
+      <path d="M10 18.25h4" />
+      <path d="M10.75 20.25h2.5" />
+    </IconBase>
+  );
+}
+
 export function SettingsIcon({ className }: IconProps) {
   return (
     <IconBase className={className}>
@@ -192,6 +202,36 @@ export function FilterIcon({ className }: IconProps) {
       <path d="M4.75 6.25h14.5" />
       <path d="M7.75 11.75h8.5" />
       <path d="M10.5 17.25h3" />
+    </IconBase>
+  );
+}
+
+export function ArrowRightIcon({ className }: IconProps) {
+  return (
+    <IconBase className={className}>
+      <path d="M5 12h14" />
+      <path d="m13.5 6.5 5.5 5.5-5.5 5.5" />
+    </IconBase>
+  );
+}
+
+export function CalendarIcon({ className }: IconProps) {
+  return (
+    <IconBase className={className}>
+      <rect x="4.5" y="5.5" width="15" height="14" rx="2.5" />
+      <path d="M8 3.75v3.5" />
+      <path d="M16 3.75v3.5" />
+      <path d="M4.5 9.25h15" />
+    </IconBase>
+  );
+}
+
+export function AlertTriangleIcon({ className }: IconProps) {
+  return (
+    <IconBase className={className}>
+      <path d="M10.95 4.45a1.2 1.2 0 0 1 2.1 0l7.1 12.4a1.2 1.2 0 0 1-1.05 1.8H4.9a1.2 1.2 0 0 1-1.05-1.8Z" />
+      <path d="M12 9v4.5" />
+      <path d="M12 17h.01" />
     </IconBase>
   );
 }

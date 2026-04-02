@@ -21,6 +21,7 @@ import {
   EmployeesIcon,
   PlansIcon,
   ReportsIcon,
+  SuggestionsIcon,
   SignOutIcon,
   SidebarCollapseIcon,
   SidebarExpandIcon,
@@ -37,7 +38,9 @@ import { getEmployeesCopy } from "@/lib/employees-copy";
 import type { AppLanguage } from "@/lib/preferences";
 import { getPlansCopy } from "@/lib/plans-copy";
 import { getReportsCopy } from "@/lib/reports-copy";
+import { getSuggestionsCopy } from "@/lib/suggestions-copy";
 import { ProfileStatusBadge } from "@/components/ui/badges";
+import { ActionStateToast } from "@/components/ui/toast-effect";
 import { useAnimatedPresence } from "@/components/ui/use-animated-presence";
 import { cx, getInitials, getRoleLabel } from "@/lib/utils";
 import type { ActionState } from "@/lib/validations";
@@ -77,6 +80,7 @@ function buildPrimaryItems(
     { href: "/dashboard", label: navCopy.dashboard, icon: DashboardIcon },
     { href: "/reports", label: navCopy.reports, icon: ReportsIcon },
     { href: "/plans", label: navCopy.plans, icon: PlansIcon },
+    { href: "/suggestions", label: navCopy.suggestions, icon: SuggestionsIcon },
   ];
 
   if (role === "admin" || role === "manager") {
@@ -109,6 +113,7 @@ function buildHeaderMeta({
   const reportsCopy = getReportsCopy(language);
   const plansCopy = getPlansCopy(language);
   const employeesCopy = getEmployeesCopy(language);
+  const suggestionsCopy = getSuggestionsCopy(language);
   const normalizedPath = pathname === "/" ? "/dashboard" : pathname;
 
   if (normalizedPath.startsWith("/employees/")) {
@@ -140,6 +145,14 @@ function buildHeaderMeta({
       title: plansCopy.header.title,
       segments: [copy.shell.nav.plans],
       icon: PlansIcon,
+    };
+  }
+
+  if (normalizedPath.startsWith("/suggestions")) {
+    return {
+      title: suggestionsCopy.header.title,
+      segments: [copy.shell.nav.suggestions],
+      icon: SuggestionsIcon,
     };
   }
 
@@ -296,6 +309,9 @@ function ProfileButton({
   const profileSubtitle =
     profileMeta || (viewer ? getRoleLabel(viewer.role, language) : copy.shell.loadingProfile);
   const currentStatus = statusOverride ?? viewer?.profileStatus ?? "";
+  const translatedStatusMessage = statusState?.message
+    ? translateProfileMessage(statusState.message, language)
+    : undefined;
 
   function closePopover() {
     setIsStatusEditorOpen(false);
@@ -365,6 +381,7 @@ function ProfileButton({
 
   return (
     <div ref={wrapperRef} className="relative">
+      <ActionStateToast state={statusState} message={translatedStatusMessage} />
       <button
         type="button"
         aria-haspopup="dialog"
@@ -469,16 +486,6 @@ function ProfileButton({
                     {statusState?.fieldErrors?.profileStatus ? (
                       <p className="text-sm text-rose-700">
                         {translateProfileMessage(statusState.fieldErrors.profileStatus[0], language)}
-                      </p>
-                    ) : null}
-                    {statusState?.message ? (
-                      <p
-                        className={cx(
-                          "text-sm",
-                          statusState.success ? "text-emerald-700" : "text-rose-700",
-                        )}
-                      >
-                        {translateProfileMessage(statusState.message, language)}
                       </p>
                     ) : null}
                   </div>

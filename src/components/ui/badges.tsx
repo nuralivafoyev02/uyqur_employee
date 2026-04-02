@@ -5,8 +5,15 @@ import {
   getPriorityLabel,
   getReportStatusLabel,
   getRoleLabel,
+  getSuggestionStatusLabel,
 } from "@/lib/utils";
-import type { PlanPriority, PlanStatus, ReportStatus, UserRole } from "@/types/database";
+import type {
+  PlanPriority,
+  PlanStatus,
+  ReportStatus,
+  SuggestionStatus,
+  UserRole,
+} from "@/types/database";
 
 export function RoleBadge({
   role,
@@ -74,4 +81,23 @@ export function ProfileStatusBadge({
   className?: string;
 }) {
   return <Badge className={className}>{status}</Badge>;
+}
+
+export function SuggestionStatusBadge({
+  status,
+  language,
+}: {
+  status: SuggestionStatus;
+  language?: AppLanguage;
+}) {
+  const tone =
+    status === "prepared"
+      ? "success"
+      : status === "accepted"
+        ? "info"
+        : status === "canceled"
+          ? "danger"
+          : "warning";
+
+  return <Badge tone={tone}>{getSuggestionStatusLabel(status, language)}</Badge>;
 }

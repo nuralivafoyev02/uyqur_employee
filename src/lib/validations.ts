@@ -1,4 +1,8 @@
-import type { PlanPriority, PlanStatus, ReportStatus } from "@/types/database";
+import type {
+  PlanPriority,
+  PlanStatus,
+  ReportStatus,
+} from "@/types/database";
 
 export type FieldErrors<TField extends string> = Partial<Record<TField, string[]>>;
 
@@ -29,6 +33,7 @@ type PlanFields =
   | "dueDate"
   | "priority"
   | "status";
+type SuggestionFields = "title" | "description";
 type ProfileFields = "fullName" | "title" | "department" | "profileStatus";
 
 export type AuthPayload = {
@@ -60,6 +65,11 @@ export type ProfilePayload = {
   title: string;
   department: string;
   profileStatus: string;
+};
+
+export type SuggestionPayload = {
+  title: string;
+  description: string;
 };
 
 function getValue(formData: FormData, key: string) {
@@ -242,6 +252,37 @@ export function validateProfileForm(
       title,
       department,
       profileStatus,
+    },
+  };
+}
+
+export function validateSuggestionForm(
+  formData: FormData,
+): ValidationResult<SuggestionPayload, SuggestionFields> {
+  const title = getValue(formData, "title");
+  const description = getValue(formData, "description");
+  const errors: FieldErrors<SuggestionFields> = {};
+
+  if (title.length < 3) {
+    pushError(errors, "title", "Taklif sarlavhasi kamida 3 ta belgidan iborat bo'lsin.");
+  }
+
+  if (title.length > 120) {
+    pushError(errors, "title", "Taklif sarlavhasi 120 ta belgidan oshmasin.");
+  }
+
+  if (description.length > 1500) {
+    pushError(errors, "description", "Batafsil izoh 1500 ta belgidan oshmasin.");
+  }
+
+  if (hasErrors(errors)) {
+    return { fieldErrors: errors };
+  }
+
+  return {
+    data: {
+      title,
+      description,
     },
   };
 }

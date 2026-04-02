@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 
 import { SubmitButton } from "@/components/ui/submit-button";
+import { ActionStateToast, ToastEffect } from "@/components/ui/toast-effect";
 import type { ActionState } from "@/lib/validations";
 
 type AuthField = "fullName" | "email" | "password";
@@ -25,17 +26,8 @@ export function AuthForm({ mode, action, notice, disabled = false }: AuthFormPro
 
   return (
     <form action={formAction} className="space-y-5">
-      {notice ? (
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-          {notice}
-        </div>
-      ) : null}
-
-      {state?.message ? (
-        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
-          {state.message}
-        </div>
-      ) : null}
+      <ToastEffect message={notice} tone="success" eventKey={notice} />
+      <ActionStateToast state={state} />
 
       {isRegister ? (
         <div className="space-y-2">

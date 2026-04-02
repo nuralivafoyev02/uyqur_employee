@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { usePreferences } from "@/components/providers/preferences-provider";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { ActionStateToast } from "@/components/ui/toast-effect";
 import { getPlansCopy, translatePlanMessage } from "@/lib/plans-copy";
 import { cx, getPlanStatusLabel, getPriorityLabel } from "@/lib/utils";
 import type { ActionState } from "@/lib/validations";
@@ -101,18 +102,10 @@ export function PlanForm({ action, employees, initialValue }: PlanFormProps) {
       {initialValue?.id ? <input type="hidden" name="planId" value={initialValue.id} /> : null}
       <input type="hidden" name="priority" value={draft.priority} />
       <input type="hidden" name="status" value={draft.status} />
-
-      {state?.message ? (
-        <div
-          className={`rounded-2xl border px-4 py-3 text-[13px] ${
-            state.success
-              ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-              : "border-rose-200 bg-rose-50 text-rose-800"
-          }`}
-        >
-          {translatePlanMessage(state.message, language)}
-        </div>
-      ) : null}
+      <ActionStateToast
+        state={state}
+        message={state?.message ? translatePlanMessage(state.message, language) : undefined}
+      />
 
       <div className="rounded-2xl border border-app-border bg-app-bg-elevated p-4">
         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">

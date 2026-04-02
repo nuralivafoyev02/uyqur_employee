@@ -4,6 +4,7 @@ export type RouteLoadingSection =
   | "dashboard"
   | "reports"
   | "plans"
+  | "suggestions"
   | "employees"
   | "employeeProfile"
   | "settings";
@@ -26,6 +27,10 @@ const COPY: Record<AppLanguage, Record<RouteLoadingSection, RouteLoadingCopy>> =
     plans: {
       title: "Vazifalar",
       description: "Vazifalar oqimi yuklanmoqda",
+    },
+    suggestions: {
+      title: "Takliflar",
+      description: "Takliflar bo'limi yuklanmoqda",
     },
     employees: {
       title: "Xodimlar",
@@ -52,6 +57,10 @@ const COPY: Record<AppLanguage, Record<RouteLoadingSection, RouteLoadingCopy>> =
     plans: {
       title: "Tasks",
       description: "Loading task pipeline",
+    },
+    suggestions: {
+      title: "Suggestions",
+      description: "Loading suggestion tracker",
     },
     employees: {
       title: "Employees",

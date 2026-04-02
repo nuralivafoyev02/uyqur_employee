@@ -7,13 +7,77 @@ type DashboardCopy = {
     leadDescription: string;
     employeeTitle: (firstName: string) => string;
     employeeDescription: string;
-    cta: string;
+    primaryCta: string;
+    secondaryCta: string;
   };
-  metrics: {
+  hero: {
+    eyebrow: string;
+    leadTitle: string;
+    employeeTitle: string;
+    todayLabel: string;
+    leadSummary: (
+      submitted: number,
+      total: number,
+      pending: number,
+      blocked: number,
+      openPlans: number,
+    ) => string;
+    employeeSummary: (
+      submitted: number,
+      total: number,
+      myOpenPlans: number,
+      dueSoon: number,
+    ) => string;
+    reportHealth: string;
+    taskHealth: string;
+    reported: string;
+    awaiting: string;
+    blockers: string;
+    overdue: string;
+    submitted: string;
+    open: string;
+  };
+  highlights: {
     totalEmployees: { label: string; helper: string };
     submittedToday: { label: string; helper: string };
     pendingToday: { label: string; helper: string };
+    blockedToday: { label: string; helper: string };
     openPlans: { label: string; helper: string };
+    overduePlans: { label: string; helper: string };
+    myReport: {
+      label: string;
+      ready: string;
+      missing: string;
+    };
+    myOpenPlans: { label: string; helper: string };
+    dueSoon: { label: string; helper: string };
+    myBlocked: { label: string; helper: string };
+    teamCoverage: {
+      label: string;
+      helper: (rate: number) => string;
+    };
+  };
+  quickActions: {
+    title: string;
+    description: string;
+    reports: { title: string; description: string };
+    plans: { title: string; description: string };
+    employees: { title: string; description: string };
+    settings: { title: string; description: string };
+  };
+  attention: {
+    title: string;
+    leadDescription: string;
+    employeeDescription: string;
+    blockedReports: string;
+    urgentPlans: string;
+    missingReports: string;
+    personalBlockers: string;
+    noBlockedReports: string;
+    noUrgentPlans: string;
+    noMissingReports: string;
+    noPersonalBlockers: string;
+    viewProfile: string;
   };
   reports: {
     leadEyebrow: string;
@@ -21,31 +85,43 @@ type DashboardCopy = {
     leadTitle: string;
     employeeTitle: string;
     viewAll: string;
+    openDetail: string;
     unknownEmployee: string;
     noTitle: string;
+    noDepartment: string;
     emptyTitle: string;
     emptyDescription: string;
+    today: string;
+    updated: string;
   };
-  coverage: {
+  focus: {
     leadEyebrow: string;
     employeeEyebrow: string;
     leadTitle: string;
     employeeTitle: string;
     noTitle: string;
-    profile: string;
     allSubmitted: string;
     editReport: string;
     emptyTitle: string;
     emptyDescription: string;
     submitReport: string;
+    currentWork: string;
+    nextPlan: string;
+    blockers: string;
   };
   plans: {
     eyebrow: string;
-    title: string;
+    leadTitle: string;
+    employeeTitle: string;
     pageLink: string;
     noDeadline: string;
-    emptyTitle: string;
-    emptyDescription: string;
+    dueSoon: string;
+    overdue: string;
+    noAssignee: string;
+    emptyLeadTitle: string;
+    emptyLeadDescription: string;
+    emptyEmployeeTitle: string;
+    emptyEmployeeDescription: string;
   };
 };
 
@@ -53,125 +129,313 @@ const COPY: Record<AppLanguage, DashboardCopy> = {
   uz: {
     header: {
       eyebrow: "Asosiy",
-      leadTitle: "Jamoa faoliyati overview",
+      leadTitle: "Mukammal boshqaruv paneli",
       leadDescription:
-        "Bugungi holat, xodim kesimidagi hisobotlar va ochiq vazifalar bir ekranda.",
+        "Coverage, blocker va faol vazifalarni bir qarashda boshqarish uchun qisqa va kuchli dashboard.",
       employeeTitle: (firstName) => `Xush kelibsiz, ${firstName}`,
       employeeDescription:
-        "Bugungi hisobot, faol vazifalar va so'nggi update'lar shu yerda jamlangan.",
-      cta: "Bugungi hisobot",
+        "Bugungi hisobot, yaqin deadline va shaxsiy fokus bir joyda.",
+      primaryCta: "Hisobotlar",
+      secondaryCta: "Vazifalar",
     },
-    metrics: {
+    hero: {
+      eyebrow: "Bugungi holat",
+      leadTitle: "Jamoa pulse",
+      employeeTitle: "Bugungi fokus",
+      todayLabel: "Bugun",
+      leadSummary: (submitted, total, pending, blocked, openPlans) =>
+        `${submitted}/${total} xodim hisobot yubordi. ${pending} ta kutilmoqda, ${blocked} ta blocker va ${openPlans} ta ochiq vazifa bor.`,
+      employeeSummary: (submitted, total, myOpenPlans, dueSoon) =>
+        `Jamoa coverage ${submitted}/${total}. Sizda ${myOpenPlans} ta faol vazifa va ${dueSoon} ta yaqin deadline bor.`,
+      reportHealth: "Hisobot oqimi",
+      taskHealth: "Vazifa oqimi",
+      reported: "Topshirilgan",
+      awaiting: "Kutilmoqda",
+      blockers: "To'siq",
+      overdue: "Kechikkan",
+      submitted: "Yuborilgan",
+      open: "Ochiq",
+    },
+    highlights: {
       totalEmployees: {
         label: "Jami xodimlar",
-        helper: "Tizimda faol profillar soni",
+        helper: "Faol profillar soni",
       },
       submittedToday: {
-        label: "Bugun topshirilgan",
-        helper: "Bugungi hisobot yuborgan xodimlar",
+        label: "Bugun topshirildi",
+        helper: "Hisobot yuborganlar",
       },
       pendingToday: {
-        label: "Kutilayotgan hisobotlar",
-        helper: "Bugun hali report topshirmaganlar",
+        label: "Kutilmoqda",
+        helper: "Hisobot hali yo'q",
+      },
+      blockedToday: {
+        label: "Blocker report",
+        helper: "To'siqli statuslar",
       },
       openPlans: {
-        label: "Ochiq vazifalar",
-        helper: "Tugallanmagan plans/tasks",
+        label: "Ochiq vazifa",
+        helper: "Tugallanmagan tasklar",
       },
+      overduePlans: {
+        label: "Kechikkan",
+        helper: "Deadline o'tib ketgan",
+      },
+      myReport: {
+        label: "Hisobot holati",
+        ready: "Yuborilgan",
+        missing: "Kutilmoqda",
+      },
+      myOpenPlans: {
+        label: "Mening vazifalarim",
+        helper: "Faol tasklar soni",
+      },
+      dueSoon: {
+        label: "Yaqin deadline",
+        helper: "3 kun ichida tugaydi",
+      },
+      myBlocked: {
+        label: "Bloklangan",
+        helper: "To'siqli tasklar",
+      },
+      teamCoverage: {
+        label: "Jamoa coverage",
+        helper: (rate) => `${rate}% topshirish darajasi`,
+      },
+    },
+    quickActions: {
+      title: "Tezkor amallar",
+      description: "Ko'p ishlatiladigan bo'limlarga tez o'ting.",
+      reports: {
+        title: "Hisobotlar",
+        description: "Daily report yaratish va tarixni ko'rish.",
+      },
+      plans: {
+        title: "Vazifalar",
+        description: "Task board va tezkor boshqaruv.",
+      },
+      employees: {
+        title: "Xodimlar",
+        description: "Jamoa profillari va activity holati.",
+      },
+      settings: {
+        title: "Sozlamalar",
+        description: "Profil va interfeys sozlamalari.",
+      },
+    },
+    attention: {
+      title: "E'tibor talab qiladi",
+      leadDescription: "Blocker, kechikkan va kutilayotgan itemlar.",
+      employeeDescription: "Sizga taalluqli risk va eslatmalar.",
+      blockedReports: "Blocker reportlar",
+      urgentPlans: "Shoshilinch vazifalar",
+      missingReports: "Hisobot kutilayotganlar",
+      personalBlockers: "Mening to'siqlarim",
+      noBlockedReports: "Hozircha blocker report yo'q.",
+      noUrgentPlans: "Shoshilinch vazifa topilmadi.",
+      noMissingReports: "Barcha xodimlar hisobot topshirgan.",
+      noPersonalBlockers: "Sizda blocker qayd etilmagan.",
+      viewProfile: "Profil",
     },
     reports: {
       leadEyebrow: "So'nggi hisobotlar",
-      employeeEyebrow: "Mening hisobotlarim",
-      leadTitle: "So'nggi yangilanishlar",
-      employeeTitle: "So'nggi activity",
-      viewAll: "Barchasini ko'rish",
+      employeeEyebrow: "So'nggi hisobotlarim",
+      leadTitle: "Jamoa yangilanishlari",
+      employeeTitle: "Hisobot tarixi",
+      viewAll: "Hisobotlar sahifasi",
+      openDetail: "To'liq ko'rish",
       unknownEmployee: "Noma'lum xodim",
       noTitle: "Lavozim ko'rsatilmagan",
+      noDepartment: "Bo'lim ko'rsatilmagan",
       emptyTitle: "Hisobotlar hali yo'q",
-      emptyDescription: "Daily reports yuborilgach shu yerda ko'rinadi.",
+      emptyDescription: "Hisobotlar kelgach shu yerda ko'rinadi.",
+      today: "Sana",
+      updated: "Yangilangan",
     },
-    coverage: {
-      leadEyebrow: "Coverage",
-      employeeEyebrow: "Bugungi hisobot holati",
-      leadTitle: "Topshirilmagan hisobotlar",
+    focus: {
+      leadEyebrow: "Coverage va ijro",
+      employeeEyebrow: "Bugungi hisobot",
+      leadTitle: "Report coverage",
       employeeTitle: "Bugungi status",
       noTitle: "Lavozim ko'rsatilmagan",
-      profile: "Profil",
       allSubmitted: "Bugungi hisobotlar to'liq topshirilgan.",
       editReport: "Hisobotni tahrirlash",
-      emptyTitle: "Bugungi hisobot hali topshirilmadi",
-      emptyDescription: "2-3 maydonni to'ldirib, joriy holatni jamoaga ko'rsating.",
+      emptyTitle: "Bugungi hisobot hali topshirilmagan",
+      emptyDescription: "Asosiy 3 maydonni to'ldirib, jamoaga holatni ko'rsating.",
       submitReport: "Hisobot yuborish",
+      currentWork: "Joriy ish",
+      nextPlan: "Keyingi reja",
+      blockers: "To'siqlar",
     },
     plans: {
-      eyebrow: "Plans",
-      title: "Faol vazifalar",
-      pageLink: "Plans sahifasi",
+      eyebrow: "Vazifalar",
+      leadTitle: "Faol jamoa vazifalari",
+      employeeTitle: "Mening vazifalarim",
+      pageLink: "Vazifalar bo'limi",
       noDeadline: "Deadline yo'q",
-      emptyTitle: "Faol vazifa topilmadi",
-      emptyDescription: "Plans qo'shilgach shu blokda ko'rinadi.",
+      dueSoon: "Yaqin",
+      overdue: "Kechikkan",
+      noAssignee: "Mas'ul ko'rsatilmagan",
+      emptyLeadTitle: "Faol vazifa topilmadi",
+      emptyLeadDescription: "Tasklar qo'shilgach shu yerda ko'rinadi.",
+      emptyEmployeeTitle: "Sizga biriktirilgan vazifa yo'q",
+      emptyEmployeeDescription: "Yangi vazifalar kelgach shu blok yangilanadi.",
     },
   },
   en: {
     header: {
       eyebrow: "Dashboard",
-      leadTitle: "Team activity overview",
+      leadTitle: "Operational control center",
       leadDescription:
-        "Today's state, employee reports, and open tasks in one place.",
+        "A compact dashboard for tracking coverage, blockers, and active work at a glance.",
       employeeTitle: (firstName) => `Welcome, ${firstName}`,
       employeeDescription:
-        "Your daily report, active tasks, and latest updates are gathered here.",
-      cta: "Today's report",
+        "Your report, near deadlines, and personal focus in one place.",
+      primaryCta: "Reports",
+      secondaryCta: "Tasks",
     },
-    metrics: {
+    hero: {
+      eyebrow: "Today's status",
+      leadTitle: "Team pulse",
+      employeeTitle: "Today's focus",
+      todayLabel: "Today",
+      leadSummary: (submitted, total, pending, blocked, openPlans) =>
+        `${submitted}/${total} employees submitted a report. ${pending} pending, ${blocked} blocked, and ${openPlans} open tasks remain.`,
+      employeeSummary: (submitted, total, myOpenPlans, dueSoon) =>
+        `Team coverage is ${submitted}/${total}. You have ${myOpenPlans} active tasks and ${dueSoon} upcoming deadlines.`,
+      reportHealth: "Report flow",
+      taskHealth: "Task flow",
+      reported: "Reported",
+      awaiting: "Pending",
+      blockers: "Blocked",
+      overdue: "Overdue",
+      submitted: "Submitted",
+      open: "Open",
+    },
+    highlights: {
       totalEmployees: {
         label: "Total employees",
-        helper: "Number of active profiles in the system",
+        helper: "Active profiles in the workspace",
       },
       submittedToday: {
         label: "Submitted today",
-        helper: "Employees who sent a report today",
+        helper: "Reports received",
       },
       pendingToday: {
-        label: "Pending reports",
-        helper: "Employees who have not submitted today",
+        label: "Pending",
+        helper: "No report yet",
+      },
+      blockedToday: {
+        label: "Blocked reports",
+        helper: "Blocked report statuses",
       },
       openPlans: {
         label: "Open tasks",
-        helper: "Incomplete plans/tasks",
+        helper: "Incomplete tasks",
       },
+      overduePlans: {
+        label: "Overdue",
+        helper: "Past due date",
+      },
+      myReport: {
+        label: "Report status",
+        ready: "Submitted",
+        missing: "Pending",
+      },
+      myOpenPlans: {
+        label: "My tasks",
+        helper: "Active workload",
+      },
+      dueSoon: {
+        label: "Due soon",
+        helper: "Due within 3 days",
+      },
+      myBlocked: {
+        label: "Blocked",
+        helper: "Blocked tasks",
+      },
+      teamCoverage: {
+        label: "Team coverage",
+        helper: (rate) => `${rate}% submission rate`,
+      },
+    },
+    quickActions: {
+      title: "Quick actions",
+      description: "Jump into the sections you use most.",
+      reports: {
+        title: "Reports",
+        description: "Create daily reports and review history.",
+      },
+      plans: {
+        title: "Tasks",
+        description: "Open the board and manage work fast.",
+      },
+      employees: {
+        title: "Employees",
+        description: "Check team profiles and activity.",
+      },
+      settings: {
+        title: "Settings",
+        description: "Update profile and interface preferences.",
+      },
+    },
+    attention: {
+      title: "Needs attention",
+      leadDescription: "Blocked, overdue, and missing items.",
+      employeeDescription: "Risks and reminders related to you.",
+      blockedReports: "Blocked reports",
+      urgentPlans: "Urgent tasks",
+      missingReports: "Missing reports",
+      personalBlockers: "My blockers",
+      noBlockedReports: "No blocked reports right now.",
+      noUrgentPlans: "No urgent tasks found.",
+      noMissingReports: "Everyone has submitted a report today.",
+      noPersonalBlockers: "No blockers were recorded for you.",
+      viewProfile: "Profile",
     },
     reports: {
       leadEyebrow: "Latest reports",
-      employeeEyebrow: "My reports",
-      leadTitle: "Latest updates",
-      employeeTitle: "Recent activity",
-      viewAll: "View all",
+      employeeEyebrow: "My recent reports",
+      leadTitle: "Team updates",
+      employeeTitle: "Report history",
+      viewAll: "Open reports page",
+      openDetail: "Open full view",
       unknownEmployee: "Unknown employee",
       noTitle: "Title not provided",
+      noDepartment: "Department not provided",
       emptyTitle: "No reports yet",
-      emptyDescription: "Daily reports will appear here once they are submitted.",
+      emptyDescription: "Reports will appear here as they come in.",
+      today: "Date",
+      updated: "Updated",
     },
-    coverage: {
-      leadEyebrow: "Coverage",
-      employeeEyebrow: "Today's report status",
-      leadTitle: "Missing reports",
+    focus: {
+      leadEyebrow: "Coverage and execution",
+      employeeEyebrow: "Today's report",
+      leadTitle: "Report coverage",
       employeeTitle: "Today's status",
       noTitle: "Title not provided",
-      profile: "Profile",
       allSubmitted: "All reports for today have been submitted.",
       editReport: "Edit report",
       emptyTitle: "Today's report has not been submitted",
-      emptyDescription: "Fill in 2-3 fields and share your current status with the team.",
+      emptyDescription: "Fill the 3 core fields and share your current status.",
       submitReport: "Submit report",
+      currentWork: "Current work",
+      nextPlan: "Next plan",
+      blockers: "Blockers",
     },
     plans: {
-      eyebrow: "Plans",
-      title: "Active tasks",
-      pageLink: "Open plans page",
+      eyebrow: "Tasks",
+      leadTitle: "Active team tasks",
+      employeeTitle: "My tasks",
+      pageLink: "Open tasks page",
       noDeadline: "No deadline",
-      emptyTitle: "No active tasks found",
-      emptyDescription: "This block will update when plans are added.",
+      dueSoon: "Soon",
+      overdue: "Overdue",
+      noAssignee: "No assignee",
+      emptyLeadTitle: "No active tasks found",
+      emptyLeadDescription: "This area will update when tasks are added.",
+      emptyEmployeeTitle: "No tasks assigned to you",
+      emptyEmployeeDescription: "This area will update when new tasks arrive.",
     },
   },
 };
