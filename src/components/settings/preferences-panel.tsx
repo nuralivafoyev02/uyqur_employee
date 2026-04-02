@@ -23,7 +23,7 @@ export function PreferencesPanel() {
           </div>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-3">
           {copy.settings.languageOptions.map((option) => {
             const isActive = option.value === language;
 

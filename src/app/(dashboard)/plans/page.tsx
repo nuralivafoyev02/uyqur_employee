@@ -5,6 +5,7 @@ import { savePlanAction, updatePlanStatusAction } from "@/lib/actions/plans";
 
 type PlansPageProps = {
   searchParams: Promise<{
+    q?: string;
     status?: string;
     priority?: string;
     employeeId?: string;

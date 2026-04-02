@@ -206,6 +206,24 @@ export function FilterIcon({ className }: IconProps) {
   );
 }
 
+export function SearchIcon({ className }: IconProps) {
+  return (
+    <IconBase className={className}>
+      <circle cx="11" cy="11" r="5.75" />
+      <path d="m19 19-3.5-3.5" />
+    </IconBase>
+  );
+}
+
+export function PlusIcon({ className }: IconProps) {
+  return (
+    <IconBase className={className}>
+      <path d="M12 5v14" />
+      <path d="M5 12h14" />
+    </IconBase>
+  );
+}
+
 export function ArrowRightIcon({ className }: IconProps) {
   return (
     <IconBase className={className}>

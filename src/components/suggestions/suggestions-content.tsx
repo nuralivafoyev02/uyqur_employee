@@ -144,7 +144,7 @@ export function SuggestionsContent({
                     name="q"
                     className="app-field"
                     defaultValue={data.filters.q}
-                    placeholder="Yozing..."
+                    placeholder={copy.create.titlePlaceholder}
                   />
                 </div>
 

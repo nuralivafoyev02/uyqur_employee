@@ -30,6 +30,7 @@ import {
   UserIcon,
 } from "@/components/layout/dashboard-icons";
 import { DashboardNav, type DashboardNavItem } from "@/components/layout/dashboard-nav";
+import { GlobalSearch } from "@/components/layout/global-search";
 import { signOutAction } from "@/lib/actions/auth";
 import { updateProfileStatusAction } from "@/lib/actions/profile";
 import { type AppCopy, translateProfileMessage } from "@/lib/copy";
@@ -646,8 +647,8 @@ export function DashboardShell({
 
         <div className="flex h-screen min-h-0 flex-col overflow-hidden w-full">
           <header className="border-b border-app-border bg-app-surface backdrop-blur">
-            <div className="app-shell flex flex-col gap-4 py-1 md:flex-row md:items-center md:justify-between">
-              <div className="min-w-0">
+            <div className="app-shell grid gap-3 py-3 lg:grid-cols-[minmax(0,1fr)_minmax(320px,460px)_auto] lg:items-center">
+              <div className="min-w-0 lg:pr-4">
                 <Link
                   href="/dashboard"
                   className="text-sm font-semibold tracking-[0.18em] text-app-text lg:hidden"
@@ -682,7 +683,11 @@ export function DashboardShell({
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 self-end md:self-auto">
+              <div className="order-3 w-full lg:order-none lg:justify-self-center">
+                <GlobalSearch />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 lg:justify-self-end">
                 <details className="rounded-2xl border border-app-border bg-app-bg-elevated px-4 py-3 lg:hidden">
                   <summary className="cursor-pointer text-sm font-medium text-app-text">
                     {copy.shell.menuAndProfile}

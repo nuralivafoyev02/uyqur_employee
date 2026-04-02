@@ -2,8 +2,10 @@
 
 import { useActionState, useState } from "react";
 
+import { usePreferences } from "@/components/providers/preferences-provider";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { ActionStateToast, ToastEffect } from "@/components/ui/toast-effect";
+import { getAuthCopy, translateAuthMessage } from "@/lib/auth-copy";
 import type { ActionState } from "@/lib/validations";
 
 type AuthField = "fullName" | "email" | "password";
@@ -23,50 +25,63 @@ export function AuthForm({ mode, action, notice, disabled = false }: AuthFormPro
   const [state, formAction] = useActionState(action, undefined);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const isRegister = mode === "register";
+  const { language } = usePreferences();
+  const copy = getAuthCopy(language);
 
   return (
     <form action={formAction} className="space-y-5">
-      <ToastEffect message={notice} tone="success" eventKey={notice} />
-      <ActionStateToast state={state} />
+      <ToastEffect
+        message={translateAuthMessage(notice, language)}
+        tone="success"
+        eventKey={notice}
+      />
+      <ActionStateToast
+        state={state}
+        message={translateAuthMessage(state?.message, language)}
+      />
 
       {isRegister ? (
         <div className="space-y-2">
           <label className="block text-sm font-medium text-app-text" htmlFor="fullName">
-            F.I.Sh.
+            {copy.form.fullName}
           </label>
           <input
             id="fullName"
             name="fullName"
             className="app-field"
-            placeholder="Masalan, Sardor Qodirov"
+            placeholder={copy.form.fullNamePlaceholder}
             disabled={disabled}
           />
           {state?.fieldErrors?.fullName ? (
-            <p className="text-sm text-rose-700">{state.fieldErrors.fullName[0]}</p>
+            <p className="text-sm text-rose-700">
+              {translateAuthMessage(state.fieldErrors.fullName[0], language)}
+            </p>
           ) : null}
         </div>
       ) : null}
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-app-text" htmlFor="email">
-          Email
+          {copy.form.email}
         </label>
         <input
           id="email"
           name="email"
           type="email"
           className="app-field"
-          placeholder="name@company.com"
+          placeholder={copy.form.emailPlaceholder}
           disabled={disabled}
         />
         {state?.fieldErrors?.email ? (
-          <p className="text-sm text-rose-700">{state.fieldErrors.email[0]}</p>
+          <p className="text-sm text-rose-700">
+            {translateAuthMessage(state.fieldErrors.email[0], language)}
+          </p>
         ) : null}
       </div>
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-app-text" htmlFor="password">
-          Parol
+          {copy.form.password}
         </label>
         <div className="relative">
           <input
@@ -75,28 +90,30 @@ export function AuthForm({ mode, action, notice, disabled = false }: AuthFormPro
             type={isPasswordVisible ? "text" : "password"}
             autoComplete={isRegister ? "new-password" : "current-password"}
             className="app-field pr-20"
-            placeholder="Kamida 8 ta belgi"
+            placeholder={copy.form.passwordPlaceholder}
             disabled={disabled}
           />
           <button
             type="button"
             className="absolute inset-y-0 right-3 my-auto inline-flex h-7 items-center text-[12px] font-semibold text-app-text-muted transition hover:text-app-text disabled:pointer-events-none disabled:opacity-60"
             onClick={() => setIsPasswordVisible((current) => !current)}
-            aria-label={isPasswordVisible ? "Parolni yashirish" : "Parolni ko'rsatish"}
+            aria-label={isPasswordVisible ? copy.form.hidePassword : copy.form.showPassword}
             aria-pressed={isPasswordVisible}
             disabled={disabled}
           >
-            {isPasswordVisible ? "Yashir" : "Ko'rsat"}
+            {isPasswordVisible ? copy.form.hidePassword : copy.form.showPassword}
           </button>
         </div>
         {state?.fieldErrors?.password ? (
-          <p className="text-sm text-rose-700">{state.fieldErrors.password[0]}</p>
+          <p className="text-sm text-rose-700">
+            {translateAuthMessage(state.fieldErrors.password[0], language)}
+          </p>
         ) : null}
       </div>
 
       <SubmitButton
-        label={isRegister ? "Hisob yaratish" : "Kirish"}
-        pendingLabel={isRegister ? "Yaratilmoqda..." : "Kirilmoqda..."}
+        label={isRegister ? copy.form.createAccount : copy.form.signIn}
+        pendingLabel={isRegister ? copy.form.creating : copy.form.signingIn}
         className="w-full"
       />
     </form>

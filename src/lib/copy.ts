@@ -24,6 +24,21 @@ type ShellCopy = {
   signOutConfirmTitle: string;
   signOutConfirmDescription: string;
   signOutConfirmAction: string;
+  search: {
+    placeholder: string;
+    loading: string;
+    empty: string;
+    minQuery: string;
+    clear: string;
+    reports: string;
+    plans: string;
+    suggestions: string;
+    employees: string;
+    open: string;
+    metaDate: string;
+    metaDeadline: string;
+    metaUpdated: string;
+  };
   nav: {
     dashboard: string;
     reports: string;
@@ -134,6 +149,21 @@ const COPY: Record<AppLanguage, AppCopy> = {
       signOutConfirmDescription:
         "Joriy sessiya yakunlanadi va tizimga qayta kirish talab qilinadi.",
       signOutConfirmAction: "Ha, aniq chiqaman",
+      search: {
+        placeholder: "Global qidiruv",
+        loading: "Qidirilmoqda...",
+        empty: "Hech narsa topilmadi.",
+        minQuery: "Kamida 2 ta belgi yozing.",
+        clear: "Tozalash",
+        reports: "Hisobotlar",
+        plans: "Vazifalar",
+        suggestions: "Takliflar",
+        employees: "Xodimlar",
+        open: "Ochish",
+        metaDate: "Sana",
+        metaDeadline: "Deadline",
+        metaUpdated: "Yangilandi",
+      },
       nav: {
         dashboard: "Asosiy",
         reports: "Kunlik hisobotlar",
@@ -143,7 +173,7 @@ const COPY: Record<AppLanguage, AppCopy> = {
         settings: "Sozlamalar",
       },
     },
-  settings: {
+    settings: {
       eyebrow: "Sozlamalar",
       title: "Profil sozlamalari",
       description:
@@ -175,8 +205,7 @@ const COPY: Record<AppLanguage, AppCopy> = {
       updatedAtLabel: "Oxirgi yangilanish",
       preferencesEyebrow: "Interfeys",
       preferencesTitle: "Til va ko'rinish",
-      preferencesDescription:
-        "Interfeys tilini va mavzusini tanlang.",
+      preferencesDescription: "Interfeys tilini va mavzusini tanlang.",
       currentSelection: "Tanlangan",
       languageLabel: "Til",
       themeLabel: "Mavzu",
@@ -203,6 +232,11 @@ const COPY: Record<AppLanguage, AppCopy> = {
           value: "en",
           label: "English",
           hint: "Aralash yoki xalqaro jamoalar uchun qulay.",
+        },
+        {
+          value: "ru",
+          label: "Русский",
+          hint: "Русскоязычная команда uchun qulay ko'rinish.",
         },
       ],
       themeOptions: [
@@ -250,6 +284,21 @@ const COPY: Record<AppLanguage, AppCopy> = {
       signOutConfirmDescription:
         "Your current session will end and you will need to sign in again.",
       signOutConfirmAction: "Yes, sign out",
+      search: {
+        placeholder: "Global search",
+        loading: "Searching...",
+        empty: "Nothing was found.",
+        minQuery: "Type at least 2 characters.",
+        clear: "Clear",
+        reports: "Reports",
+        plans: "Tasks",
+        suggestions: "Suggestions",
+        employees: "Employees",
+        open: "Open",
+        metaDate: "Date",
+        metaDeadline: "Deadline",
+        metaUpdated: "Updated",
+      },
       nav: {
         dashboard: "Home",
         reports: "Daily Reports",
@@ -291,8 +340,7 @@ const COPY: Record<AppLanguage, AppCopy> = {
       updatedAtLabel: "Last updated",
       preferencesEyebrow: "Preferences",
       preferencesTitle: "Language and theme",
-      preferencesDescription:
-        "Choose your interface language and theme.",
+      preferencesDescription: "Choose your interface language and theme.",
       currentSelection: "Selected",
       languageLabel: "Language",
       themeLabel: "Theme",
@@ -320,6 +368,11 @@ const COPY: Record<AppLanguage, AppCopy> = {
           label: "English",
           hint: "Better for mixed or international teams.",
         },
+        {
+          value: "ru",
+          label: "Русский",
+          hint: "A better fit for Russian-speaking teams.",
+        },
       ],
       themeOptions: [
         {
@@ -335,36 +388,178 @@ const COPY: Record<AppLanguage, AppCopy> = {
       ],
     },
   },
+  ru: {
+    common: {
+      active: "Активно",
+      cancel: "Отмена",
+      close: "Закрыть",
+    },
+    shell: {
+      subtitle: "ERP-система Uyqur Support",
+      menuAndProfile: "Меню",
+      openProfile: "Открыть панель профиля",
+      closeProfile: "Закрыть панель профиля",
+      expandSidebar: "Развернуть боковую панель",
+      collapseSidebar: "Свернуть боковую панель",
+      collapseSidebarShort: "Свернуть",
+      expandSidebarShort: "Развернуть",
+      profileTitle: "Профиль",
+      profileDescription: "Данные аккаунта и управление сессией.",
+      profileSettings: "Настройки профиля",
+      loadingName: "Загрузка...",
+      loadingProfile: "Загружаются данные профиля",
+      noStatus: "Статус не указан",
+      addStatus: "Добавить статус",
+      statusLabel: "Статус профиля",
+      statusPlaceholder: "Например, Работаю из офиса",
+      statusSubmit: "Сохранить статус",
+      statusPending: "Сохранение...",
+      signOut: "Выйти",
+      signOutConfirmTitle: "Вы действительно хотите выйти из аккаунта?",
+      signOutConfirmDescription:
+        "Текущая сессия завершится, и вам нужно будет войти снова.",
+      signOutConfirmAction: "Да, выйти",
+      search: {
+        placeholder: "Глобальный поиск",
+        loading: "Поиск...",
+        empty: "Ничего не найдено.",
+        minQuery: "Введите минимум 2 символа.",
+        clear: "Очистить",
+        reports: "Отчеты",
+        plans: "Задачи",
+        suggestions: "Предложения",
+        employees: "Сотрудники",
+        open: "Открыть",
+        metaDate: "Дата",
+        metaDeadline: "Срок",
+        metaUpdated: "Обновлено",
+      },
+      nav: {
+        dashboard: "Главная",
+        reports: "Ежедневные отчеты",
+        plans: "Задачи",
+        suggestions: "Предложения",
+        employees: "Сотрудники",
+        settings: "Настройки",
+      },
+    },
+    settings: {
+      eyebrow: "Настройки",
+      title: "Настройки профиля",
+      description:
+        "Обновите основные данные профиля. Управление ролями выполняют менеджеры и администраторы.",
+      navigationEyebrow: "Категории",
+      navigationTitle: "Карта настроек",
+      navigationDescription:
+        "Настройки разделены на категории, чтобы нужный раздел находился быстрее.",
+      sections: {
+        account: {
+          label: "Аккаунт",
+          description: "Email, роль и статус последнего обновления.",
+        },
+        preferences: {
+          label: "Интерфейс",
+          description: "Управление языком и светлой или темной темой.",
+        },
+        profile: {
+          label: "Профиль",
+          description: "Обновите имя, должность, статус и отдел.",
+        },
+      },
+      accountEyebrow: "Аккаунт",
+      accountTitle: "Основная информация",
+      accountDescription:
+        "Просматривайте email для входа, текущую роль и время последнего обновления профиля.",
+      emailLabel: "Email",
+      roleLabel: "Роль",
+      updatedAtLabel: "Последнее обновление",
+      preferencesEyebrow: "Интерфейс",
+      preferencesTitle: "Язык и тема",
+      preferencesDescription: "Выберите язык интерфейса и тему.",
+      currentSelection: "Выбрано",
+      languageLabel: "Язык",
+      themeLabel: "Тема",
+      profileEyebrow: "Профиль",
+      profileTitle: "Редактирование",
+      profileForm: {
+        fullName: "Ф.И.О.",
+        title: "Должность",
+        department: "Отдел",
+        profileStatus: "Статус профиля",
+        titlePlaceholder: "Например, Product Manager",
+        departmentPlaceholder: "Например, Operations",
+        profileStatusPlaceholder: "Например, Работаю из офиса",
+        submit: "Обновить профиль",
+        pending: "Обновление...",
+      },
+      languageOptions: [
+        {
+          value: "uz",
+          label: "O'zbekcha",
+          hint: "Подходит для внутреннего узбекского рабочего процесса.",
+        },
+        {
+          value: "en",
+          label: "English",
+          hint: "Удобно для смешанных или международных команд.",
+        },
+        {
+          value: "ru",
+          label: "Русский",
+          hint: "Полная русскоязычная локализация интерфейса.",
+        },
+      ],
+      themeOptions: [
+        {
+          value: "light",
+          label: "Светлая",
+          hint: "Чистый вид для ежедневной офисной работы.",
+        },
+        {
+          value: "dark",
+          label: "Темная",
+          hint: "Комфортнее для глаз при слабом освещении.",
+        },
+      ],
+    },
+  },
 };
 
 const PROFILE_MESSAGE_COPY: Record<string, Record<AppLanguage, string>> = {
   "Profil maydonlarini tekshiring.": {
     uz: "Profil maydonlarini tekshiring.",
     en: "Please review the profile fields.",
+    ru: "Проверьте поля профиля.",
   },
   "Supabase ulanishi sozlanmagan.": {
     uz: "Supabase ulanishi sozlanmagan.",
     en: "Supabase connection is not configured.",
+    ru: "Подключение Supabase не настроено.",
   },
   "Profil yangilandi.": {
     uz: "Profil yangilandi.",
     en: "Profile updated.",
+    ru: "Профиль обновлен.",
   },
   "Status yangilandi.": {
     uz: "Status yangilandi.",
     en: "Status updated.",
+    ru: "Статус обновлен.",
   },
   "Status maydonini tekshiring.": {
     uz: "Status maydonini tekshiring.",
     en: "Please review the status field.",
+    ru: "Проверьте поле статуса.",
   },
   "Ism kamida 2 ta belgidan iborat bo'lsin.": {
     uz: "Ism kamida 2 ta belgidan iborat bo'lsin.",
     en: "Full name must be at least 2 characters long.",
+    ru: "Полное имя должно содержать минимум 2 символа.",
   },
   "Profil statusi 60 ta belgidan oshmasin.": {
     uz: "Profil statusi 60 ta belgidan oshmasin.",
     en: "Profile status must be 60 characters or fewer.",
+    ru: "Статус профиля не должен превышать 60 символов.",
   },
 };
 

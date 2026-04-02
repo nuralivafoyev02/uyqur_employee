@@ -14,6 +14,7 @@ export function cx(...parts: Array<string | false | null | undefined>) {
 const MONTHS_BY_LANGUAGE: Record<AppLanguage, string[]> = {
   uz: ["yan", "fev", "mar", "apr", "may", "iyn", "iyl", "avg", "sen", "okt", "noy", "dek"],
   en: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+  ru: ["янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"],
 };
 
 function parseDateValue(value: string | Date) {
@@ -48,7 +49,11 @@ export function formatDate(
   const includeTime = options?.hour || options?.minute;
 
   const dateLabel =
-    language === "en" ? `${month} ${day}, ${year}` : `${day}-${month}, ${year}`;
+    language === "en"
+      ? `${month} ${day}, ${year}`
+      : language === "ru"
+        ? `${day} ${month} ${year}`
+        : `${day}-${month}, ${year}`;
 
   if (!includeTime) {
     return dateLabel;
@@ -111,6 +116,11 @@ export function getRoleLabel(role: UserRole, language: AppLanguage = "uz") {
       manager: "Manager",
       employee: "Employee",
     },
+    ru: {
+      admin: "Админ",
+      manager: "Менеджер",
+      employee: "Сотрудник",
+    },
   };
 
   return labels[language][role];
@@ -131,6 +141,11 @@ export function getReportStatusLabel(
       in_progress: "In progress",
       blocked: "Blocked",
     },
+    ru: {
+      done: "Выполнено",
+      in_progress: "В процессе",
+      blocked: "Есть блокер",
+    },
   };
 
   return labels[language][status];
@@ -150,6 +165,12 @@ export function getPlanStatusLabel(status: PlanStatus, language: AppLanguage = "
       done: "Done",
       blocked: "Blocked",
     },
+    ru: {
+      todo: "Не начато",
+      in_progress: "В процессе",
+      done: "Завершено",
+      blocked: "Заблокировано",
+    },
   };
 
   return labels[language][status];
@@ -166,6 +187,11 @@ export function getPriorityLabel(priority: PlanPriority, language: AppLanguage =
       low: "Low",
       medium: "Medium",
       high: "High",
+    },
+    ru: {
+      low: "Низкий",
+      medium: "Средний",
+      high: "Высокий",
     },
   };
 
@@ -188,6 +214,12 @@ export function getSuggestionStatusLabel(
       accepted: "Accepted",
       prepared: "Prepared",
       canceled: "Canceled",
+    },
+    ru: {
+      new: "Новый",
+      accepted: "Принято",
+      prepared: "Подготовлено",
+      canceled: "Отменено",
     },
   };
 

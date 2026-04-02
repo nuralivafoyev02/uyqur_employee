@@ -1,4 +1,4 @@
-export type AppLanguage = "uz" | "en";
+export type AppLanguage = "uz" | "en" | "ru";
 export type AppTheme = "light" | "dark";
 
 export const DEFAULT_LANGUAGE: AppLanguage = "uz";
@@ -9,7 +9,11 @@ export const THEME_STORAGE_KEY = "uyqur-theme";
 export const PREFERENCES_EVENT = "uyqur:preferences-change";
 
 export function parseAppLanguage(value: string | null | undefined): AppLanguage {
-  return value === "en" ? "en" : DEFAULT_LANGUAGE;
+  if (value === "en" || value === "ru") {
+    return value;
+  }
+
+  return DEFAULT_LANGUAGE;
 }
 
 export function parseAppTheme(value: string | null | undefined): AppTheme {

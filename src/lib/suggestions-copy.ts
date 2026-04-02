@@ -233,6 +233,84 @@ const COPY: Record<AppLanguage, SuggestionsCopy> = {
       summary: (page, pageCount) => `Page ${page} / ${pageCount}`,
     },
   },
+  ru: {
+    header: {
+      eyebrow: "Предложения",
+      title: "Трекинг предложений",
+      description:
+        "Идеи сотрудников, их статусы и общий поток предложений управляются в одном месте.",
+      compact: "Компактный вид",
+      expanded: "Полный вид",
+    },
+    filters: {
+      open: "Фильтр",
+      title: "Фильтр предложений",
+      close: "Закрыть фильтр",
+      search: "Поиск",
+      employee: "Сотрудник",
+      status: "Статус",
+      all: "Все",
+      submit: "Применить",
+    },
+    stats: {
+      total: "Всего предложений",
+      fresh: "Новые",
+      accepted: "Принятые",
+      prepared: "Подготовленные",
+      canceled: "Отмененные",
+    },
+    create: {
+      eyebrow: "Быстрое добавление",
+      title: "Оставьте новое предложение",
+      description:
+        "Быстро добавьте предложение по заголовку, а детали раскройте только при необходимости.",
+      toggleDetails: "Добавить детали",
+      hideDetails: "Скрыть детали",
+      titleLabel: "Заголовок предложения",
+      descriptionLabel: "Подробности",
+      titlePlaceholder: "Напишите...",
+      descriptionPlaceholder: "Напишите...",
+      submit: "Добавить предложение",
+      pending: "Сохранение...",
+      success: "Предложение сохранено.",
+    },
+    list: {
+      eyebrow: "Список предложений",
+      title: "Все предложения",
+      description:
+        "Активные предложения отображаются сверху, а подготовленные и отмененные перемещаются в архив.",
+      active: "Активные предложения",
+      archive: "Архив",
+      archiveOpen: "Открыть архив",
+      archiveClose: "Закрыть архив",
+      openDetail: "Открыть полностью",
+      noDescription: "Подробное описание не указано.",
+      noSuggestionsTitle: "Пока нет предложений",
+      noSuggestionsDescription: "После отправки первое предложение появится здесь.",
+      emptyActive: "Активных предложений пока нет.",
+      emptyArchive: "Архив пуст.",
+      compactHint: "Включен компактный режим",
+      fullHint: "Включен полный режим",
+    },
+    detail: {
+      title: "Детали предложения",
+      close: "Закрыть",
+      createdAt: "Создано",
+      updatedAt: "Обновлено",
+      employee: "Автор",
+      titleLabel: "Заголовок",
+      descriptionLabel: "Подробности",
+      noDescription: "Подробное описание не оставлено.",
+      statusActions: "Обновить статус",
+      accept: "Принять",
+      cancel: "Отменить",
+      prepare: "Подготовлено",
+      updating: "Обновление...",
+    },
+    pagination: {
+      summary: (page, pageCount) => `Страница ${page} / ${pageCount}`,
+    },
+  },
 };
 
 export function getSuggestionsCopy(language: AppLanguage) {
@@ -243,26 +321,32 @@ const SUGGESTION_MESSAGE_COPY: Record<string, Record<AppLanguage, string>> = {
   "Taklif maydonlarini tekshirib chiqing.": {
     uz: "Taklif maydonlarini tekshirib chiqing.",
     en: "Please review the suggestion fields.",
+    ru: "Проверьте поля предложения.",
   },
   "Supabase ulanishi sozlanmagan.": {
     uz: "Supabase ulanishi sozlanmagan.",
     en: "Supabase connection is not configured.",
+    ru: "Подключение Supabase не настроено.",
   },
   "Taklif saqlandi.": {
     uz: "Taklif saqlandi.",
     en: "Suggestion saved.",
+    ru: "Предложение сохранено.",
   },
   "Taklif sarlavhasi kamida 3 ta belgidan iborat bo'lsin.": {
     uz: "Taklif sarlavhasi kamida 3 ta belgidan iborat bo'lsin.",
     en: "Suggestion title must be at least 3 characters long.",
+    ru: "Заголовок предложения должен содержать минимум 3 символа.",
   },
   "Taklif sarlavhasi 120 ta belgidan oshmasin.": {
     uz: "Taklif sarlavhasi 120 ta belgidan oshmasin.",
     en: "Suggestion title must not exceed 120 characters.",
+    ru: "Заголовок предложения не должен превышать 120 символов.",
   },
   "Batafsil izoh 1500 ta belgidan oshmasin.": {
     uz: "Batafsil izoh 1500 ta belgidan oshmasin.",
     en: "Detailed description must not exceed 1500 characters.",
+    ru: "Подробное описание не должно превышать 1500 символов.",
   },
 };
 

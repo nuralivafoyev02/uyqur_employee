@@ -12,6 +12,7 @@ type FilterModalProps = {
   closeLabel: string;
   description?: string;
   activeCount?: number;
+  triggerClassName?: string;
   children: React.ReactNode;
 };
 
@@ -21,6 +22,7 @@ export function FilterModal({
   closeLabel,
   description,
   activeCount = 0,
+  triggerClassName,
   children,
 }: FilterModalProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -54,7 +56,9 @@ export function FilterModal({
     <>
       <button
         type="button"
-        className="app-button-secondary gap-2 self-end px-3 py-1.5 text-xs"
+        className={
+          triggerClassName ?? "app-button-secondary gap-2 self-end px-3 py-1.5 text-xs"
+        }
         onClick={() => setIsOpen(true)}
       >
         <FilterIcon className="h-4 w-4" />

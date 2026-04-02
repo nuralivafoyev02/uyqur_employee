@@ -1,12 +1,13 @@
 import { hasRole } from "@/lib/auth";
 import { SUPABASE_SETUP_MESSAGE } from "@/lib/supabase/config";
 import { createServerComponentClient } from "@/lib/supabase/server";
-import { getTodayIsoDate } from "@/lib/utils";
+import { escapeLikeQuery, getTodayIsoDate } from "@/lib/utils";
 import type { Plan, PlanPriority, PlanStatus, Profile, Viewer } from "@/types/database";
 
 const PLAN_PAGE_SIZE = 16;
 
 type PlanFilters = {
+  q?: string;
   status?: string;
   priority?: string;
   employeeId?: string;
@@ -45,6 +46,7 @@ export type PlanListItem = {
 
 export type PlansPageData = {
   filters: {
+    q: string;
     status: PlanStatus | "";
     priority: PlanPriority | "";
     employeeId: string;
@@ -110,6 +112,7 @@ export async function getPlansPageData(
   }
 
   const isLeadView = hasRole(viewer.role, ["admin", "manager"]);
+  const q = filters.q?.trim() ?? "";
   const status = normalizeStatus(filters.status);
   const priority = normalizePriority(filters.priority);
   const employeeId = filters.employeeId?.trim() ?? "";
@@ -129,6 +132,11 @@ export async function getPlansPageData(
     .order("due_date", { ascending: true, nullsFirst: false })
     .order("updated_at", { ascending: false })
     .range(from, to);
+
+  if (q) {
+    const pattern = `%${escapeLikeQuery(q).split(/\s+/).filter(Boolean).join("%")}%`;
+    plansQuery = plansQuery.or(`title.ilike.${pattern},description.ilike.${pattern}`);
+  }
 
   if (isLeadView) {
     if (status) {
@@ -196,6 +204,7 @@ export async function getPlansPageData(
 
   return {
     filters: {
+      q,
       status,
       priority,
       employeeId,

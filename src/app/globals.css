@@ -232,6 +232,9 @@
 
   .app-scroll-row {
     @apply flex gap-3 overflow-x-auto pb-2;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
     scrollbar-width: thin;
   }
 

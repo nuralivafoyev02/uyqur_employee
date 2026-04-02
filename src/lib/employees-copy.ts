@@ -190,6 +190,70 @@ const COPY: Record<AppLanguage, EmployeesCopy> = {
       },
     },
   },
+  ru: {
+    list: {
+      header: {
+        eyebrow: "Сотрудники",
+        title: "Сотрудники",
+        description: "Поиск, фильтры и индивидуальная история активности.",
+      },
+      filters: {
+        open: "Фильтр",
+        title: "Фильтр сотрудников",
+        close: "Закрыть",
+        search: "Поиск",
+        searchPlaceholder: "Имя, должность, статус или отдел",
+        role: "Роль",
+        department: "Отдел",
+        all: "Все",
+        apply: "Применить",
+      },
+      cards: {
+        noTitle: "Должность не указана",
+        department: "Отдел",
+        status: "Статус",
+        statusEmpty: "Не указан",
+        unassigned: "Не назначено",
+        lastReport: "Последний отчет",
+        none: "Нет",
+        openTasks: "Открытые задачи",
+        openProfile: "Открыть профиль",
+      },
+      pagination: {
+        summary: (page, pageCount) => `Страница ${page} / ${pageCount}`,
+        previous: "Назад",
+        next: "Далее",
+      },
+    },
+    profile: {
+      headerEyebrow: "Профиль сотрудника",
+      noTitle: "Должность не указана",
+      statusEmpty: "Статус не указан",
+      metrics: {
+        totalReports: { label: "Всего отчетов", helper: "Количество видимых отчетов" },
+        blockedReports: { label: "Отчеты с блокерами", helper: "Отчеты с отмеченными проблемами" },
+        activePlans: { label: "Активные задачи", helper: "Незавершенные планы и задачи" },
+      },
+      reports: {
+        eyebrow: "Отчеты",
+        title: "История активности",
+        pageLink: "Открыть страницу отчетов",
+        completedWork: "Выполнено",
+        nextPlan: "Следующий план",
+        emptyTitle: "Отчеты не найдены",
+        emptyDescription: "Для этого сотрудника пока нет отчетов.",
+      },
+      plans: {
+        eyebrow: "Планы",
+        title: "Назначенные задачи",
+        noDescription: "Дополнительное описание отсутствует.",
+        deadlinePrefix: "Срок",
+        noDeadline: "Без срока",
+        emptyTitle: "Задачи не найдены",
+        emptyDescription: "Этому сотруднику пока не назначены задачи.",
+      },
+    },
+  },
 };
 
 export function getEmployeesCopy(language: AppLanguage) {

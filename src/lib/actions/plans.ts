@@ -93,7 +93,10 @@ export async function updatePlanStatusAction(formData: FormData) {
   const supabase = await createActionClient();
 
   if (!supabase) {
-    return;
+    return {
+      success: false,
+      message: "Supabase ulanishi sozlanmagan.",
+    } satisfies ActionState;
   }
 
   const planIdEntry = formData.get("planId");
@@ -102,7 +105,10 @@ export async function updatePlanStatusAction(formData: FormData) {
   const rawStatus = typeof statusEntry === "string" ? statusEntry : "";
 
   if (!planId) {
-    return;
+    return {
+      success: false,
+      message: "Vazifa topilmadi.",
+    } satisfies ActionState;
   }
 
   if (
@@ -111,7 +117,10 @@ export async function updatePlanStatusAction(formData: FormData) {
     rawStatus !== "done" &&
     rawStatus !== "blocked"
   ) {
-    return;
+    return {
+      success: false,
+      message: "Status noto'g'ri tanlangan.",
+    } satisfies ActionState;
   }
 
   const { data: plan } = await supabase
@@ -121,25 +130,44 @@ export async function updatePlanStatusAction(formData: FormData) {
     .maybeSingle();
 
   if (!plan) {
-    return;
+    return {
+      success: false,
+      message: "Vazifa topilmadi.",
+    } satisfies ActionState;
   }
 
   if (!hasRole(viewer.role, ["admin", "manager"]) && plan.assignee_id !== viewer.id) {
-    return;
+    return {
+      success: false,
+      message: "Bu vazifa statusini yangilashga ruxsat yo'q.",
+    } satisfies ActionState;
   }
 
+  let error: { message: string } | null = null;
+
   if (hasRole(viewer.role, ["admin", "manager"])) {
-    await supabase
+    const response = await supabase
       .from("plans")
       .update({
         status: rawStatus as PlanStatus,
       })
       .eq("id", planId);
+
+    error = response.error;
   } else {
-    await supabase.rpc("update_plan_status", {
+    const response = await supabase.rpc("update_plan_status", {
       plan_id: planId,
       next_status: rawStatus as PlanStatus,
     });
+
+    error = response.error;
+  }
+
+  if (error) {
+    return {
+      success: false,
+      message: error.message,
+    } satisfies ActionState;
   }
 
   revalidatePath("/dashboard");
@@ -147,4 +175,9 @@ export async function updatePlanStatusAction(formData: FormData) {
   revalidatePath("/employees");
   revalidatePath(`/employees/${plan.assignee_id}`);
   revalidatePath("/api/employees");
+
+  return {
+    success: true,
+    message: "Vazifa statusi yangilandi.",
+  } satisfies ActionState;
 }

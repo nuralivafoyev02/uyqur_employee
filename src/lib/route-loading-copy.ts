@@ -75,6 +75,36 @@ const COPY: Record<AppLanguage, Record<RouteLoadingSection, RouteLoadingCopy>> =
       description: "Loading profile settings",
     },
   },
+  ru: {
+    dashboard: {
+      title: "Главная",
+      description: "Загружается обзор",
+    },
+    reports: {
+      title: "Ежедневные отчеты",
+      description: "Загружаются отчеты",
+    },
+    plans: {
+      title: "Задачи",
+      description: "Загружается поток задач",
+    },
+    suggestions: {
+      title: "Предложения",
+      description: "Загружается трекинг предложений",
+    },
+    employees: {
+      title: "Сотрудники",
+      description: "Загружается список сотрудников",
+    },
+    employeeProfile: {
+      title: "Профиль сотрудника",
+      description: "Загружается профиль сотрудника",
+    },
+    settings: {
+      title: "Настройки",
+      description: "Загружаются настройки профиля",
+    },
+  },
 };
 
 export function getRouteLoadingCopy(
