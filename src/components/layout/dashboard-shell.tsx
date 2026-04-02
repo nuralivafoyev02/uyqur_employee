@@ -38,6 +38,7 @@ import type { AppLanguage } from "@/lib/preferences";
 import { getPlansCopy } from "@/lib/plans-copy";
 import { getReportsCopy } from "@/lib/reports-copy";
 import { ProfileStatusBadge } from "@/components/ui/badges";
+import { useAnimatedPresence } from "@/components/ui/use-animated-presence";
 import { cx, getInitials, getRoleLabel } from "@/lib/utils";
 import type { ActionState } from "@/lib/validations";
 import type { ComponentType } from "react";
@@ -176,6 +177,7 @@ function SignOutButton({
   const formRef = useRef<HTMLFormElement>(null);
   const titleId = useId();
   const descriptionId = useId();
+  const { isMounted, dataState } = useAnimatedPresence(isOpen);
 
   useEffect(() => {
     if (!isOpen) {
@@ -220,10 +222,11 @@ function SignOutButton({
         </button>
       </form>
 
-      {isOpen
+      {isMounted
         ? createPortal(
           <div
-            className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-950/40 px-4 backdrop-blur-[2px]"
+            data-state={dataState}
+            className="app-overlay fixed inset-0 z-[110] flex items-center justify-center bg-slate-950/40 px-4 backdrop-blur-[2px]"
             onClick={() => setIsOpen(false)}
           >
             <div
@@ -231,7 +234,8 @@ function SignOutButton({
               aria-modal="true"
               aria-labelledby={titleId}
               aria-describedby={descriptionId}
-              className="app-panel w-full max-w-md p-6"
+              data-state={dataState}
+              className="app-dialog-panel app-panel w-full max-w-md p-6"
               onClick={(event) => event.stopPropagation()}
             >
               <div className="space-y-2">

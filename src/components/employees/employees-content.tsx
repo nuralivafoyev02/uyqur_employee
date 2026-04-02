@@ -6,6 +6,7 @@ import { usePreferences } from "@/components/providers/preferences-provider";
 import { PageHeader } from "@/components/ui/page-header";
 import { Pagination } from "@/components/ui/pagination";
 import { ProfileStatusBadge, RoleBadge } from "@/components/ui/badges";
+import { FilterModal } from "@/components/ui/filter-modal";
 import { getEmployeesCopy } from "@/lib/employees-copy";
 import { formatDate, getRoleLabel } from "@/lib/utils";
 import type { EmployeesPageData } from "@/lib/queries/employees";
@@ -17,6 +18,10 @@ type EmployeesContentProps = {
 export function EmployeesContent({ data }: EmployeesContentProps) {
   const { language } = usePreferences();
   const copy = getEmployeesCopy(language);
+  const activeFilterCount =
+    Number(Boolean(data.filters.q)) +
+    Number(Boolean(data.filters.role)) +
+    Number(Boolean(data.filters.department));
 
   return (
     <div className="space-y-6">
@@ -24,61 +29,79 @@ export function EmployeesContent({ data }: EmployeesContentProps) {
         eyebrow={copy.list.header.eyebrow}
         title={copy.list.header.title}
         description={copy.list.header.description}
+        actions={(
+          <FilterModal
+            triggerLabel={copy.list.filters.open}
+            title={copy.list.filters.title}
+            closeLabel={copy.list.filters.close}
+            activeCount={activeFilterCount}
+          >
+            <form className="grid gap-4">
+              <div className="space-y-1.5">
+                <label
+                  className="block text-xs font-semibold uppercase tracking-[0.12em] text-app-text-subtle"
+                  htmlFor="employeeFilterQuery"
+                >
+                  {copy.list.filters.search}
+                </label>
+                <input
+                  id="employeeFilterQuery"
+                  name="q"
+                  className="app-field"
+                  defaultValue={data.filters.q}
+                  placeholder={copy.list.filters.searchPlaceholder}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label
+                  className="block text-xs font-semibold uppercase tracking-[0.12em] text-app-text-subtle"
+                  htmlFor="employeeFilterRole"
+                >
+                  {copy.list.filters.role}
+                </label>
+                <select
+                  id="employeeFilterRole"
+                  name="role"
+                  className="app-field"
+                  defaultValue={data.filters.role}
+                >
+                  <option value="">{copy.list.filters.all}</option>
+                  <option value="admin">{getRoleLabel("admin", language)}</option>
+                  <option value="manager">{getRoleLabel("manager", language)}</option>
+                  <option value="employee">{getRoleLabel("employee", language)}</option>
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label
+                  className="block text-xs font-semibold uppercase tracking-[0.12em] text-app-text-subtle"
+                  htmlFor="employeeFilterDepartment"
+                >
+                  {copy.list.filters.department}
+                </label>
+                <select
+                  id="employeeFilterDepartment"
+                  name="department"
+                  className="app-field"
+                  defaultValue={data.filters.department}
+                >
+                  <option value="">{copy.list.filters.all}</option>
+                  {data.departments.map((department) => (
+                    <option key={department} value={department}>
+                      {department}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <button type="submit" className="app-button w-full">
+                {copy.list.filters.apply}
+              </button>
+            </form>
+          </FilterModal>
+        )}
       />
-
-      <section className="app-panel p-6">
-        <form className="grid gap-4 md:grid-cols-4">
-          <div className="space-y-2 md:col-span-2">
-            <label className="block text-sm font-medium text-app-text" htmlFor="q">
-              {copy.list.filters.search}
-            </label>
-            <input
-              id="q"
-              name="q"
-              className="app-field"
-              defaultValue={data.filters.q}
-              placeholder={copy.list.filters.searchPlaceholder}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-app-text" htmlFor="role">
-              {copy.list.filters.role}
-            </label>
-            <select id="role" name="role" className="app-field" defaultValue={data.filters.role}>
-              <option value="">{copy.list.filters.all}</option>
-              <option value="admin">{getRoleLabel("admin", language)}</option>
-              <option value="manager">{getRoleLabel("manager", language)}</option>
-              <option value="employee">{getRoleLabel("employee", language)}</option>
-            </select>
-          </div>
-
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-app-text" htmlFor="department">
-              {copy.list.filters.department}
-            </label>
-            <select
-              id="department"
-              name="department"
-              className="app-field"
-              defaultValue={data.filters.department}
-            >
-              <option value="">{copy.list.filters.all}</option>
-              {data.departments.map((department) => (
-                <option key={department} value={department}>
-                  {department}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex items-end md:col-span-4">
-            <button type="submit" className="app-button">
-              {copy.list.filters.apply}
-            </button>
-          </div>
-        </form>
-      </section>
 
       <section className="app-panel p-6">
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">

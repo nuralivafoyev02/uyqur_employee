@@ -10,6 +10,7 @@ type ReportsCopy = {
     eyebrow: string;
     openComposer: string;
     closeComposer: string;
+    quickHint: string;
     existingDescription: string;
     newDescription: string;
     collapse: string;
@@ -20,6 +21,9 @@ type ReportsCopy = {
     employeePlaceholder: string;
   };
   filters: {
+    open: string;
+    title: string;
+    close: string;
     date: string;
     employee: string;
     status: string;
@@ -41,16 +45,34 @@ type ReportsCopy = {
     edit: string;
     delete: string;
   };
+  detail: {
+    title: string;
+    close: string;
+    employee: string;
+    reportDate: string;
+    updatedAt: string;
+    noBlockers: string;
+  };
   form: {
     completedWork: string;
     completedWorkPlaceholder: string;
+    completedWorkHint: string;
     currentWork: string;
     currentWorkPlaceholder: string;
+    currentWorkHint: string;
     nextPlan: string;
     nextPlanPlaceholder: string;
+    nextPlanHint: string;
     blockers: string;
     blockersPlaceholder: string;
+    blockersHint: string;
+    optional: string;
     status: string;
+    statusHint: string;
+    progressTitle: string;
+    progressDescription: string;
+    progressReady: string;
+    progressPending: string;
     submit: string;
     pending: string;
   };
@@ -73,6 +95,7 @@ const COPY: Record<AppLanguage, ReportsCopy> = {
       eyebrow: "Hisobot yaratish",
       openComposer: "Hisobot yaratish",
       closeComposer: "Editorni yopish",
+      quickHint: "3 ta asosiy blokni to'ldirsangiz, hisobot tayyor bo'ladi.",
       existingDescription: "Mavjud report tahrirlash holatida ochildi.",
       newDescription: "Tanlangan sana uchun yangi hisobot yarating.",
       collapse: "Yopish",
@@ -83,6 +106,9 @@ const COPY: Record<AppLanguage, ReportsCopy> = {
       employeePlaceholder: "Xodim tanlang",
     },
     filters: {
+      open: "Filtrlash",
+      title: "Hisobotlarni filtrlash",
+      close: "Yopish",
       date: "Sana",
       employee: "Xodim",
       status: "Status",
@@ -104,16 +130,34 @@ const COPY: Record<AppLanguage, ReportsCopy> = {
       edit: "Tahrirlash",
       delete: "O'chirish",
     },
+    detail: {
+      title: "To'liq hisobot",
+      close: "Yopish",
+      employee: "Xodim",
+      reportDate: "Hisobot sanasi",
+      updatedAt: "Yangilangan vaqti",
+      noBlockers: "To'siq ko'rsatilmagan.",
+    },
     form: {
       completedWork: "Bugun nimalarni yakunladingiz?",
-      completedWorkPlaceholder: "Qisqa, aniq va natijaga yo'naltirilgan yozing.",
+      completedWorkPlaceholder: "Yozing...",
+      completedWorkHint: "Tugatgan ish, natija va chiqgan foydani yozing.",
       currentWork: "Hozir nima ustida ishlayapsiz?",
-      currentWorkPlaceholder: "Joriy fokusni kiriting.",
+      currentWorkPlaceholder: "Yozing...",
+      currentWorkHint: "Ayni paytdagi asosiy fokus va davom etayotgan ish.",
       nextPlan: "Keyingi reja",
-      nextPlanPlaceholder: "Keyingi qadamlarni kiriting.",
+      nextPlanPlaceholder: "Yozing...",
+      nextPlanHint: "Ertaga yoki keyingi blokda nima qilishni aniq yozing.",
       blockers: "To'siq yoki muammo",
-      blockersPlaceholder: "Agar muammo bo'lsa, shu yerga yozing.",
+      blockersPlaceholder: "Yozing...",
+      blockersHint: "Kutish, risk yoki yordam kerak bo'lgan joylarni kiriting.",
+      optional: "ixtiyoriy",
       status: "Umumiy holat",
+      statusHint: "Umumiy pacing'ni bitta tugma bilan belgilang.",
+      progressTitle: "Hisobot holati",
+      progressDescription: "3 ta asosiy blok to'lsa, hisobot yuborishga tayyor bo'ladi.",
+      progressReady: "Tayyor",
+      progressPending: "Yana to'ldirish kerak",
       submit: "Hisobotni saqlash",
       pending: "Saqlanmoqda...",
     },
@@ -134,6 +178,7 @@ const COPY: Record<AppLanguage, ReportsCopy> = {
       eyebrow: "Editor",
       openComposer: "Create report",
       closeComposer: "Close editor",
+      quickHint: "Complete the 3 core sections and send the update without extra friction.",
       existingDescription: "An existing report was opened in edit mode.",
       newDescription: "Create a new report for the selected date.",
       collapse: "Collapse",
@@ -144,6 +189,9 @@ const COPY: Record<AppLanguage, ReportsCopy> = {
       employeePlaceholder: "Select an employee",
     },
     filters: {
+      open: "Filters",
+      title: "Filter reports",
+      close: "Close",
       date: "Date",
       employee: "Employee",
       status: "Status",
@@ -165,16 +213,34 @@ const COPY: Record<AppLanguage, ReportsCopy> = {
       edit: "Edit",
       delete: "Delete",
     },
+    detail: {
+      title: "Full report",
+      close: "Close",
+      employee: "Employee",
+      reportDate: "Report date",
+      updatedAt: "Last updated",
+      noBlockers: "No blockers were reported.",
+    },
     form: {
       completedWork: "What did you complete today?",
-      completedWorkPlaceholder: "Keep it concise, clear, and outcome-oriented.",
+      completedWorkPlaceholder: "Write...",
+      completedWorkHint: "Describe what was finished and the outcome it created.",
       currentWork: "What are you working on now?",
-      currentWorkPlaceholder: "Describe your current focus.",
+      currentWorkPlaceholder: "Write...",
+      currentWorkHint: "Capture the main focus or work currently in progress.",
       nextPlan: "Next plan",
-      nextPlanPlaceholder: "Outline the next steps.",
+      nextPlanPlaceholder: "Write...",
+      nextPlanHint: "State the next concrete action or tomorrow's plan.",
       blockers: "Blocker or issue",
-      blockersPlaceholder: "If there is an issue, write it here.",
+      blockersPlaceholder: "Write...",
+      blockersHint: "Call out dependencies, risks, or where you need help.",
+      optional: "optional",
       status: "Overall status",
+      statusHint: "Pick the overall pace in one tap.",
+      progressTitle: "Report health",
+      progressDescription: "Once the 3 core sections are filled, the report is ready to send.",
+      progressReady: "Ready",
+      progressPending: "Needs attention",
       submit: "Save report",
       pending: "Saving...",
     },

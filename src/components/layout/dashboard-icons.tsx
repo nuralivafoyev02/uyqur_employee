@@ -185,3 +185,13 @@ export function StatusIcon({ className }: IconProps) {
     </IconBase>
   );
 }
+
+export function FilterIcon({ className }: IconProps) {
+  return (
+    <IconBase className={className}>
+      <path d="M4.75 6.25h14.5" />
+      <path d="M7.75 11.75h8.5" />
+      <path d="M10.5 17.25h3" />
+    </IconBase>
+  );
+}

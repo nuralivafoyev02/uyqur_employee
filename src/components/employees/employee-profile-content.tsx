@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 
 import { usePreferences } from "@/components/providers/preferences-provider";
 import { MetricCard } from "@/components/ui/metric-card";
@@ -13,6 +14,7 @@ import {
   ReportStatusBadge,
   RoleBadge,
 } from "@/components/ui/badges";
+import { ReportDetailModal } from "@/components/reports/report-detail-modal";
 import { getEmployeesCopy } from "@/lib/employees-copy";
 import { formatDate, truncate } from "@/lib/utils";
 import type { EmployeeProfileData } from "@/lib/queries/employees";
@@ -22,8 +24,64 @@ type EmployeeProfileContentProps = {
 };
 
 export function EmployeeProfileContent({ data }: EmployeeProfileContentProps) {
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [selectedReport, setSelectedReport] = useState<{
+    employeeName?: string | null;
+    employeeTitle?: string | null;
+    employeeProfileStatus?: string | null;
+    reportDate: string;
+    updatedAt: string;
+    status: EmployeeProfileData["reportHistory"][number]["status"];
+    completedWork: string;
+    currentWork: string;
+    nextPlan: string;
+    blockers?: string | null;
+  } | null>(null);
+  const detailCloseTimeoutRef = useRef<number | null>(null);
   const { language } = usePreferences();
   const copy = getEmployeesCopy(language);
+
+  useEffect(() => {
+    return () => {
+      if (detailCloseTimeoutRef.current !== null) {
+        window.clearTimeout(detailCloseTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  function openReportDetail(report: EmployeeProfileData["reportHistory"][number]) {
+    if (detailCloseTimeoutRef.current !== null) {
+      window.clearTimeout(detailCloseTimeoutRef.current);
+      detailCloseTimeoutRef.current = null;
+    }
+
+    setSelectedReport({
+      employeeName: data.profile.full_name,
+      employeeTitle: data.profile.title,
+      employeeProfileStatus: data.profile.profile_status,
+      reportDate: report.report_date,
+      updatedAt: report.updated_at,
+      status: report.status,
+      completedWork: report.completed_work,
+      currentWork: report.current_work,
+      nextPlan: report.next_plan,
+      blockers: report.blockers,
+    });
+    setIsDetailOpen(true);
+  }
+
+  function closeReportDetail() {
+    setIsDetailOpen(false);
+
+    if (detailCloseTimeoutRef.current !== null) {
+      window.clearTimeout(detailCloseTimeoutRef.current);
+    }
+
+    detailCloseTimeoutRef.current = window.setTimeout(() => {
+      setSelectedReport(null);
+      detailCloseTimeoutRef.current = null;
+    }, 240);
+  }
 
   return (
     <div className="space-y-6">
@@ -79,7 +137,16 @@ export function EmployeeProfileContent({ data }: EmployeeProfileContentProps) {
               data.reportHistory.map((report) => (
                 <article
                   key={report.id}
-                  className="rounded-2xl border border-app-border bg-app-bg-elevated p-4"
+                  className="cursor-pointer rounded-2xl border border-app-border bg-app-bg-elevated p-4 transition hover:border-app-border-strong hover:bg-app-surface"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => openReportDetail(report)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      openReportDetail(report);
+                    }
+                  }}
                 >
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <p className="font-semibold text-app-text">
@@ -157,6 +224,12 @@ export function EmployeeProfileContent({ data }: EmployeeProfileContentProps) {
           </div>
         </section>
       </div>
+
+      <ReportDetailModal
+        isOpen={isDetailOpen}
+        report={selectedReport}
+        onClose={closeReportDetail}
+      />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 
 import { SubmitButton } from "@/components/ui/submit-button";
 import type { ActionState } from "@/lib/validations";
@@ -20,6 +20,7 @@ type AuthFormProps = {
 
 export function AuthForm({ mode, action, notice, disabled = false }: AuthFormProps) {
   const [state, formAction] = useActionState(action, undefined);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const isRegister = mode === "register";
 
   return (
@@ -75,14 +76,27 @@ export function AuthForm({ mode, action, notice, disabled = false }: AuthFormPro
         <label className="block text-sm font-medium text-app-text" htmlFor="password">
           Parol
         </label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          className="app-field"
-          placeholder="Kamida 8 ta belgi"
-          disabled={disabled}
-        />
+        <div className="relative">
+          <input
+            id="password"
+            name="password"
+            type={isPasswordVisible ? "text" : "password"}
+            autoComplete={isRegister ? "new-password" : "current-password"}
+            className="app-field pr-20"
+            placeholder="Kamida 8 ta belgi"
+            disabled={disabled}
+          />
+          <button
+            type="button"
+            className="absolute inset-y-0 right-3 my-auto inline-flex h-7 items-center text-[12px] font-semibold text-app-text-muted transition hover:text-app-text disabled:pointer-events-none disabled:opacity-60"
+            onClick={() => setIsPasswordVisible((current) => !current)}
+            aria-label={isPasswordVisible ? "Parolni yashirish" : "Parolni ko'rsatish"}
+            aria-pressed={isPasswordVisible}
+            disabled={disabled}
+          >
+            {isPasswordVisible ? "Yashir" : "Ko'rsat"}
+          </button>
+        </div>
         {state?.fieldErrors?.password ? (
           <p className="text-sm text-rose-700">{state.fieldErrors.password[0]}</p>
         ) : null}

@@ -16,11 +16,11 @@ type RouteLoadingProps = {
 function LoadingPageHeader({
   title,
   description,
-  actionWidth = "w-32",
+  actionSkeletons = ["h-10 w-32 rounded-2xl"],
 }: {
   title: string;
   description: string;
-  actionWidth?: string | null;
+  actionSkeletons?: string[] | null;
 }) {
   return (
     <section className="rounded-3xl border border-app-border bg-app-surface px-5 py-5 md:px-6">
@@ -30,8 +30,12 @@ function LoadingPageHeader({
           <div className="app-skeleton h-10 w-72 max-w-full" />
           <div className="text-sm text-app-text-muted/80">{description}</div>
         </div>
-        {actionWidth ? (
-          <div className={`app-skeleton h-10 rounded-2xl ${actionWidth}`} />
+        {actionSkeletons ? (
+          <div className="flex flex-col items-end gap-2 sm:flex-row sm:items-center">
+            {actionSkeletons.map((skeleton, index) => (
+              <div key={index} className={`app-skeleton ${skeleton}`} />
+            ))}
+          </div>
         ) : null}
       </div>
     </section>
@@ -71,25 +75,113 @@ function LoadingSectionHeading({
   );
 }
 
-function LoadingFilterPanel({ fields }: { fields: number }) {
+function LoadingPlanComposer() {
   return (
-    <aside className="app-panel h-fit p-5">
-      <div className="space-y-4">
+    <section className="app-panel p-4 md:p-5">
+      <div className="flex flex-col gap-4 border-b border-app-border pb-4 md:flex-row md:items-start md:justify-between">
         <div className="space-y-2">
-          <div className="app-skeleton h-4 w-16" />
-          <div className="app-skeleton h-7 w-28" />
+          <div className="app-skeleton h-4 w-24" />
+          <div className="app-skeleton h-7 w-40" />
+          <div className="app-skeleton h-4 w-72 max-w-full" />
+        </div>
+        <div className="app-skeleton h-8 w-24 rounded-xl" />
+      </div>
+
+      <div className="mt-5 space-y-4">
+        <div className="app-skeleton h-10 w-full rounded-2xl" />
+        <div className="grid gap-3 xl:grid-cols-[minmax(0,1.45fr)_minmax(220px,0.82fr)_180px_auto]">
+          <div className="app-skeleton h-11 w-full rounded-2xl" />
+          <div className="app-skeleton h-11 w-full rounded-2xl" />
+          <div className="app-skeleton h-11 w-full rounded-2xl" />
+          <div className="app-skeleton h-10 w-full rounded-2xl" />
+        </div>
+        <div className="grid gap-3 lg:grid-cols-2">
+          <div className="rounded-2xl border border-app-border bg-app-surface p-3">
+            <div className="app-skeleton h-4 w-20" />
+            <div className="mt-3 flex gap-2">
+              <div className="app-skeleton h-8 w-20 rounded-full" />
+              <div className="app-skeleton h-8 w-20 rounded-full" />
+              <div className="app-skeleton h-8 w-20 rounded-full" />
+            </div>
+          </div>
+          <div className="rounded-2xl border border-app-border bg-app-surface p-3">
+            <div className="app-skeleton h-4 w-24" />
+            <div className="mt-3 flex gap-2">
+              <div className="app-skeleton h-8 w-24 rounded-full" />
+              <div className="app-skeleton h-8 w-24 rounded-full" />
+              <div className="app-skeleton h-8 w-24 rounded-full" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function LoadingReportComposer() {
+  return (
+    <section className="app-panel p-4 md:p-5">
+      <div className="flex flex-col gap-4 border-b border-app-border pb-4 md:flex-row md:items-start md:justify-between">
+        <div className="space-y-2">
+          <div className="app-skeleton h-4 w-24" />
+          <div className="app-skeleton h-7 w-40" />
+          <div className="app-skeleton h-4 w-80 max-w-full" />
+          <div className="app-skeleton h-10 w-72 max-w-full rounded-2xl" />
+        </div>
+        <div className="app-skeleton h-8 w-24 rounded-xl" />
+      </div>
+
+      <div className="mt-4 rounded-2xl border border-app-border bg-app-bg-elevated p-4">
+        <div className="grid gap-3 lg:grid-cols-[180px_minmax(0,1fr)_auto]">
+          <div className="app-skeleton h-11 w-full rounded-2xl" />
+          <div className="app-skeleton h-11 w-full rounded-2xl" />
+          <div className="app-skeleton h-10 w-full rounded-2xl" />
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-4 xl:grid-cols-[260px_minmax(0,1fr)]">
+        <div className="space-y-4">
+          <div className="rounded-2xl border border-app-border bg-app-bg-elevated p-4">
+            <div className="app-skeleton h-4 w-24" />
+            <div className="mt-3 app-skeleton h-7 w-28" />
+            <div className="mt-2 app-skeleton h-4 w-40" />
+            <div className="mt-4 space-y-2">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="rounded-2xl border border-app-border bg-app-surface px-3 py-3"
+                >
+                  <div className="app-skeleton h-3 w-12" />
+                  <div className="mt-2 app-skeleton h-4 w-28" />
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="rounded-2xl border border-app-border bg-app-bg-elevated p-4">
+            <div className="app-skeleton h-4 w-20" />
+            <div className="mt-3 flex gap-2">
+              <div className="app-skeleton h-8 w-24 rounded-full" />
+              <div className="app-skeleton h-8 w-24 rounded-full" />
+              <div className="app-skeleton h-8 w-24 rounded-full" />
+            </div>
+          </div>
         </div>
 
-        {Array.from({ length: fields }).map((_, index) => (
-          <div key={index} className="space-y-2">
-            <div className="app-skeleton h-4 w-24" />
-            <div className="app-skeleton h-11 w-full rounded-2xl" />
-          </div>
-        ))}
-
-        <div className="app-skeleton mt-2 h-10 w-full rounded-2xl" />
+        <div className="space-y-3">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div
+              key={index}
+              className="rounded-2xl border border-app-border bg-app-surface p-4"
+            >
+              <div className="app-skeleton h-3 w-12" />
+              <div className="mt-2 app-skeleton h-5 w-52 max-w-full" />
+              <div className="mt-2 app-skeleton h-4 w-72 max-w-full" />
+              <div className="mt-3 app-skeleton h-28 w-full rounded-2xl" />
+            </div>
+          ))}
+        </div>
       </div>
-    </aside>
+    </section>
   );
 }
 
@@ -120,29 +212,66 @@ function LoadingReportCard() {
 
 function LoadingPlanCard() {
   return (
-    <article className="rounded-2xl border border-app-border bg-app-bg-elevated p-4">
-      <div className="flex flex-wrap items-start justify-between gap-4">
+    <article className="rounded-[20px] border border-app-border bg-app-surface px-3 py-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="space-y-2">
-          <div className="app-skeleton h-6 w-44" />
-          <div className="app-skeleton h-4 w-32" />
+          <div className="app-skeleton h-5 w-36" />
+          <div className="app-skeleton h-3.5 w-28" />
         </div>
-        <div className="flex gap-2">
-          <div className="app-skeleton h-7 w-20 rounded-full" />
-          <div className="app-skeleton h-7 w-24 rounded-full" />
-        </div>
+        <div className="app-skeleton h-7 w-20 rounded-full" />
       </div>
 
-      <div className="mt-4 app-skeleton h-4 w-full" />
-      <div className="mt-2 app-skeleton h-4 w-10/12" />
+      <div className="mt-2 app-skeleton h-3.5 w-full" />
+      <div className="mt-1.5 app-skeleton h-3.5 w-10/12" />
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="app-skeleton h-4 w-36" />
+      <div className="mt-3 flex flex-wrap gap-2">
+        <div className="app-skeleton h-5 w-24 rounded-full" />
+      </div>
+
+      <div className="mt-3 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <div className="app-skeleton h-11 w-40 rounded-2xl" />
-          <div className="app-skeleton h-10 w-24 rounded-2xl" />
+          <div className="app-skeleton h-6 w-6 rounded-full" />
+          <div className="app-skeleton h-3.5 w-20" />
         </div>
+        <div className="app-skeleton h-7 w-20 rounded-full" />
+      </div>
+
+      <div className="mt-2.5 flex items-center gap-1.5">
+        <div className="app-skeleton h-8 flex-1 rounded-xl" />
+        <div className="app-skeleton h-8 w-12 rounded-xl" />
       </div>
     </article>
+  );
+}
+
+function LoadingPlanBoardColumn({ collapsed = false }: { collapsed?: boolean }) {
+  return (
+    <section
+      className={`shrink-0 rounded-[24px] border border-app-border bg-app-bg-elevated p-2.5 ${
+        collapsed ? "w-[220px]" : "w-[272px]"
+      }`}
+    >
+      <div className="flex items-center justify-between gap-2 rounded-[18px] bg-white/70 px-2.5 py-2">
+        <div className="app-skeleton h-7 w-28 rounded-full" />
+        <div className="app-skeleton h-6 w-10 rounded-full" />
+      </div>
+
+      {collapsed ? (
+        <div className="mt-3 rounded-[20px] border border-dashed border-app-border bg-app-surface px-3 py-3">
+          <div className="flex items-center justify-between gap-3">
+            <div className="app-skeleton h-4 w-24" />
+            <div className="app-skeleton h-4 w-20" />
+          </div>
+          <div className="mt-3 app-skeleton h-5 w-11/12" />
+        </div>
+      ) : (
+        <div className="mt-3 space-y-3">
+          {Array.from({ length: 2 }).map((_, index) => (
+            <LoadingPlanCard key={index} />
+          ))}
+        </div>
+      )}
+    </section>
   );
 }
 
@@ -186,7 +315,11 @@ function LoadingPagination() {
 function DashboardRouteLoading({ title, description, stats = 4 }: RouteLoadingProps) {
   return (
     <div className="space-y-6">
-      <LoadingPageHeader title={title} description={description} actionWidth="w-36" />
+      <LoadingPageHeader
+        title={title}
+        description={description}
+        actionSkeletons={["h-10 w-36 rounded-2xl"]}
+      />
       <LoadingMetricGrid count={stats} />
 
       <div className="grid gap-6 xl:grid-cols-[1.15fr_minmax(0,0.85fr)]">
@@ -267,23 +400,24 @@ function DashboardRouteLoading({ title, description, stats = 4 }: RouteLoadingPr
 function ReportsRouteLoading({ title, description }: RouteLoadingProps) {
   return (
     <div className="space-y-6">
-      <LoadingPageHeader title={title} description={description} actionWidth="w-40" />
+      <LoadingPageHeader
+        title={title}
+        description={description}
+        actionSkeletons={["h-8 w-24 rounded-xl", "h-10 w-36 rounded-2xl"]}
+      />
+      <LoadingReportComposer />
 
-      <div className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
-        <LoadingFilterPanel fields={3} />
-
-        <section className="app-panel p-6">
-          <LoadingSectionHeading />
-          <div className="mt-6 space-y-4">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <LoadingReportCard key={index} />
-            ))}
-          </div>
-          <div className="mt-6">
-            <LoadingPagination />
-          </div>
-        </section>
-      </div>
+      <section className="app-panel p-4 md:p-5">
+        <LoadingSectionHeading />
+        <div className="mt-6 space-y-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <LoadingReportCard key={index} />
+          ))}
+        </div>
+        <div className="mt-6">
+          <LoadingPagination />
+        </div>
+      </section>
     </div>
   );
 }
@@ -291,23 +425,35 @@ function ReportsRouteLoading({ title, description }: RouteLoadingProps) {
 function PlansRouteLoading({ title, description, stats = 4 }: RouteLoadingProps) {
   return (
     <div className="space-y-6">
-      <LoadingPageHeader title={title} description={description} actionWidth="w-36" />
+      <LoadingPageHeader
+        title={title}
+        description={description}
+        actionSkeletons={["h-8 w-24 rounded-xl", "h-10 w-32 rounded-2xl"]}
+      />
       <LoadingMetricGrid count={stats} />
+      <LoadingPlanComposer />
 
-      <div className="grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">
-        <LoadingFilterPanel fields={3} />
+      <section className="app-panel p-4 md:p-5">
+        <div className="flex flex-col gap-3 border-b border-app-border pb-4 md:flex-row md:items-end md:justify-between">
+          <div className="space-y-2">
+            <div className="app-skeleton h-4 w-28" />
+            <div className="app-skeleton h-7 w-40" />
+            <div className="app-skeleton h-4 w-80 max-w-full" />
+          </div>
+          <div className="app-skeleton h-4 w-24" />
+        </div>
 
-        <section className="app-panel p-6">
-          <div className="space-y-4">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <LoadingPlanCard key={index} />
-            ))}
-          </div>
-          <div className="mt-6">
-            <LoadingPagination />
-          </div>
-        </section>
-      </div>
+        <div className="app-scroll-row mt-5">
+          <LoadingPlanBoardColumn />
+          <LoadingPlanBoardColumn />
+          <LoadingPlanBoardColumn />
+          <LoadingPlanBoardColumn collapsed />
+        </div>
+
+        <div className="mt-6">
+          <LoadingPagination />
+        </div>
+      </section>
     </div>
   );
 }
@@ -315,27 +461,11 @@ function PlansRouteLoading({ title, description, stats = 4 }: RouteLoadingProps)
 function EmployeesRouteLoading({ title, description }: RouteLoadingProps) {
   return (
     <div className="space-y-6">
-      <LoadingPageHeader title={title} description={description} actionWidth={null} />
-
-      <section className="app-panel p-6">
-        <div className="grid gap-4 md:grid-cols-4">
-          <div className="space-y-2 md:col-span-2">
-            <div className="app-skeleton h-4 w-20" />
-            <div className="app-skeleton h-11 w-full rounded-2xl" />
-          </div>
-          <div className="space-y-2">
-            <div className="app-skeleton h-4 w-16" />
-            <div className="app-skeleton h-11 w-full rounded-2xl" />
-          </div>
-          <div className="space-y-2">
-            <div className="app-skeleton h-4 w-20" />
-            <div className="app-skeleton h-11 w-full rounded-2xl" />
-          </div>
-          <div className="md:col-span-4">
-            <div className="app-skeleton h-10 w-28 rounded-2xl" />
-          </div>
-        </div>
-      </section>
+      <LoadingPageHeader
+        title={title}
+        description={description}
+        actionSkeletons={["h-8 w-24 rounded-xl"]}
+      />
 
       <section className="app-panel p-6">
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -355,7 +485,11 @@ function EmployeesRouteLoading({ title, description }: RouteLoadingProps) {
 function EmployeeProfileRouteLoading({ title, description, stats = 3 }: RouteLoadingProps) {
   return (
     <div className="space-y-6">
-      <LoadingPageHeader title={title} description={description} actionWidth="w-20" />
+      <LoadingPageHeader
+        title={title}
+        description={description}
+        actionSkeletons={["h-10 w-20 rounded-2xl"]}
+      />
       <LoadingMetricGrid count={stats} />
 
       <div className="grid gap-6 xl:grid-cols-[1.15fr_minmax(0,0.85fr)]">

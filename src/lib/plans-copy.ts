@@ -15,10 +15,17 @@ type PlansCopy = {
   create: {
     eyebrow: string;
     title: string;
+    description: string;
+    quickHint: string;
     openComposer: string;
     closeComposer: string;
+    details: string;
+    hideDetails: string;
   };
   filters: {
+    open: string;
+    title: string;
+    close: string;
     employee: string;
     status: string;
     priority: string;
@@ -29,20 +36,29 @@ type PlansCopy = {
     title: string;
     titlePlaceholder: string;
     description: string;
+    descriptionOptional: string;
     descriptionPlaceholder: string;
     assignee: string;
     assigneePlaceholder: string;
     dueDate: string;
     priority: string;
     initialStatus: string;
+    quickSubmit: string;
     submit: string;
     pending: string;
   };
   list: {
+    boardTitle: string;
+    boardDescription: string;
+    collapsedState: string;
+    expandColumn: string;
+    collapseColumn: string;
     assigneeMissing: string;
     noDescription: string;
     deadlinePrefix: string;
     noDeadline: string;
+    updatedPrefix: string;
+    emptyColumn: string;
     update: string;
     updating: string;
     emptyTitle: string;
@@ -72,10 +88,17 @@ const COPY: Record<AppLanguage, PlansCopy> = {
     create: {
       eyebrow: "Yangi vazifa",
       title: "Vazifa qo'shish",
+      description: "Sarlavha, ijrochi va deadline bilan vazifani bir necha soniyada yarating.",
+      quickHint: "ClickUp uslubida tez yarating: avval nom, keyin mas'ul va muhimlikni belgilang.",
       openComposer: "Vazifa qo'shish",
       closeComposer: "Yopish",
+      details: "Batafsil",
+      hideDetails: "Qisqartirish",
     },
     filters: {
+      open: "Filtrlash",
+      title: "Vazifalarni filtrlash",
+      close: "Yopish",
       employee: "Xodim",
       status: "Status",
       priority: "Prioritet",
@@ -84,22 +107,31 @@ const COPY: Record<AppLanguage, PlansCopy> = {
     },
     form: {
       title: "Vazifa nomi",
-      titlePlaceholder: "Masalan, Yangi hisobot oqimini tayyorlash",
+      titlePlaceholder: "Yozing...",
       description: "Tavsif",
-      descriptionPlaceholder: "Kutilayotgan natija, eslatmalar yoki kontekst.",
+      descriptionOptional: "Tavsif (ixtiyoriy)",
+      descriptionPlaceholder: "Yozing...",
       assignee: "Ijrochi",
       assigneePlaceholder: "Xodim tanlang",
       dueDate: "Deadline",
       priority: "Prioritet",
       initialStatus: "Boshlang'ich status",
+      quickSubmit: "Tez yaratish",
       submit: "Vazifani saqlash",
       pending: "Saqlanmoqda...",
     },
     list: {
+      boardTitle: "Vazifalar board",
+      boardDescription: "Status bo'yicha tez ko'ring va bir tegishda boshqa bosqichga o'tkazing.",
+      collapsedState: "Yopiq ko'rinish",
+      expandColumn: "Ochish",
+      collapseColumn: "Yopish",
       assigneeMissing: "Ijrochi topilmadi",
       noDescription: "Qo'shimcha tavsif berilmagan.",
       deadlinePrefix: "Deadline",
       noDeadline: "Deadline yo'q",
+      updatedPrefix: "Yangilandi",
+      emptyColumn: "Bu statusda vazifa yo'q.",
       update: "Yangilash",
       updating: "...",
       emptyTitle: "Vazifalar topilmadi",
@@ -127,10 +159,17 @@ const COPY: Record<AppLanguage, PlansCopy> = {
     create: {
       eyebrow: "Create task",
       title: "New task",
+      description: "Create a task in seconds with title, assignee, deadline, and status.",
+      quickHint: "Use the quick composer first, then expand details only when needed.",
       openComposer: "Create task",
       closeComposer: "Close",
+      details: "Details",
+      hideDetails: "Compact",
     },
     filters: {
+      open: "Filters",
+      title: "Filter tasks",
+      close: "Close",
       employee: "Employee",
       status: "Status",
       priority: "Priority",
@@ -139,22 +178,31 @@ const COPY: Record<AppLanguage, PlansCopy> = {
     },
     form: {
       title: "Task title",
-      titlePlaceholder: "For example, prepare the new report workflow",
+      titlePlaceholder: "Write...",
       description: "Description",
-      descriptionPlaceholder: "Expected outcome, notes, or context.",
+      descriptionOptional: "Description (optional)",
+      descriptionPlaceholder: "Write...",
       assignee: "Assignee",
       assigneePlaceholder: "Select an employee",
       dueDate: "Deadline",
       priority: "Priority",
       initialStatus: "Initial status",
+      quickSubmit: "Quick create",
       submit: "Save task",
       pending: "Saving...",
     },
     list: {
+      boardTitle: "Task board",
+      boardDescription: "Review by status and move work forward with one quick action.",
+      collapsedState: "Collapsed",
+      expandColumn: "Expand",
+      collapseColumn: "Collapse",
       assigneeMissing: "Assignee not found",
       noDescription: "No additional description provided.",
       deadlinePrefix: "Deadline",
       noDeadline: "No deadline",
+      updatedPrefix: "Updated",
+      emptyColumn: "No tasks in this status.",
       update: "Update",
       updating: "...",
       emptyTitle: "No tasks found",

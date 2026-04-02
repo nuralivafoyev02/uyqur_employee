@@ -177,6 +177,14 @@ export async function getReportsPageData(
     }
   } else {
     historyQuery = historyQuery.eq("employee_id", viewer.id);
+
+    if (isValidIsoDate(filters.date ?? "")) {
+      historyQuery = historyQuery.eq("report_date", filters.date!);
+    }
+
+    if (status) {
+      historyQuery = historyQuery.eq("status", status);
+    }
   }
 
   const [reportForEditorRes, employeesRes, historyRes] = await Promise.all([

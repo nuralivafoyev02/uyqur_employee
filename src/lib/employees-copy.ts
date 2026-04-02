@@ -4,6 +4,9 @@ type EmployeesCopy = {
   list: {
     header: { eyebrow: string; title: string; description: string };
     filters: {
+      open: string;
+      title: string;
+      close: string;
       search: string;
       searchPlaceholder: string;
       role: string;
@@ -67,6 +70,9 @@ const COPY: Record<AppLanguage, EmployeesCopy> = {
         description: "Qidiruv, filter va individual activity history ko'rinishi.",
       },
       filters: {
+        open: "Filtrlash",
+        title: "Xodimlarni filtrlash",
+        close: "Yopish",
         search: "Qidiruv",
         searchPlaceholder: "Ism, lavozim, status yoki bo'lim",
         role: "Role",
@@ -128,6 +134,9 @@ const COPY: Record<AppLanguage, EmployeesCopy> = {
         description: "Search, filters, and individual activity history.",
       },
       filters: {
+        open: "Filters",
+        title: "Filter employees",
+        close: "Close",
         search: "Search",
         searchPlaceholder: "Name, title, status, or department",
         role: "Role",
