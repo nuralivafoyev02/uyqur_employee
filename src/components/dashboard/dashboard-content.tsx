@@ -286,134 +286,134 @@ export function DashboardContent({
   });
   const summaryMetrics: OverviewStat[] = isLeadView
     ? [
-        {
-          label: copy.highlights.totalEmployees.label,
-          value: data.metrics.totalEmployees,
-          helper: copy.highlights.totalEmployees.helper,
-        },
-        {
-          label: copy.highlights.submittedToday.label,
-          value: data.metrics.submittedToday,
-          helper: copy.highlights.submittedToday.helper,
-          tone: "success",
-        },
-        {
-          label: copy.highlights.pendingToday.label,
-          value: data.metrics.pendingToday,
-          helper: copy.highlights.pendingToday.helper,
-          tone: data.metrics.pendingToday > 0 ? "warning" : "neutral",
-        },
-        {
-          label: copy.highlights.blockedToday.label,
-          value: data.metrics.blockedToday,
-          helper: copy.highlights.blockedToday.helper,
-          tone: data.metrics.blockedToday > 0 ? "danger" : "neutral",
-        },
-        {
-          label: copy.highlights.overduePlans.label,
-          value: data.metrics.overduePlans,
-          helper: copy.highlights.overduePlans.helper,
-          tone: data.metrics.overduePlans > 0 ? "danger" : "neutral",
-        },
-      ]
+      {
+        label: copy.highlights.totalEmployees.label,
+        value: data.metrics.totalEmployees,
+        helper: copy.highlights.totalEmployees.helper,
+      },
+      {
+        label: copy.highlights.submittedToday.label,
+        value: data.metrics.submittedToday,
+        helper: copy.highlights.submittedToday.helper,
+        tone: "success",
+      },
+      {
+        label: copy.highlights.pendingToday.label,
+        value: data.metrics.pendingToday,
+        helper: copy.highlights.pendingToday.helper,
+        tone: data.metrics.pendingToday > 0 ? "warning" : "neutral",
+      },
+      {
+        label: copy.highlights.blockedToday.label,
+        value: data.metrics.blockedToday,
+        helper: copy.highlights.blockedToday.helper,
+        tone: data.metrics.blockedToday > 0 ? "danger" : "neutral",
+      },
+      {
+        label: copy.highlights.overduePlans.label,
+        value: data.metrics.overduePlans,
+        helper: copy.highlights.overduePlans.helper,
+        tone: data.metrics.overduePlans > 0 ? "danger" : "neutral",
+      },
+    ]
     : [
-        {
-          label: copy.highlights.myReport.label,
-          value: data.ownTodayReport
-            ? copy.highlights.myReport.ready
-            : copy.highlights.myReport.missing,
-          helper: data.ownTodayReport
-            ? formatDateTime(data.ownTodayReport.updated_at, language)
-            : copy.focus.emptyDescription,
-          tone: data.ownTodayReport ? "success" : "warning",
-        },
-        {
-          label: copy.highlights.myOpenPlans.label,
-          value: data.ownPlanMetrics.active,
-          helper: copy.highlights.myOpenPlans.helper,
-        },
-        {
-          label: copy.highlights.dueSoon.label,
-          value: data.ownPlanMetrics.dueSoon,
-          helper: copy.highlights.dueSoon.helper,
-          tone: data.ownPlanMetrics.dueSoon > 0 ? "warning" : "neutral",
-        },
-        {
-          label: copy.highlights.myBlocked.label,
-          value: data.ownPlanMetrics.blocked,
-          helper: copy.highlights.myBlocked.helper,
-          tone: data.ownPlanMetrics.blocked > 0 ? "danger" : "neutral",
-        },
-        {
-          label: copy.highlights.teamCoverage.label,
-          value: `${data.metrics.submissionRate}%`,
-          helper: copy.highlights.teamCoverage.helper(data.metrics.submissionRate),
-          tone: data.metrics.submissionRate >= 80 ? "success" : "info",
-        },
-      ];
+      {
+        label: copy.highlights.myReport.label,
+        value: data.ownTodayReport
+          ? copy.highlights.myReport.ready
+          : copy.highlights.myReport.missing,
+        helper: data.ownTodayReport
+          ? formatDateTime(data.ownTodayReport.updated_at, language)
+          : copy.focus.emptyDescription,
+        tone: data.ownTodayReport ? "success" : "warning",
+      },
+      {
+        label: copy.highlights.myOpenPlans.label,
+        value: data.ownPlanMetrics.active,
+        helper: copy.highlights.myOpenPlans.helper,
+      },
+      {
+        label: copy.highlights.dueSoon.label,
+        value: data.ownPlanMetrics.dueSoon,
+        helper: copy.highlights.dueSoon.helper,
+        tone: data.ownPlanMetrics.dueSoon > 0 ? "warning" : "neutral",
+      },
+      {
+        label: copy.highlights.myBlocked.label,
+        value: data.ownPlanMetrics.blocked,
+        helper: copy.highlights.myBlocked.helper,
+        tone: data.ownPlanMetrics.blocked > 0 ? "danger" : "neutral",
+      },
+      {
+        label: copy.highlights.teamCoverage.label,
+        value: `${data.metrics.submissionRate}%`,
+        helper: copy.highlights.teamCoverage.helper(data.metrics.submissionRate),
+        tone: data.metrics.submissionRate >= 80 ? "success" : "info",
+      },
+    ];
   const planFeed = isLeadView ? data.activePlans : data.ownActivePlans;
   const reportFeed = isLeadView ? data.latestReports : data.ownRecentReports;
   const heroSummary = isLeadView
     ? copy.hero.leadSummary(
-        data.metrics.submittedToday,
-        data.metrics.totalEmployees,
-        data.metrics.pendingToday,
-        data.metrics.blockedToday,
-        data.metrics.openPlans,
-      )
+      data.metrics.submittedToday,
+      data.metrics.totalEmployees,
+      data.metrics.pendingToday,
+      data.metrics.blockedToday,
+      data.metrics.openPlans,
+    )
     : copy.hero.employeeSummary(
-        data.metrics.submittedToday,
-        data.metrics.totalEmployees,
-        data.ownPlanMetrics.active,
-        data.ownPlanMetrics.dueSoon,
-      );
+      data.metrics.submittedToday,
+      data.metrics.totalEmployees,
+      data.ownPlanMetrics.active,
+      data.ownPlanMetrics.dueSoon,
+    );
   const actionTiles = isLeadView
     ? [
-        {
-          href: "/reports",
-          title: copy.quickActions.reports.title,
-          description: copy.quickActions.reports.description,
-          icon: <ReportsIcon className="h-4 w-4" />,
-        },
-        {
-          href: "/plans",
-          title: copy.quickActions.plans.title,
-          description: copy.quickActions.plans.description,
-          icon: <PlansIcon className="h-4 w-4" />,
-        },
-        {
-          href: "/employees",
-          title: copy.quickActions.employees.title,
-          description: copy.quickActions.employees.description,
-          icon: <EmployeesIcon className="h-4 w-4" />,
-        },
-        {
-          href: "/settings",
-          title: copy.quickActions.settings.title,
-          description: copy.quickActions.settings.description,
-          icon: <SettingsIcon className="h-4 w-4" />,
-        },
-      ]
+      {
+        href: "/reports",
+        title: copy.quickActions.reports.title,
+        description: copy.quickActions.reports.description,
+        icon: <ReportsIcon className="h-4 w-4" />,
+      },
+      {
+        href: "/plans",
+        title: copy.quickActions.plans.title,
+        description: copy.quickActions.plans.description,
+        icon: <PlansIcon className="h-4 w-4" />,
+      },
+      {
+        href: "/employees",
+        title: copy.quickActions.employees.title,
+        description: copy.quickActions.employees.description,
+        icon: <EmployeesIcon className="h-4 w-4" />,
+      },
+      {
+        href: "/settings",
+        title: copy.quickActions.settings.title,
+        description: copy.quickActions.settings.description,
+        icon: <SettingsIcon className="h-4 w-4" />,
+      },
+    ]
     : [
-        {
-          href: "/reports",
-          title: copy.quickActions.reports.title,
-          description: copy.quickActions.reports.description,
-          icon: <ReportsIcon className="h-4 w-4" />,
-        },
-        {
-          href: "/plans",
-          title: copy.quickActions.plans.title,
-          description: copy.quickActions.plans.description,
-          icon: <PlansIcon className="h-4 w-4" />,
-        },
-        {
-          href: "/settings",
-          title: copy.quickActions.settings.title,
-          description: copy.quickActions.settings.description,
-          icon: <SettingsIcon className="h-4 w-4" />,
-        },
-      ];
+      {
+        href: "/reports",
+        title: copy.quickActions.reports.title,
+        description: copy.quickActions.reports.description,
+        icon: <ReportsIcon className="h-4 w-4" />,
+      },
+      {
+        href: "/plans",
+        title: copy.quickActions.plans.title,
+        description: copy.quickActions.plans.description,
+        icon: <PlansIcon className="h-4 w-4" />,
+      },
+      {
+        href: "/settings",
+        title: copy.quickActions.settings.title,
+        description: copy.quickActions.settings.description,
+        icon: <SettingsIcon className="h-4 w-4" />,
+      },
+    ];
 
   function openReportDetail(report: ReportFeedItem | DashboardData["ownRecentReports"][number]) {
     if (detailCloseTimeoutRef.current !== null) {
@@ -424,26 +424,26 @@ export function DashboardContent({
     const normalized: ReportDetailItem =
       "completedWork" in report
         ? {
-            employeeName: report.employee?.full_name,
-            employeeTitle: report.employee?.title,
-            employeeProfileStatus: report.employee?.profile_status,
-            reportDate: report.reportDate,
-            updatedAt: report.updatedAt,
-            status: report.status,
-            completedWork: report.completedWork,
-            currentWork: report.currentWork,
-            nextPlan: report.nextPlan,
-            blockers: report.blockers,
-          }
+          employeeName: report.employee?.full_name,
+          employeeTitle: report.employee?.title,
+          employeeProfileStatus: report.employee?.profile_status,
+          reportDate: report.reportDate,
+          updatedAt: report.updatedAt,
+          status: report.status,
+          completedWork: report.completedWork,
+          currentWork: report.currentWork,
+          nextPlan: report.nextPlan,
+          blockers: report.blockers,
+        }
         : {
-            reportDate: report.report_date,
-            updatedAt: report.updated_at,
-            status: report.status,
-            completedWork: report.completed_work,
-            currentWork: report.current_work,
-            nextPlan: report.next_plan,
-            blockers: report.blockers,
-          };
+          reportDate: report.report_date,
+          updatedAt: report.updated_at,
+          status: report.status,
+          completedWork: report.completed_work,
+          currentWork: report.current_work,
+          nextPlan: report.next_plan,
+          blockers: report.blockers,
+        };
 
     setSelectedReport(normalized);
     setIsDetailOpen(true);

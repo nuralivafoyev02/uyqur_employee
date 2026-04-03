@@ -12,11 +12,11 @@ import {
 
 export const metadata: Metadata = {
   title: {
-    default: "Uyqur Employee Tracking",
-    template: "%s | Uyqur Employee Tracking",
+    default: "Uyqur Support ERP",
+    template: "%s | Uyqur Support ERP",
   },
   description:
-    "Ichki employee tracking tizimi: hisobotlar, rejalar va boshqaruv ko'rinishi.",
+    "Uyqur Support ERP - Ichki employee tracking tizimi: hisobotlar, rejalar va boshqaruv ko'rinishi.",
 };
 
 const themeInitScript = `
