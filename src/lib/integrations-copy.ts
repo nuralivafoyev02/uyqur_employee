@@ -75,7 +75,7 @@ const COPY: Record<AppLanguage, IntegrationsCopy> = {
       "Faol ulanishlar umumiy navigatsiyada chiqadi va barcha foydalanuvchilar integration sahifasini ko'ra oladi.",
     connectedEmptyTitle: "Hali faol integratsiya yo'q",
     connectedEmptyDescription:
-      "Avval biror servisni ulab ko'ring, shunda u umumiy aside ichida paydo bo'ladi.",
+      "Avval biror servisni ulab ko'ring, shunda u umumiy chap menu ichida paydo bo'ladi.",
     manageHint: "API credential va mapping ma'lumotlarini admin yoki manager boshqaradi.",
     readOnlyHint: "Siz bu yerda faqat faol integratsiyalarni ko'ra olasiz.",
     themeLanguageHint:
@@ -86,7 +86,7 @@ const COPY: Record<AppLanguage, IntegrationsCopy> = {
     secureStorageLabel: "Maxfiy credential",
     secureStorageDescription:
       "API key va tokenlar alohida xavfsiz qatlamda saqlanadi va foydalanuvchilarga ko'rsatilmaydi.",
-    sidebarHint: "Ulanganidan keyin aside ichida alohida bo'lim chiqadi.",
+    sidebarHint: "Ulanganidan keyin chap menu ichida alohida bo'lim chiqadi.",
     connectedAtLabel: "Ulandi",
     updatedAtLabel: "Yangilandi",
     statusLabel: "Status",

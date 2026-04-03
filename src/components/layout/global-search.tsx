@@ -40,6 +40,13 @@ export function GlobalSearch() {
   const [isLoading, setIsLoading] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [os, setOs] = useState<"mac" | "windows" | null>(null);
+
+  useEffect(() => {
+    if (typeof navigator !== "undefined") {
+      setOs(navigator.userAgent.toLowerCase().includes("mac") ? "mac" : "windows");
+    }
+  }, []);
 
   useEffect(() => {
     function handlePointerDown(event: PointerEvent) {
@@ -56,13 +63,14 @@ export function GlobalSearch() {
         target instanceof HTMLSelectElement ||
         target?.isContentEditable;
 
-      if (event.key === "/" && !event.metaKey && !event.ctrlKey && !event.altKey && !isTypingTarget) {
+      if ((event.metaKey || event.ctrlKey) && (event.key.toLowerCase() === "k" || event.key.toLowerCase() === "л")) {
         event.preventDefault();
         inputRef.current?.focus();
       }
 
       if (event.key === "Escape") {
         setIsFocused(false);
+        inputRef.current?.blur();
       }
     }
 
@@ -225,20 +233,37 @@ export function GlobalSearch() {
           placeholder={copy.shell.search.placeholder}
           aria-label={copy.shell.search.placeholder}
         />
-        {query ? (
-          <button
-            type="button"
-            className="inline-flex h-7 w-7 items-center justify-center rounded-full text-app-text-subtle transition hover:bg-app-surface-muted hover:text-app-text"
-            aria-label={copy.shell.search.clear}
-            onClick={() => {
-              setQuery("");
-              setResults([]);
-              inputRef.current?.focus();
-            }}
-          >
-            <CloseIcon className="h-4 w-4" />
-          </button>
-        ) : null}
+        <div className="flex items-center gap-1.5">
+          {query ? (
+            <button
+              type="button"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-full text-app-text-subtle transition hover:bg-app-surface-muted hover:text-app-text"
+              aria-label={copy.shell.search.clear}
+              onClick={() => {
+                setQuery("");
+                setResults([]);
+                inputRef.current?.focus();
+              }}
+            >
+              <CloseIcon className="h-4 w-4" />
+            </button>
+          ) : null}
+
+          <div className="pointer-events-none flex h-5 select-none items-center gap-0.5 rounded-[4px] border border-app-border bg-app-surface-muted px-1.5 text-[10px] font-medium text-app-text-subtle shadow-sm transition">
+            {isFocused ? (
+              <span className="uppercase tracking-wider">Esc</span>
+            ) : os === "mac" ? (
+              <span className="flex items-center gap-0.5">
+                <span className="font-sans text-[11px] leading-none">⌘</span>
+                <span>K</span>
+              </span>
+            ) : os === "windows" ? (
+              <span>Ctrl K</span>
+            ) : (
+              <span className="w-6" />
+            )}
+          </div>
+        </div>
       </div>
 
       {isPanelOpen ? (
