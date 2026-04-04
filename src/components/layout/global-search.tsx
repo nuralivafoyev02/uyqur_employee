@@ -221,7 +221,7 @@ export function GlobalSearch() {
   }
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-[460px]">
+    <div ref={containerRef} className="relative w-full max-w-none lg:max-w-[460px]">
       <div className="flex h-11 items-center gap-2 rounded-full border border-app-border bg-app-bg-elevated px-3 shadow-[0_1px_2px_rgba(16,24,40,0.04)] transition focus-within:border-app-border-strong focus-within:bg-app-surface">
         <SearchIcon className="h-4 w-4 text-app-text-subtle" />
         <input
@@ -229,7 +229,7 @@ export function GlobalSearch() {
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           onFocus={() => setIsFocused(true)}
-          className="h-full min-w-0 flex-1 bg-transparent text-[13px] text-app-text outline-none placeholder:text-app-text-subtle"
+          className="h-full min-w-0 flex-1 bg-transparent text-[16px] text-app-text outline-none placeholder:text-app-text-subtle sm:text-[13px]"
           placeholder={copy.shell.search.placeholder}
           aria-label={copy.shell.search.placeholder}
         />
@@ -249,7 +249,7 @@ export function GlobalSearch() {
             </button>
           ) : null}
 
-          <div className="pointer-events-none flex h-5 select-none items-center gap-0.5 rounded-[4px] border border-app-border bg-app-surface-muted px-1.5 text-[10px] font-medium text-app-text-subtle shadow-sm transition">
+          <div className="pointer-events-none hidden h-5 select-none items-center gap-0.5 rounded-[4px] border border-app-border bg-app-surface-muted px-1.5 text-[10px] font-medium text-app-text-subtle shadow-sm transition sm:flex">
             {isFocused ? (
               <span className="uppercase tracking-wider">Esc</span>
             ) : os === "mac" ? (
@@ -268,8 +268,8 @@ export function GlobalSearch() {
 
       {isPanelOpen ? (
         <div
-          data-state={isPanelOpen ? "open" : "closed"}
-          className="app-popover-panel absolute inset-x-0 top-[calc(100%+10px)] z-40 rounded-[24px] border border-app-border bg-app-surface p-3 shadow-[0_18px_48px_rgba(16,24,40,0.14)]"
+        data-state={isPanelOpen ? "open" : "closed"}
+          className="app-popover-panel absolute inset-x-0 top-[calc(100%+10px)] z-40 max-h-[min(60vh,28rem)] overflow-y-auto rounded-[24px] border border-app-border bg-app-surface p-3 shadow-[0_18px_48px_rgba(16,24,40,0.14)]"
         >
           <div className="max-h-[min(70vh,560px)] overflow-y-auto pr-1">
             {deferredQuery.length < 2 ? (

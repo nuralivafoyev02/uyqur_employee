@@ -52,9 +52,9 @@ export const INTEGRATION_PROVIDERS: IntegrationProviderDefinition[] = [
       ru: "Готово для синхронизации досок, списков и рабочих процессов.",
     },
     description: {
-      uz: "ClickUp workspace va API key ulab, keyinchalik task oqimlarini ikki tomonga sinxronlash mumkin bo'ladi.",
-      en: "Connect a ClickUp workspace and API key to prepare for future two-way task sync.",
-      ru: "Подключите workspace ClickUp и API key, чтобы подготовить будущую двустороннюю синхронизацию задач.",
+      uz: "ClickUp workspace va API key ulab, ulanishni darhol tekshirib, keyingi task sync uchun tayyorlab qo'yish mumkin.",
+      en: "Connect a ClickUp workspace and API key, validate the connection immediately, and prepare for future task sync.",
+      ru: "Подключите workspace ClickUp и API key, сразу проверьте соединение и подготовьте интеграцию к будущей синхронизации задач.",
     },
     capabilities: [
       {
@@ -89,6 +89,11 @@ export const INTEGRATION_PROVIDERS: IntegrationProviderDefinition[] = [
           en: "For example, team_12345",
           ru: "Например, team_12345",
         },
+        helper: {
+          uz: "ClickUp API'da team_id Workspace ID bilan bir xil ishlatiladi.",
+          en: "In the ClickUp API, team_id is the same value as your Workspace ID.",
+          ru: "В API ClickUp team_id использует то же значение, что и Workspace ID.",
+        },
       },
       {
         key: "spaceId",
@@ -104,6 +109,11 @@ export const INTEGRATION_PROVIDERS: IntegrationProviderDefinition[] = [
           uz: "Masalan, space_87",
           en: "For example, space_87",
           ru: "Например, space_87",
+        },
+        helper: {
+          uz: "Ixtiyoriy. Agar vazifalarni bitta Space bilan bog'lamoqchi bo'lsangiz, default Space ID kiriting.",
+          en: "Optional. Add a default Space ID if future task sync should target one ClickUp Space.",
+          ru: "Необязательно. Укажите Space ID по умолчанию, если будущая синхронизация задач должна идти в один Space.",
         },
       },
       {
@@ -121,6 +131,11 @@ export const INTEGRATION_PROVIDERS: IntegrationProviderDefinition[] = [
           uz: "ClickUp API key kiriting",
           en: "Enter the ClickUp API key",
           ru: "Введите ClickUp API key",
+        },
+        helper: {
+          uz: "Saqlash vaqtida API key va Workspace kirish huquqi ClickUp API orqali tekshiriladi.",
+          en: "The API key and Workspace access are verified against the ClickUp API when you save.",
+          ru: "При сохранении API key и доступ к Workspace проверяются через ClickUp API.",
         },
       },
     ],

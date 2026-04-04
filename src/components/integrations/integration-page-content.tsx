@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 
+import { ClickUpTestButton } from "@/components/integrations/clickup-test-button";
 import { IntegrationProviderBadge } from "@/components/integrations/provider-icon";
 import { TelegramDigestPanel } from "@/components/integrations/telegram-digest-panel";
 import { TelegramTestButton } from "@/components/integrations/telegram-test-button";
@@ -22,24 +23,26 @@ import { formatDateTime } from "@/lib/utils";
 import type { ActionState } from "@/lib/validations";
 
 type IntegrationPageContentProps = {
-  canManageTelegram: boolean;
+  canManageConnection: boolean;
   canSendPersonalCompletedPlans: boolean;
   connection: ActiveIntegrationSummary;
   disconnectAction: (formData: FormData) => Promise<ActionState<string>>;
   personalCompletedPlans: TodayCompletedPlansPreviewData | null;
   sendCompletedPlansToTelegramAction?: (formData: FormData) => Promise<ActionState<string>>;
+  testClickUpConnectionAction?: (formData: FormData) => Promise<ActionState<string>>;
   sendTelegramDigestAction?: (formData: FormData) => Promise<ActionState<string>>;
   sendTelegramTestAction?: (formData: FormData) => Promise<ActionState<string>>;
   telegramDigestOverview: TelegramDigestOverview | null;
 };
 
 export function IntegrationPageContent({
-  canManageTelegram,
+  canManageConnection,
   canSendPersonalCompletedPlans,
   connection,
   disconnectAction,
   personalCompletedPlans,
   sendCompletedPlansToTelegramAction,
+  testClickUpConnectionAction,
   sendTelegramDigestAction,
   sendTelegramTestAction,
   telegramDigestOverview,
@@ -74,19 +77,22 @@ export function IntegrationPageContent({
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center md:justify-end">
             <Badge tone="success">{copy.connectedStatus}</Badge>
-            {connection.provider === "telegram" && sendTelegramTestAction && canManageTelegram ? (
+            {connection.provider === "telegram" && sendTelegramTestAction && canManageConnection ? (
               <TelegramTestButton action={sendTelegramTestAction} />
+            ) : null}
+            {connection.provider === "clickup" && testClickUpConnectionAction && canManageConnection ? (
+              <ClickUpTestButton action={testClickUpConnectionAction} />
             ) : null}
             <IntegrationDisconnectButton
               action={disconnectAction}
               provider={connection.provider}
-              className="app-button-secondary px-3 py-2 text-xs text-rose-600"
+              className="app-button-secondary w-full px-3 py-2 text-xs text-rose-600 sm:w-auto"
             />
             <Link
               href="/settings?section=integrations"
-              className="app-button-secondary gap-2 px-3 py-2 text-xs"
+              className="app-button-secondary w-full gap-2 px-3 py-2 text-xs sm:w-auto"
             >
               <span>{copy.pageBackToSettings}</span>
               <ArrowRightIcon className="h-4 w-4" />
@@ -94,7 +100,7 @@ export function IntegrationPageContent({
           </div>
         </div>
 
-        <div className="mt-5 grid gap-4 xl:grid-cols-[minmax(0,0.85fr)_minmax(420px,1.15fr)] xl:items-end">
+        <div className="mt-5 grid gap-4 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] xl:items-end">
           <div className="flex flex-wrap gap-2 xl:self-end">
             <div className="rounded-full border border-app-border bg-app-bg-elevated px-3 py-1.5 text-[12px] font-medium text-app-text-muted">
               {copy.connectedAtLabel}: {formatDateTime(connection.createdAt, language)}
@@ -145,10 +151,10 @@ export function IntegrationPageContent({
         />
       ) : null}
 
-      {connection.provider === "telegram" && canManageTelegram && sendTelegramDigestAction ? (
+      {connection.provider === "telegram" && canManageConnection && sendTelegramDigestAction ? (
         <TelegramDigestPanel
           action={sendTelegramDigestAction}
-          canManage={canManageTelegram}
+          canManage={canManageConnection}
           overview={telegramDigestOverview}
         />
       ) : null}

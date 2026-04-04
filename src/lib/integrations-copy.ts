@@ -33,6 +33,8 @@ type IntegrationsCopy = {
   disconnecting: string;
   testMessage: string;
   testingMessage: string;
+  testConnection: string;
+  testingConnection: string;
   required: string;
   optional: string;
   privateField: string;
@@ -59,6 +61,14 @@ type IntegrationsCopy = {
     telegramTestSent: string;
     telegramConfigMissing: string;
     telegramOnly: string;
+    clickUpOnly: string;
+    clickUpSaved: string;
+    clickUpReady: string;
+    clickUpConfigMissing: string;
+    clickUpInvalidApiKey: string;
+    clickUpWorkspaceMissing: string;
+    clickUpSpaceMissing: string;
+    clickUpValidationFailed: string;
     connectionSaved: (providerName: string) => string;
     disconnected: (providerName: string) => string;
     requiredField: (fieldLabel: string) => string;
@@ -106,6 +116,8 @@ const COPY: Record<AppLanguage, IntegrationsCopy> = {
     disconnecting: "Uzilmoqda...",
     testMessage: "Test xabar yuborish",
     testingMessage: "Yuborilmoqda...",
+    testConnection: "Ulanishni tekshirish",
+    testingConnection: "Tekshirilmoqda...",
     required: "Majburiy",
     optional: "Ixtiyoriy",
     privateField: "Maxfiy",
@@ -143,6 +155,14 @@ const COPY: Record<AppLanguage, IntegrationsCopy> = {
       telegramTestSent: "Telegramga test xabar yuborildi.",
       telegramConfigMissing: "Telegram bot token yoki chat ID topilmadi.",
       telegramOnly: "Test xabar faqat Telegram integratsiyasi uchun mavjud.",
+      clickUpOnly: "Bu amal faqat ClickUp integratsiyasi uchun mavjud.",
+      clickUpSaved: "ClickUp integratsiyasi saqlandi va ulanish tekshirildi.",
+      clickUpReady: "ClickUp ulanishi tekshirildi, integratsiya tayyor.",
+      clickUpConfigMissing: "ClickUp workspace ID yoki API key topilmadi.",
+      clickUpInvalidApiKey: "ClickUp API key noto'g'ri yoki bu workspace uchun ruxsat yetarli emas.",
+      clickUpWorkspaceMissing: "Berilgan ClickUp Workspace ID topilmadi yoki token bu workspace'ga kira olmaydi.",
+      clickUpSpaceMissing: "Berilgan ClickUp Space ID topilmadi yoki tanlangan workspace ichida emas.",
+      clickUpValidationFailed: "ClickUp ulanishini tekshirishda xatolik yuz berdi.",
       connectionSaved: (providerName: string) => `${providerName} integratsiyasi saqlandi.`,
       disconnected: (providerName: string) => `${providerName} integratsiyasi uzildi.`,
       requiredField: (fieldLabel: string) => `${fieldLabel} maydonini to'ldiring.`,
@@ -188,6 +208,8 @@ const COPY: Record<AppLanguage, IntegrationsCopy> = {
     disconnecting: "Disconnecting...",
     testMessage: "Send test message",
     testingMessage: "Sending...",
+    testConnection: "Test connection",
+    testingConnection: "Checking...",
     required: "Required",
     optional: "Optional",
     privateField: "Private",
@@ -225,6 +247,14 @@ const COPY: Record<AppLanguage, IntegrationsCopy> = {
       telegramTestSent: "A Telegram test message was sent.",
       telegramConfigMissing: "The Telegram bot token or chat ID is missing.",
       telegramOnly: "Test messages are only available for the Telegram integration.",
+      clickUpOnly: "This action is only available for the ClickUp integration.",
+      clickUpSaved: "The ClickUp integration was saved and the connection was verified.",
+      clickUpReady: "The ClickUp connection was verified and is ready.",
+      clickUpConfigMissing: "The ClickUp workspace ID or API key is missing.",
+      clickUpInvalidApiKey: "The ClickUp API key is invalid or does not have enough access for this workspace.",
+      clickUpWorkspaceMissing: "The provided ClickUp Workspace ID was not found or the token cannot access it.",
+      clickUpSpaceMissing: "The provided ClickUp Space ID was not found or does not belong to the selected workspace.",
+      clickUpValidationFailed: "The ClickUp connection check failed.",
       connectionSaved: (providerName: string) => `${providerName} integration saved.`,
       disconnected: (providerName: string) => `${providerName} integration disconnected.`,
       requiredField: (fieldLabel: string) => `Please fill in ${fieldLabel}.`,
@@ -270,6 +300,8 @@ const COPY: Record<AppLanguage, IntegrationsCopy> = {
     disconnecting: "Отключение...",
     testMessage: "Отправить тест",
     testingMessage: "Отправка...",
+    testConnection: "Проверить соединение",
+    testingConnection: "Проверка...",
     required: "Обязательно",
     optional: "Опционально",
     privateField: "Секретно",
@@ -307,6 +339,14 @@ const COPY: Record<AppLanguage, IntegrationsCopy> = {
       telegramTestSent: "Тестовое сообщение отправлено в Telegram.",
       telegramConfigMissing: "Не найден bot token или chat ID Telegram.",
       telegramOnly: "Тестовое сообщение доступно только для интеграции Telegram.",
+      clickUpOnly: "Это действие доступно только для интеграции ClickUp.",
+      clickUpSaved: "Интеграция ClickUp сохранена и соединение проверено.",
+      clickUpReady: "Соединение ClickUp проверено и готово к работе.",
+      clickUpConfigMissing: "Не найден Workspace ID или API key ClickUp.",
+      clickUpInvalidApiKey: "API key ClickUp неверный или у него недостаточно прав для этого workspace.",
+      clickUpWorkspaceMissing: "Указанный Workspace ID ClickUp не найден или токен не имеет к нему доступа.",
+      clickUpSpaceMissing: "Указанный Space ID ClickUp не найден или не относится к выбранному workspace.",
+      clickUpValidationFailed: "Не удалось проверить соединение с ClickUp.",
       connectionSaved: (providerName: string) => `Интеграция ${providerName} сохранена.`,
       disconnected: (providerName: string) => `Интеграция ${providerName} отключена.`,
       requiredField: (fieldLabel: string) => `Заполните поле ${fieldLabel}.`,

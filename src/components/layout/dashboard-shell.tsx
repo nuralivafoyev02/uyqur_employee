@@ -642,13 +642,13 @@ export function DashboardShell({
   }, [pathname]);
 
   return (
-    <div className="h-screen overflow-hidden">
+    <div className="h-dvh min-h-dvh overflow-hidden">
       <div
-        className="mx-auto grid h-screen w-full transition-[grid-template-columns] duration-300 ease-out lg:grid-cols-[var(--sidebar-width)_minmax(0,1fr)]"
+        className="mx-auto grid h-dvh min-h-dvh w-full transition-[grid-template-columns] duration-300 ease-out lg:grid-cols-[var(--sidebar-width)_minmax(0,1fr)]"
         style={desktopLayoutStyle}
       >
         <aside
-          className="hidden h-screen border-r border-app-border bg-app-surface px-4 py-6 backdrop-blur lg:flex lg:flex-col"
+          className="hidden h-dvh min-h-dvh border-r border-app-border bg-app-surface px-4 py-6 backdrop-blur lg:flex lg:flex-col"
         >
           <Link
             href="/dashboard"
@@ -703,13 +703,13 @@ export function DashboardShell({
           </div>
         </aside>
 
-        <div className="flex h-screen min-h-0 flex-col overflow-hidden w-full">
+        <div className="flex h-dvh min-h-0 w-full flex-col overflow-hidden">
           <header className="border-b border-app-border bg-app-surface backdrop-blur">
             <div className="app-shell grid gap-3 py-3 lg:grid-cols-[minmax(0,1fr)_minmax(320px,460px)_auto] lg:items-center">
               <div className="min-w-0 lg:pr-4">
                 <Link
                   href="/dashboard"
-                  className="text-sm font-semibold tracking-[0.18em] text-app-text lg:hidden"
+                  className="truncate text-sm font-semibold tracking-[0.18em] text-app-text lg:hidden"
                 >
                   Uyqur Support
                 </Link>
@@ -746,7 +746,7 @@ export function DashboardShell({
               </div>
 
               <div className="flex items-center justify-end gap-2 lg:justify-self-end">
-                <details className="rounded-2xl border border-app-border bg-app-bg-elevated px-4 py-3 lg:hidden">
+                <details className="min-w-0 flex-1 rounded-2xl border border-app-border bg-app-bg-elevated px-4 py-3 sm:flex-none lg:hidden">
                   <summary className="cursor-pointer text-sm font-medium text-app-text">
                     {copy.shell.menuAndProfile}
                   </summary>
@@ -761,7 +761,9 @@ export function DashboardShell({
           </header>
 
           <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-            <div className="app-shell min-h-full py-6">{children}</div>
+            <div className="app-shell min-h-full py-5 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] md:py-6">
+              {children}
+            </div>
           </main>
         </div>
       </div>

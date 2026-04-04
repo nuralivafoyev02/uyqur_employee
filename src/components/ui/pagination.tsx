@@ -39,15 +39,15 @@ export function Pagination({
   }
 
   return (
-    <div className="flex items-center justify-between border-t border-app-border pt-4">
+    <div className="flex flex-col gap-3 border-t border-app-border pt-4 sm:flex-row sm:items-center sm:justify-between">
       <p className="text-sm text-app-text-muted">
         {summaryLabel ?? `Sahifa ${page} / ${pageCount}`}
       </p>
-      <div className="flex items-center gap-2">
+      <div className="flex w-full items-center gap-2 sm:w-auto">
         <Link
           href={buildHref(pathname, Math.max(1, page - 1), query)}
           className={cx(
-            "app-button-secondary px-3 py-2",
+            "app-button-secondary flex-1 px-3 py-2 sm:flex-none",
             page <= 1 && "pointer-events-none opacity-50",
           )}
         >
@@ -56,7 +56,7 @@ export function Pagination({
         <Link
           href={buildHref(pathname, Math.min(pageCount, page + 1), query)}
           className={cx(
-            "app-button-secondary px-3 py-2",
+            "app-button-secondary flex-1 px-3 py-2 sm:flex-none",
             page >= pageCount && "pointer-events-none opacity-50",
           )}
         >

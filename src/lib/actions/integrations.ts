@@ -3,6 +3,11 @@
 import { revalidatePath } from "next/cache";
 
 import { hasRole, requireViewer } from "@/lib/auth";
+import {
+  validateClickUpConfig,
+  getClickUpConfig,
+  type ClickUpValidationResult,
+} from "@/lib/clickup-service";
 import { getIntegrationsCopy } from "@/lib/integrations-copy";
 import { getIntegrationProvider } from "@/lib/integration-providers";
 import { parseAppLanguage } from "@/lib/preferences";
@@ -31,6 +36,39 @@ function isValidUrl(value: string) {
     return url.protocol === "http:" || url.protocol === "https:";
   } catch {
     return false;
+  }
+}
+
+function getClickUpValidationFeedback(
+  copy: ReturnType<typeof getIntegrationsCopy>,
+  result: Extract<ClickUpValidationResult, { ok: false }>,
+) {
+  switch (result.code) {
+    case "config_missing":
+      return {
+        field: "apiKey",
+        message: copy.messages.clickUpConfigMissing,
+      };
+    case "invalid_api_key":
+      return {
+        field: "apiKey",
+        message: copy.messages.clickUpInvalidApiKey,
+      };
+    case "workspace_not_found":
+      return {
+        field: "workspaceId",
+        message: copy.messages.clickUpWorkspaceMissing,
+      };
+    case "space_not_found":
+      return {
+        field: "spaceId",
+        message: copy.messages.clickUpSpaceMissing,
+      };
+    default:
+      return {
+        field: null,
+        message: result.detail || copy.messages.clickUpValidationFailed,
+      };
   }
 }
 
@@ -160,6 +198,28 @@ export async function saveIntegrationAction(
     };
   }
 
+  if (provider.slug === "clickup") {
+    const validationResult = await validateClickUpConfig({
+      workspaceId: publicConfig.workspaceId ?? "",
+      spaceId: publicConfig.spaceId ?? null,
+      apiKey: secretConfig.apiKey ?? "",
+    });
+
+    if (!validationResult.ok) {
+      const feedback = getClickUpValidationFeedback(copy, validationResult);
+
+      if (feedback.field) {
+        pushFieldError(fieldErrors, feedback.field, feedback.message);
+      }
+
+      return {
+        success: false,
+        message: feedback.message,
+        fieldErrors: Object.keys(fieldErrors).length > 0 ? fieldErrors : undefined,
+      };
+    }
+  }
+
   const { data: savedConnection, error: saveConnectionError } = await supabase
     .from("integration_connections")
     .upsert(
@@ -224,7 +284,10 @@ export async function saveIntegrationAction(
 
   return {
     success: true,
-    message: copy.messages.connectionSaved(provider.displayName),
+    message:
+      provider.slug === "clickup"
+        ? copy.messages.clickUpSaved
+        : copy.messages.connectionSaved(provider.displayName),
   };
 }
 
@@ -362,6 +425,65 @@ export async function sendTelegramTestMessageAction(
           : "Telegramga yuborishda xatolik yuz berdi.",
     };
   }
+}
+
+export async function testClickUpConnectionAction(
+  formData: FormData,
+): Promise<ActionState<string>> {
+  const viewer = await requireViewer();
+  const languageEntry = formData.get("language");
+  const language = parseAppLanguage(typeof languageEntry === "string" ? languageEntry : undefined);
+  const copy = getIntegrationsCopy(language);
+  const providerValue = formData.get("provider");
+  const providerEntry = typeof providerValue === "string" ? providerValue : "";
+
+  if (!hasRole(viewer.role, ["admin", "manager"])) {
+    return {
+      success: false,
+      message: copy.messages.unauthorized,
+    };
+  }
+
+  if (providerEntry !== "clickup") {
+    return {
+      success: false,
+      message: copy.messages.clickUpOnly,
+    };
+  }
+
+  const supabase = await createActionClient();
+
+  if (!supabase) {
+    return {
+      success: false,
+      message: copy.messages.supabaseMissing,
+    };
+  }
+
+  const clickUpConfig = await getClickUpConfig(supabase);
+
+  if (!clickUpConfig) {
+    return {
+      success: false,
+      message: copy.messages.clickUpConfigMissing,
+    };
+  }
+
+  const validationResult = await validateClickUpConfig(clickUpConfig);
+
+  if (!validationResult.ok) {
+    const feedback = getClickUpValidationFeedback(copy, validationResult);
+
+    return {
+      success: false,
+      message: feedback.message,
+    };
+  }
+
+  return {
+    success: true,
+    message: copy.messages.clickUpReady,
+  };
 }
 
 export async function sendTelegramDigestAction(

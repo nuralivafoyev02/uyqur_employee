@@ -81,6 +81,7 @@
     color: var(--text);
     font-family: var(--font-public-sans), sans-serif;
     text-rendering: optimizeLegibility;
+    overflow-x: hidden;
   }
 
   html[data-theme="dark"] body {
@@ -103,7 +104,9 @@
 
 @layer components {
   .app-shell {
-    @apply mx-auto w-full px-4 md:px-6;
+    @apply mx-auto w-full px-3 sm:px-4 md:px-6;
+    padding-left: max(0.75rem, env(safe-area-inset-left));
+    padding-right: max(0.75rem, env(safe-area-inset-right));
   }
 
   .app-panel {
@@ -116,7 +119,9 @@
   }
 
   .app-field {
-    @apply w-full rounded-xl border bg-app-surface px-3 py-2 text-[13px] text-app-text outline-none transition;
+    @apply w-full rounded-xl border bg-app-surface px-3 py-2 text-app-text outline-none transition;
+    min-height: 44px;
+    font-size: 16px;
   }
 
   .app-field::placeholder {
@@ -136,6 +141,7 @@
     @apply inline-flex items-center justify-center rounded-xl px-3.5 py-2 text-[13px] font-semibold transition disabled:pointer-events-none disabled:opacity-60;
     background: var(--accent);
     color: white;
+    min-height: 44px;
   }
 
   .exit-btn {
@@ -153,6 +159,7 @@
   .app-button-secondary {
     @apply inline-flex items-center justify-center rounded-xl border px-3.5 py-2 text-[13px] font-semibold text-app-text transition;
     background: var(--surface);
+    min-height: 44px;
   }
 
   .app-button-secondary:hover {
@@ -162,6 +169,8 @@
   .app-icon-button {
     @apply inline-flex items-center justify-center rounded-full border text-app-text transition;
     background: var(--surface);
+    min-height: 44px;
+    min-width: 44px;
   }
 
   .app-icon-button:hover {
@@ -236,6 +245,7 @@
     overscroll-behavior-x: contain;
     scroll-snap-type: x proximity;
     scrollbar-width: thin;
+    scroll-padding-inline: 0.75rem;
   }
 
   .app-overlay {
@@ -324,5 +334,11 @@
   .app-toast[data-state="closed"] {
     opacity: 0;
     transform: translateY(-12px) scale(0.98);
+  }
+}
+
+@media (min-width: 640px) {
+  .app-field {
+    font-size: 13px;
   }
 }

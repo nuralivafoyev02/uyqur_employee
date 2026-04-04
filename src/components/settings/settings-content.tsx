@@ -119,7 +119,7 @@ export function SettingsContent({
 
   return (
     <div className="-mx-4 -mt-6 min-h-screen md:-mx-6">
-      <div className="min-h-screen overflow-hidden border-y border-app-border bg-app-surface lg:grid lg:grid-cols-[232px_minmax(0,1fr)] lg:border">
+      <div className="min-h-dvh overflow-hidden border-y border-app-border bg-app-surface lg:grid lg:grid-cols-[232px_minmax(0,1fr)] lg:border">
         <aside className="border-b border-app-border bg-app-surface px-3.5 py-4 lg:min-h-full lg:border-b-0 lg:border-r lg:px-4 lg:py-5">
           <div className="px-2 pb-3">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-app-text-subtle">
@@ -127,7 +127,7 @@ export function SettingsContent({
             </p>
           </div>
 
-          <nav className="space-y-1">
+          <nav className="flex gap-2 overflow-x-auto pb-1 lg:block lg:space-y-1 lg:overflow-visible lg:pb-0">
             {sections.map((section) => {
               const Icon = section.icon;
               const isActive = section.id === activeSection;
@@ -137,7 +137,7 @@ export function SettingsContent({
                   key={section.id}
                   type="button"
                   className={cx(
-                    "flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2.5 text-left transition-colors duration-200",
+                    "flex shrink-0 items-center gap-2.5 rounded-xl px-2.5 py-2.5 text-left transition-colors duration-200 lg:w-full",
                     isActive
                       ? "bg-app-accent-muted text-app-text"
                       : "text-app-text-muted hover:bg-app-surface-muted hover:text-app-text",

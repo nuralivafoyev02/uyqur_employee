@@ -103,7 +103,7 @@ export function IntegrationsPanel({
           <Badge tone="neutral">{INTEGRATION_PROVIDERS.length}</Badge>
         </div>
 
-        <div className="grid gap-3 xl:grid-cols-2">
+        <div className="grid gap-3 lg:grid-cols-2">
           {INTEGRATION_PROVIDERS.map((provider) => {
             const connection = connectionMap.get(provider.slug);
             const summary = connection
@@ -157,11 +157,11 @@ export function IntegrationsPanel({
                   </div>
                 ) : null}
 
-                <div className="mt-4 flex flex-wrap items-center gap-2">
+                <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
                   {connection ? (
                     <Link
                       href={`/integrations/${provider.slug}`}
-                      className="app-button-secondary gap-2 px-3 py-2 text-xs"
+                      className="app-button-secondary w-full gap-2 px-3 py-2 text-xs sm:w-auto"
                     >
                       <span>{copy.open}</span>
                       <ArrowRightIcon className="h-4 w-4" />
@@ -171,7 +171,7 @@ export function IntegrationsPanel({
                   <button
                     type="button"
                     className={cx(
-                      "app-button gap-2 px-3 py-2 text-xs",
+                      "app-button w-full gap-2 px-3 py-2 text-xs sm:w-auto",
                       !canManage && "cursor-not-allowed opacity-60",
                     )}
                     disabled={!canManage}
@@ -241,11 +241,11 @@ export function IntegrationsPanel({
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
                       <Badge tone="success">{copy.connectedStatus}</Badge>
                       <Link
                         href={`/integrations/${connection.provider}`}
-                        className="app-button-secondary gap-2 px-3 py-2 text-xs"
+                        className="app-button-secondary w-full gap-2 px-3 py-2 text-xs sm:w-auto"
                       >
                         <span>{copy.open}</span>
                         <ArrowRightIcon className="h-4 w-4" />

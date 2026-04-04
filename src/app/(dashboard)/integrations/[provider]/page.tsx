@@ -5,6 +5,7 @@ import {
   disconnectIntegrationAction,
   sendTelegramDigestAction,
   sendTelegramTestMessageAction,
+  testClickUpConnectionAction,
 } from "@/lib/actions/integrations";
 import { sendCompletedPlansToTelegramAction } from "@/lib/actions/plans";
 import { hasRole, requireViewer } from "@/lib/auth";
@@ -23,7 +24,7 @@ export default async function IntegrationPage({
   const viewer = await requireViewer();
   const { provider } = await params;
   const connection = await getActiveIntegrationByProvider(provider);
-  const canManageTelegram = hasRole(viewer.role, ["admin", "manager"]);
+  const canManageConnection = hasRole(viewer.role, ["admin", "manager"]);
   const canSendPersonalCompletedPlans =
     Boolean(connection) &&
     (hasRole(viewer.role, ["admin", "manager"]) || hasSupabaseServiceRoleEnv());
@@ -35,19 +36,20 @@ export default async function IntegrationPage({
   const [telegramDigestOverview, personalCompletedPlans] =
     connection.provider === "telegram"
       ? await Promise.all([
-          canManageTelegram ? getTelegramDigestOverview() : Promise.resolve(null),
+          canManageConnection ? getTelegramDigestOverview() : Promise.resolve(null),
           getTodayCompletedPlansPreview(viewer),
         ])
       : [null, null];
 
   return (
     <IntegrationPageContent
-      canManageTelegram={canManageTelegram}
+      canManageConnection={canManageConnection}
       canSendPersonalCompletedPlans={canSendPersonalCompletedPlans}
       connection={connection}
       disconnectAction={disconnectIntegrationAction}
       personalCompletedPlans={personalCompletedPlans}
       sendCompletedPlansToTelegramAction={sendCompletedPlansToTelegramAction}
+      testClickUpConnectionAction={testClickUpConnectionAction}
       sendTelegramDigestAction={sendTelegramDigestAction}
       sendTelegramTestAction={sendTelegramTestMessageAction}
       telegramDigestOverview={telegramDigestOverview}
