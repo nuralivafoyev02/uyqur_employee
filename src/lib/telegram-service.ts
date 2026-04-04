@@ -12,7 +12,43 @@ export type TelegramConfig = {
   chatId: string;
   botToken: string;
   botUsername: string | null;
+  logChannelId: string | null;
 };
+
+type TelegramMessageOptions = {
+  chatId?: string;
+  parseMode?: "MarkdownV2" | "HTML" | "Markdown";
+};
+
+type TelegramJsonLogEntry = {
+  event: string;
+  status: "success" | "error" | "info";
+  actor?: {
+    id?: string;
+    name?: string | null;
+  } | null;
+  data?: Record<string, unknown>;
+};
+
+const TELEGRAM_LOG_CHUNK_LIMIT = 2600;
+
+function chunkText(value: string, size: number) {
+  const chunks: string[] = [];
+
+  for (let index = 0; index < value.length; index += size) {
+    chunks.push(value.slice(index, index + size));
+  }
+
+  return chunks;
+}
+
+function escapeMarkdownV2CodeContent(value: string) {
+  return value.replace(/\\/g, "\\\\").replace(/`/g, "\\`");
+}
+
+function toTelegramJsonCodeBlock(value: string) {
+  return `\`\`\`json\n${escapeMarkdownV2CodeContent(value)}\n\`\`\``;
+}
 
 export function getTelegramMessageError(payload: unknown) {
   if (
@@ -61,22 +97,30 @@ export async function getTelegramConfig(
     chatId,
     botToken,
     botUsername: publicConfig.botUsername?.trim() || null,
+    logChannelId: publicConfig.logChannelId?.trim() || null,
   };
 }
 
 export async function sendTelegramTextMessage(
   config: Pick<TelegramConfig, "botToken" | "chatId">,
   text: string,
+  options?: TelegramMessageOptions,
 ) {
+  const body: Record<string, unknown> = {
+    chat_id: options?.chatId ?? config.chatId,
+    text,
+  };
+
+  if (options?.parseMode) {
+    body.parse_mode = options.parseMode;
+  }
+
   const response = await fetch(`https://api.telegram.org/bot${config.botToken}/sendMessage`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      chat_id: config.chatId,
-      text,
-    }),
+    body: JSON.stringify(body),
   });
 
   const responseJson = await response.json().catch(() => null);
@@ -89,4 +133,75 @@ export async function sendTelegramTextMessage(
     messageId:
       responseJson?.result?.message_id != null ? String(responseJson.result.message_id) : null,
   };
+}
+
+export async function sendTelegramJsonLog(
+  config: Pick<TelegramConfig, "botToken" | "logChannelId">,
+  entry: TelegramJsonLogEntry,
+) {
+  const logChannelId = config.logChannelId?.trim();
+
+  if (!logChannelId) {
+    return false;
+  }
+
+  const timestamp = new Date().toISOString();
+  const logPayload = {
+    app: "uyqur_support_erp",
+    type: "telegram_log",
+    event: entry.event,
+    status: entry.status,
+    timestamp,
+    actor: entry.actor ?? null,
+    data: entry.data ?? null,
+  };
+
+  const serialized = JSON.stringify(logPayload, null, 2);
+
+  if (serialized.length <= TELEGRAM_LOG_CHUNK_LIMIT) {
+    await sendTelegramTextMessage(
+      {
+        botToken: config.botToken,
+        chatId: logChannelId,
+      },
+      toTelegramJsonCodeBlock(serialized),
+      {
+        parseMode: "MarkdownV2",
+      },
+    );
+
+    return true;
+  }
+
+  const chunks = chunkText(serialized, TELEGRAM_LOG_CHUNK_LIMIT);
+
+  for (const [index, chunk] of chunks.entries()) {
+    await sendTelegramTextMessage(
+      {
+        botToken: config.botToken,
+        chatId: logChannelId,
+      },
+      toTelegramJsonCodeBlock(
+        JSON.stringify(
+          {
+            app: "uyqur_support_erp",
+            type: "telegram_log_chunk",
+            event: entry.event,
+            status: entry.status,
+            timestamp,
+            part: index + 1,
+            totalParts: chunks.length,
+            chunk,
+          },
+          null,
+          2,
+        ),
+      ),
+      {
+        parseMode: "MarkdownV2",
+      },
+    );
+  }
+
+  return true;
 }

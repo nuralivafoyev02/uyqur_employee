@@ -483,6 +483,27 @@ export const INTEGRATION_PROVIDERS: IntegrationProviderDefinition[] = [
         },
       },
       {
+        key: "logChannelId",
+        type: "text",
+        store: "public",
+        required: true,
+        label: {
+          uz: "Log yuborish uchun kanal ID",
+          en: "Log channel ID",
+          ru: "ID канала для логов",
+        },
+        placeholder: {
+          uz: "Masalan, -1001234567890 yoki @uyqur_logs",
+          en: "For example, -1001234567890 or @uyqur_logs",
+          ru: "Например, -1001234567890 или @uyqur_logs",
+        },
+        helper: {
+          uz: "Bot barcha texnik loglarni shu Telegram kanalga JSON ko'rinishida yuboradi.",
+          en: "The bot sends all technical logs to this Telegram channel in JSON form.",
+          ru: "Бот будет отправлять все технические логи в этот Telegram-канал в формате JSON.",
+        },
+      },
+      {
         key: "botToken",
         type: "password",
         store: "secret",

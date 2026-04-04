@@ -19,7 +19,12 @@ import {
 import { loadTelegramDigestOverview } from "@/lib/telegram-digest-data";
 import { isMissingIntegrationsRelationError, toStringRecord } from "@/lib/queries/integrations";
 import { createActionClient } from "@/lib/supabase/server";
-import { getTelegramConfig, sendTelegramTextMessage } from "@/lib/telegram-service";
+import {
+  getTelegramConfig,
+  sendTelegramJsonLog,
+  sendTelegramTextMessage,
+  type TelegramConfig,
+} from "@/lib/telegram-service";
 import type { ActionState, FieldErrors } from "@/lib/validations";
 
 function pushFieldError(
@@ -69,6 +74,21 @@ function getClickUpValidationFeedback(
         field: null,
         message: result.detail || copy.messages.clickUpValidationFailed,
       };
+  }
+}
+
+async function trySendTelegramAuditLog(
+  config: Pick<TelegramConfig, "botToken" | "logChannelId"> | null,
+  entry: Parameters<typeof sendTelegramJsonLog>[1],
+) {
+  if (!config?.logChannelId) {
+    return;
+  }
+
+  try {
+    await sendTelegramJsonLog(config, entry);
+  } catch {
+    // Logging must never block the main user flow.
   }
 }
 
@@ -279,6 +299,28 @@ export async function saveIntegrationAction(
     };
   }
 
+  const savedTelegramLogConfig =
+    provider.slug === "telegram" && secretConfig.botToken && publicConfig.logChannelId
+      ? {
+          botToken: secretConfig.botToken,
+          logChannelId: publicConfig.logChannelId,
+        }
+      : await getTelegramConfig(supabase);
+
+  await trySendTelegramAuditLog(savedTelegramLogConfig, {
+    event: "integration.saved",
+    status: "success",
+    actor: {
+      id: viewer.id,
+      name: viewer.full_name,
+    },
+    data: {
+      provider: provider.slug,
+      publicConfig,
+      hasSecretConfig: Object.keys(secretConfig).length > 0,
+    },
+  });
+
   revalidatePath("/settings");
   revalidatePath("/dashboard");
 
@@ -326,6 +368,8 @@ export async function disconnectIntegrationAction(
     };
   }
 
+  const telegramConfig = await getTelegramConfig(supabase);
+
   const { error } = await supabase
     .from("integration_connections")
     .delete()
@@ -344,6 +388,18 @@ export async function disconnectIntegrationAction(
       message: error.message,
     };
   }
+
+  await trySendTelegramAuditLog(telegramConfig, {
+    event: "integration.disconnected",
+    status: "info",
+    actor: {
+      id: viewer.id,
+      name: viewer.full_name,
+    },
+    data: {
+      provider: provider.slug,
+    },
+  });
 
   revalidatePath("/settings");
   revalidatePath("/dashboard");
@@ -412,11 +468,42 @@ export async function sendTelegramTestMessageAction(
   try {
     await sendTelegramTextMessage(telegramConfig, text);
 
+    await trySendTelegramAuditLog(telegramConfig, {
+      event: "telegram.test_message.sent",
+      status: "success",
+      actor: {
+        id: viewer.id,
+        name: viewer.full_name,
+      },
+      data: {
+        source: "web_app",
+        targetChatId: telegramConfig.chatId,
+        preview: text,
+      },
+    });
+
     return {
       success: true,
       message: copy.messages.telegramTestSent,
     };
   } catch (error) {
+    await trySendTelegramAuditLog(telegramConfig, {
+      event: "telegram.test_message.failed",
+      status: "error",
+      actor: {
+        id: viewer.id,
+        name: viewer.full_name,
+      },
+      data: {
+        source: "web_app",
+        targetChatId: telegramConfig.chatId,
+        error:
+          error instanceof Error && error.message
+            ? error.message
+            : "Telegramga yuborishda xatolik yuz berdi.",
+      },
+    });
+
     return {
       success: false,
       message:
@@ -474,11 +561,38 @@ export async function testClickUpConnectionAction(
   if (!validationResult.ok) {
     const feedback = getClickUpValidationFeedback(copy, validationResult);
 
+    await trySendTelegramAuditLog(await getTelegramConfig(supabase), {
+      event: "clickup.connection_test.failed",
+      status: "error",
+      actor: {
+        id: viewer.id,
+        name: viewer.full_name,
+      },
+      data: {
+        workspaceId: clickUpConfig.workspaceId,
+        spaceId: clickUpConfig.spaceId,
+        error: feedback.message,
+      },
+    });
+
     return {
       success: false,
       message: feedback.message,
     };
   }
+
+  await trySendTelegramAuditLog(await getTelegramConfig(supabase), {
+    event: "clickup.connection_test.sent",
+    status: "success",
+    actor: {
+      id: viewer.id,
+      name: viewer.full_name,
+    },
+    data: {
+      workspaceId: clickUpConfig.workspaceId,
+      spaceId: clickUpConfig.spaceId,
+    },
+  });
 
   return {
     success: true,
@@ -561,6 +675,22 @@ export async function sendTelegramDigestAction(
 
     await sendTelegramTextMessage(telegramConfig, payload);
 
+    await trySendTelegramAuditLog(telegramConfig, {
+      event: `telegram.digest.${kind}.sent`,
+      status: "success",
+      actor: {
+        id: viewer.id,
+        name: viewer.full_name,
+      },
+      data: {
+        kind,
+        targetChatId: telegramConfig.chatId,
+        reportsCount: overview.reports.length,
+        completedPlansCount: overview.completedPlans.length,
+        preview: payload,
+      },
+    });
+
     revalidatePath("/settings");
     revalidatePath("/dashboard");
     revalidatePath("/reports");
@@ -575,6 +705,23 @@ export async function sendTelegramDigestAction(
           : digestCopy.messages.completedPlansSent,
     };
   } catch (error) {
+    await trySendTelegramAuditLog(telegramConfig, {
+      event: `telegram.digest.${kind}.failed`,
+      status: "error",
+      actor: {
+        id: viewer.id,
+        name: viewer.full_name,
+      },
+      data: {
+        kind,
+        targetChatId: telegramConfig.chatId,
+        error:
+          error instanceof Error && error.message
+            ? error.message
+            : "Telegramga yuborishda xatolik yuz berdi.",
+      },
+    });
+
     return {
       success: false,
       message:

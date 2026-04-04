@@ -7,7 +7,11 @@ import { parseAppLanguage } from "@/lib/preferences";
 import { hasSupabaseServiceRoleEnv } from "@/lib/supabase/config";
 import { buildTelegramReportMessage } from "@/lib/telegram-report";
 import { createActionClient, createAdminClient } from "@/lib/supabase/server";
-import { getTelegramConfig, sendTelegramTextMessage } from "@/lib/telegram-service";
+import {
+  getTelegramConfig,
+  sendTelegramJsonLog,
+  sendTelegramTextMessage,
+} from "@/lib/telegram-service";
 import { type ActionState, validateReportForm } from "@/lib/validations";
 
 type ReportField =
@@ -250,6 +254,29 @@ export async function sendReportToTelegramAction(
   try {
     const result = await sendTelegramTextMessage(telegramConfig, payload);
 
+    await sendTelegramJsonLog(telegramConfig, {
+      event: "telegram.report.sent",
+      status: "success",
+      actor: {
+        id: viewer.id,
+        name: viewer.full_name,
+      },
+      data: {
+        reportId: report.id,
+        employeeId: report.employee_id,
+        reportDate: report.report_date,
+        targetChatId: telegramConfig.chatId,
+        messageId: result.messageId,
+        report: {
+          completedWork: report.completed_work,
+          currentWork: report.current_work,
+          nextPlan: report.next_plan,
+          blockers: report.blockers,
+          status: report.status,
+        },
+      },
+    }).catch(() => undefined);
+
     await supabase
       .from("daily_reports")
       .update({
@@ -276,6 +303,29 @@ export async function sendReportToTelegramAction(
       error instanceof Error && error.message
         ? error.message
         : "Telegramga yuborishda xatolik yuz berdi.";
+
+    await sendTelegramJsonLog(telegramConfig, {
+      event: "telegram.report.failed",
+      status: "error",
+      actor: {
+        id: viewer.id,
+        name: viewer.full_name,
+      },
+      data: {
+        reportId: report.id,
+        employeeId: report.employee_id,
+        reportDate: report.report_date,
+        targetChatId: telegramConfig.chatId,
+        error: errorMessage,
+        report: {
+          completedWork: report.completed_work,
+          currentWork: report.current_work,
+          nextPlan: report.next_plan,
+          blockers: report.blockers,
+          status: report.status,
+        },
+      },
+    }).catch(() => undefined);
 
     await supabase
       .from("daily_reports")

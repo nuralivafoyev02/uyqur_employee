@@ -7,7 +7,11 @@ import { parseAppLanguage } from "@/lib/preferences";
 import { buildTelegramCompletedPlansMessage } from "@/lib/telegram-report";
 import { hasSupabaseServiceRoleEnv, isSupabaseConfigured } from "@/lib/supabase/config";
 import { createActionClient, createAdminClient } from "@/lib/supabase/server";
-import { getTelegramConfig, sendTelegramTextMessage } from "@/lib/telegram-service";
+import {
+  getTelegramConfig,
+  sendTelegramJsonLog,
+  sendTelegramTextMessage,
+} from "@/lib/telegram-service";
 import { getTodayIsoDate, isValidIsoDate } from "@/lib/utils";
 import { type ActionState, validatePlanForm } from "@/lib/validations";
 import type { PlanStatus } from "@/types/database";
@@ -296,6 +300,21 @@ export async function sendCompletedPlansToTelegramAction(
   try {
     await sendTelegramTextMessage(telegramConfig, payload);
 
+    await sendTelegramJsonLog(telegramConfig, {
+      event: "telegram.completed_plans.sent",
+      status: "success",
+      actor: {
+        id: viewer.id,
+        name: viewer.full_name,
+      },
+      data: {
+        employeeId,
+        reportDate,
+        targetChatId: telegramConfig.chatId,
+        completedPlans,
+      },
+    }).catch(() => undefined);
+
     revalidatePath("/dashboard");
     revalidatePath("/plans");
     revalidatePath("/employees");
@@ -308,6 +327,25 @@ export async function sendCompletedPlansToTelegramAction(
       message: "Yakunlangan vazifalar Telegramga yuborildi.",
     };
   } catch (error) {
+    await sendTelegramJsonLog(telegramConfig, {
+      event: "telegram.completed_plans.failed",
+      status: "error",
+      actor: {
+        id: viewer.id,
+        name: viewer.full_name,
+      },
+      data: {
+        employeeId,
+        reportDate,
+        targetChatId: telegramConfig.chatId,
+        completedPlans,
+        error:
+          error instanceof Error && error.message
+            ? error.message
+            : "Telegramga yuborishda xatolik yuz berdi.",
+      },
+    }).catch(() => undefined);
+
     return {
       success: false,
       message:
