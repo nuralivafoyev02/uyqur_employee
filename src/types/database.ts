@@ -24,6 +24,8 @@ export type Database = {
           title: string | null;
           department: string | null;
           profile_status: string | null;
+          telegram_chat_id: string | null;
+          telegram_username: string | null;
           role: UserRole;
           created_at: string;
           updated_at: string;
@@ -34,6 +36,8 @@ export type Database = {
           title?: string | null;
           department?: string | null;
           profile_status?: string | null;
+          telegram_chat_id?: string | null;
+          telegram_username?: string | null;
           role?: UserRole;
           created_at?: string;
           updated_at?: string;
@@ -43,6 +47,8 @@ export type Database = {
           title?: string | null;
           department?: string | null;
           profile_status?: string | null;
+          telegram_chat_id?: string | null;
+          telegram_username?: string | null;
           role?: UserRole;
           updated_at?: string;
         };

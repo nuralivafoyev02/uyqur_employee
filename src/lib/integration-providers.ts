@@ -428,9 +428,9 @@ export const INTEGRATION_PROVIDERS: IntegrationProviderDefinition[] = [
       ru: "Для быстрых сообщений и сигналов через бота.",
     },
     description: {
-      uz: "Telegram bot token va chat ID saqlanib, keyinchalik muhim statuslar yoki ogohlantirishlar yuboriladi.",
-      en: "Store a Telegram bot token and chat ID to prepare future status or alert delivery.",
-      ru: "Сохраните bot token и chat ID Telegram для будущей отправки статусов и уведомлений.",
+      uz: "Telegram bot token va chat identifikatori saqlanib, keyinchalik muhim statuslar yoki ogohlantirishlar yuboriladi.",
+      en: "Store a Telegram bot token and chat target to prepare future status or alert delivery.",
+      ru: "Сохраните bot token и идентификатор чата Telegram для будущей отправки статусов и уведомлений.",
     },
     capabilities: [
       {
@@ -456,14 +456,19 @@ export const INTEGRATION_PROVIDERS: IntegrationProviderDefinition[] = [
         store: "public",
         required: true,
         label: {
-          uz: "Chat ID",
-          en: "Chat ID",
-          ru: "Chat ID",
+          uz: "Chat ID yoki @username",
+          en: "Chat ID or @username",
+          ru: "Chat ID или @username",
         },
         placeholder: {
-          uz: "Masalan, -1001234567890",
-          en: "For example, -1001234567890",
-          ru: "Например, -1001234567890",
+          uz: "Masalan, -1001234567890 yoki @uyqur_team",
+          en: "For example, -1001234567890 or @uyqur_team",
+          ru: "Например, -1001234567890 или @uyqur_team",
+        },
+        helper: {
+          uz: "Public kanal yoki guruhlar uchun @username ham ishlaydi.",
+          en: "For public channels or groups, an @username also works.",
+          ru: "Для публичных каналов и групп можно использовать @username.",
         },
       },
       {
@@ -488,9 +493,9 @@ export const INTEGRATION_PROVIDERS: IntegrationProviderDefinition[] = [
         store: "public",
         required: true,
         label: {
-          uz: "Log yuborish uchun kanal ID",
-          en: "Log channel ID",
-          ru: "ID канала для логов",
+          uz: "Log yuborish uchun kanal ID yoki @username",
+          en: "Log channel ID or @username",
+          ru: "ID канала для логов или @username",
         },
         placeholder: {
           uz: "Masalan, -1001234567890 yoki @uyqur_logs",

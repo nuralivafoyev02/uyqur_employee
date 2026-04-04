@@ -219,7 +219,7 @@ export async function getEmployeeProfileData(
   const [profileRes, reportsRes, plansRes] = await Promise.all([
     supabase
       .from("profiles")
-      .select("id, full_name, title, department, profile_status, role, created_at, updated_at")
+      .select("id, full_name, title, department, profile_status, telegram_chat_id, telegram_username, role, created_at, updated_at")
       .eq("id", employeeId)
       .maybeSingle(),
     supabase

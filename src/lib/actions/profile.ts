@@ -10,7 +10,7 @@ import {
   validateProfileStatusForm,
 } from "@/lib/validations";
 
-type ProfileField = "fullName" | "title" | "department" | "profileStatus";
+type ProfileField = "fullName" | "title" | "department" | "profileStatus" | "telegramContact";
 type ProfileStatusField = "profileStatus";
 
 function revalidateProfileViews(viewerId: string) {
@@ -52,6 +52,8 @@ export async function updateProfileAction(
       title: validation.data.title || null,
       department: validation.data.department || null,
       profile_status: validation.data.profileStatus || null,
+      telegram_chat_id: validation.data.telegramChatId || null,
+      telegram_username: validation.data.telegramUsername || null,
     })
     .eq("id", viewer.id);
 

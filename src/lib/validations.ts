@@ -34,7 +34,12 @@ type PlanFields =
   | "priority"
   | "status";
 type SuggestionFields = "title" | "description";
-type ProfileFields = "fullName" | "title" | "department" | "profileStatus";
+type ProfileFields =
+  | "fullName"
+  | "title"
+  | "department"
+  | "profileStatus"
+  | "telegramContact";
 
 export type AuthPayload = {
   fullName?: string;
@@ -65,6 +70,8 @@ export type ProfilePayload = {
   title: string;
   department: string;
   profileStatus: string;
+  telegramChatId: string;
+  telegramUsername: string;
 };
 
 export type SuggestionPayload = {
@@ -91,6 +98,24 @@ function hasErrors<TField extends string>(errors: FieldErrors<TField>) {
 
 function isIsoDate(value: string) {
   return /^\d{4}-\d{2}-\d{2}$/.test(value);
+}
+
+function isTelegramUsername(value: string) {
+  return /^@?[A-Za-z0-9_]{5,32}$/.test(value);
+}
+
+function normalizeTelegramUsername(value: string) {
+  const trimmed = value.trim();
+
+  if (!trimmed) {
+    return "";
+  }
+
+  return trimmed.startsWith("@") ? trimmed : `@${trimmed}`;
+}
+
+function isTelegramChatId(value: string) {
+  return /^-?\d{5,}$/.test(value);
 }
 
 export function validateAuthForm(
@@ -231,6 +256,13 @@ export function validateProfileForm(
   const title = getValue(formData, "title");
   const department = getValue(formData, "department");
   const profileStatus = getValue(formData, "profileStatus");
+  const telegramContactEntry = getValue(formData, "telegramContact");
+  const telegramContact = telegramContactEntry.trim();
+  const inferredUsername = !isTelegramChatId(telegramContact) && isTelegramUsername(telegramContact)
+    ? normalizeTelegramUsername(telegramContact)
+    : "";
+  const telegramChatId = inferredUsername ? "" : telegramContact;
+  const telegramUsername = inferredUsername;
 
   const errors: FieldErrors<ProfileFields> = {};
 
@@ -240,6 +272,10 @@ export function validateProfileForm(
 
   if (profileStatus.length > 60) {
     pushError(errors, "profileStatus", "Profil statusi 60 ta belgidan oshmasin.");
+  }
+
+  if (telegramChatId && !isTelegramChatId(telegramChatId)) {
+    pushError(errors, "telegramContact", "Telegram identifikatori noto'g'ri ko'rinmoqda.");
   }
 
   if (hasErrors(errors)) {
@@ -252,6 +288,8 @@ export function validateProfileForm(
       title,
       department,
       profileStatus,
+      telegramChatId,
+      telegramUsername,
     },
   };
 }

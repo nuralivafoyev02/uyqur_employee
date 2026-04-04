@@ -11,7 +11,7 @@ import { PROFILE_EVENT } from "@/lib/profile-events";
 import type { ActionState } from "@/lib/validations";
 import type { Profile } from "@/types/database";
 
-type ProfileField = "fullName" | "title" | "department" | "profileStatus";
+type ProfileField = "fullName" | "title" | "department" | "profileStatus" | "telegramContact";
 
 type ProfileFormAction = (
   state: ActionState<ProfileField> | undefined,
@@ -20,7 +20,10 @@ type ProfileFormAction = (
 
 type ProfileFormProps = {
   action: ProfileFormAction;
-  profile: Pick<Profile, "full_name" | "title" | "department" | "profile_status">;
+  profile: Pick<
+    Profile,
+    "full_name" | "title" | "department" | "profile_status" | "telegram_chat_id" | "telegram_username"
+  >;
 };
 
 export function ProfileForm({ action, profile }: ProfileFormProps) {
@@ -91,6 +94,28 @@ export function ProfileForm({ action, profile }: ProfileFormProps) {
             {translateProfileMessage(state.fieldErrors.profileStatus[0], language)}
           </p>
         ) : null}
+      </div>
+
+      <div className="space-y-2">
+        <label className="block text-[13px] font-semibold text-app-text" htmlFor="telegramContact">
+          {copy.settings.profileForm.telegramContact}
+        </label>
+        <input
+          id="telegramContact"
+          name="telegramContact"
+          className="app-field"
+          defaultValue={profile.telegram_chat_id ?? profile.telegram_username ?? ""}
+          placeholder={copy.settings.profileForm.telegramContactPlaceholder}
+        />
+        {state?.fieldErrors?.telegramContact ? (
+          <p className="text-[12px] text-rose-700">
+            {translateProfileMessage(state.fieldErrors.telegramContact[0], language)}
+          </p>
+        ) : (
+          <p className="text-[12px] leading-5 text-app-text-muted">
+            {copy.settings.profileForm.telegramContactHint}
+          </p>
+        )}
       </div>
 
       <div className="grid gap-3 md:grid-cols-2">

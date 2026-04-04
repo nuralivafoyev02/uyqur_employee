@@ -16,5 +16,7 @@ export async function GET() {
     title: viewer.title,
     department: viewer.department,
     profileStatus: viewer.profile_status,
+    telegramChatId: viewer.telegram_chat_id,
+    telegramUsername: viewer.telegram_username,
   });
 }

@@ -97,9 +97,12 @@ type SettingsCopy = {
     title: string;
     department: string;
     profileStatus: string;
+    telegramContact: string;
     titlePlaceholder: string;
     departmentPlaceholder: string;
     profileStatusPlaceholder: string;
+    telegramContactPlaceholder: string;
+    telegramContactHint: string;
     submit: string;
     pending: string;
   };
@@ -233,9 +236,13 @@ const COPY: Record<AppLanguage, AppCopy> = {
         title: "Ish lavozimi",
         department: "Bo'lim",
         profileStatus: "Profil statusi",
+        telegramContact: "Telegram chat ID yoki @username",
         titlePlaceholder: "Masalan, Product Manager",
         departmentPlaceholder: "Masalan, Operations",
         profileStatusPlaceholder: "Masalan, Ofisda ishlayapman",
+        telegramContactPlaceholder: "Masalan, 123456789 yoki @username",
+        telegramContactHint:
+          "Bu maydon chat ID yoki @username qabul qiladi. Vazifa bo'yicha private xabarlarning ishonchli ishlashi uchun chat ID afzal.",
         submit: "Profilni yangilash",
         pending: "Yangilanmoqda...",
       },
@@ -377,9 +384,13 @@ const COPY: Record<AppLanguage, AppCopy> = {
         title: "Job title",
         department: "Department",
         profileStatus: "Profile status",
+        telegramContact: "Telegram chat ID or @username",
         titlePlaceholder: "For example, Product Manager",
         departmentPlaceholder: "For example, Operations",
         profileStatusPlaceholder: "For example, Working from the office",
+        telegramContactPlaceholder: "For example, 123456789 or @username",
+        telegramContactHint:
+          "This field accepts a chat ID or @username. A real chat ID is still the most reliable option for private task alerts.",
         submit: "Update profile",
         pending: "Updating...",
       },
@@ -521,9 +532,13 @@ const COPY: Record<AppLanguage, AppCopy> = {
         title: "Должность",
         department: "Отдел",
         profileStatus: "Статус профиля",
+        telegramContact: "Telegram chat ID или @username",
         titlePlaceholder: "Например, Product Manager",
         departmentPlaceholder: "Например, Operations",
         profileStatusPlaceholder: "Например, Работаю из офиса",
+        telegramContactPlaceholder: "Например, 123456789 или @username",
+        telegramContactHint:
+          "Поле принимает chat ID или @username. Для личных уведомлений о задачах chat ID все еще остается самым надежным вариантом.",
         submit: "Обновить профиль",
         pending: "Обновление...",
       },
@@ -595,6 +610,11 @@ const PROFILE_MESSAGE_COPY: Record<string, Record<AppLanguage, string>> = {
     uz: "Profil statusi 60 ta belgidan oshmasin.",
     en: "Profile status must be 60 characters or fewer.",
     ru: "Статус профиля не должен превышать 60 символов.",
+  },
+  "Telegram identifikatori noto'g'ri ko'rinmoqda.": {
+    uz: "Telegram identifikatori noto'g'ri ko'rinmoqda.",
+    en: "The Telegram identifier looks invalid.",
+    ru: "Похоже, Telegram идентификатор указан неверно.",
   },
 };
 

@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { hasRole, requireViewer } from "@/lib/auth";
 import { parseAppLanguage } from "@/lib/preferences";
 import { buildTelegramCompletedPlansMessage } from "@/lib/telegram-report";
+import { getRequestOrigin } from "@/lib/site-url";
 import { hasSupabaseServiceRoleEnv, isSupabaseConfigured } from "@/lib/supabase/config";
 import { createActionClient, createAdminClient } from "@/lib/supabase/server";
 import {
@@ -23,6 +24,38 @@ type PlanField =
   | "dueDate"
   | "priority"
   | "status";
+
+function buildPlanAssignmentMessage({
+  title,
+  dueDate,
+  plansUrl,
+}: {
+  title: string;
+  dueDate: string;
+  plansUrl: string;
+}) {
+  return [
+    "Sizga vazifa biriktirildi.🤓",
+    "",
+    `Vazifa: ${title}`,
+    dueDate ? `Deadline: ${dueDate}` : null,
+    "",
+    "Vazifani ko'rish uchun quyidagi linkga kiring:",
+    plansUrl,
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
+function normalizeTelegramUsername(value: string | null | undefined) {
+  const trimmed = value?.trim();
+
+  if (!trimmed) {
+    return "";
+  }
+
+  return trimmed.startsWith("@") ? trimmed : `@${trimmed}`;
+}
 
 export async function savePlanAction(
   _prevState: ActionState<PlanField> | undefined,
@@ -58,6 +91,14 @@ export async function savePlanAction(
 
   const planIdEntry = formData.get("planId");
   const planId = typeof planIdEntry === "string" ? planIdEntry : "";
+  const existingPlan = planId
+    ? await supabase
+      .from("plans")
+      .select("id, assignee_id, title")
+      .eq("id", planId)
+      .maybeSingle()
+      .then((result) => result.data)
+    : null;
   const payload = {
     assignee_id: validation.data.assigneeId,
     title: validation.data.title,
@@ -70,9 +111,9 @@ export async function savePlanAction(
   const operation = planId
     ? supabase.from("plans").update(payload).eq("id", planId)
     : supabase.from("plans").insert({
-        ...payload,
-        created_by: viewer.id,
-      });
+      ...payload,
+      created_by: viewer.id,
+    });
 
   const { error } = await operation;
 
@@ -81,6 +122,102 @@ export async function savePlanAction(
       success: false,
       message: error.message,
     };
+  }
+
+  const shouldNotifyAssignee =
+    !planId || Boolean(existingPlan && existingPlan.assignee_id !== validation.data.assigneeId);
+
+  if (shouldNotifyAssignee) {
+    const [assigneeProfile, telegramConfig] = await Promise.all([
+      supabase
+        .from("profiles")
+        .select("id, full_name, telegram_chat_id, telegram_username")
+        .eq("id", validation.data.assigneeId)
+        .maybeSingle()
+        .then((result) => result.data),
+      getTelegramConfig(supabase),
+    ]);
+
+    const assigneeChatId = assigneeProfile?.telegram_chat_id?.trim();
+    const assigneeUsername = normalizeTelegramUsername(assigneeProfile?.telegram_username);
+
+    if (telegramConfig && assigneeProfile && assigneeChatId) {
+      const plansUrl = `${await getRequestOrigin()}/plans`;
+      const assignmentMessage = buildPlanAssignmentMessage({
+        title: validation.data.title,
+        dueDate: validation.data.dueDate,
+        plansUrl,
+      });
+
+      try {
+        await sendTelegramTextMessage(telegramConfig, assignmentMessage, {
+          chatId: assigneeChatId,
+        });
+
+        await sendTelegramJsonLog(telegramConfig, {
+          event: "telegram.plan_assignment.sent",
+          status: "success",
+          actor: {
+            id: viewer.id,
+            name: viewer.full_name,
+          },
+          data: {
+            planId: planId || "new",
+            assigneeId: validation.data.assigneeId,
+            assigneeName: assigneeProfile.full_name,
+            assigneeChatId,
+            assigneeUsername: assigneeUsername || null,
+            title: validation.data.title,
+            dueDate: validation.data.dueDate || null,
+            targetChatId: assigneeChatId,
+          },
+        }).catch(() => undefined);
+      } catch (notificationError) {
+        await sendTelegramJsonLog(telegramConfig, {
+          event: "telegram.plan_assignment.failed",
+          status: "error",
+          actor: {
+            id: viewer.id,
+            name: viewer.full_name,
+          },
+          data: {
+            planId: planId || "new",
+            assigneeId: validation.data.assigneeId,
+            assigneeName: assigneeProfile.full_name,
+            assigneeChatId,
+            assigneeUsername: assigneeUsername || null,
+            title: validation.data.title,
+            dueDate: validation.data.dueDate || null,
+            error:
+              notificationError instanceof Error && notificationError.message
+                ? notificationError.message
+                : "Telegramga private vazifa xabari yuborilmadi.",
+          },
+        }).catch(() => undefined);
+      }
+    } else if (telegramConfig) {
+      await sendTelegramJsonLog(telegramConfig, {
+        event: "telegram.plan_assignment.skipped",
+        status: "info",
+        actor: {
+          id: viewer.id,
+          name: viewer.full_name,
+        },
+        data: {
+          planId: planId || "new",
+          assigneeId: validation.data.assigneeId,
+          assigneeUsername: assigneeUsername || null,
+          title: validation.data.title,
+          reason: !assigneeProfile
+            ? "assignee_not_found"
+            : !assigneeChatId
+              ? assigneeUsername
+                ? "assignee_username_requires_chat_id"
+                : "assignee_missing_telegram_chat_id"
+              : "telegram_not_connected",
+        },
+      }).catch(() => undefined);
+    }
   }
 
   revalidatePath("/dashboard");
@@ -246,15 +383,15 @@ export async function sendCompletedPlansToTelegramAction(
   const employee =
     employeeId === viewer.id
       ? {
-          full_name: viewer.full_name,
-          title: viewer.title,
-        }
+        full_name: viewer.full_name,
+        title: viewer.title,
+      }
       : await supabase
-          .from("profiles")
-          .select("full_name, title")
-          .eq("id", employeeId)
-          .maybeSingle()
-          .then((result) => result.data);
+        .from("profiles")
+        .select("full_name, title")
+        .eq("id", employeeId)
+        .maybeSingle()
+        .then((result) => result.data);
 
   if (!employee) {
     return {
