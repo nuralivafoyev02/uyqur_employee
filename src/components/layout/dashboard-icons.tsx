@@ -30,6 +30,7 @@ import {
   Sliders,
   Telegram,
   Trello,
+  Trash3Fill,
   XLg,
   type Icon,
 } from "react-bootstrap-icons";
@@ -160,4 +161,8 @@ export function AlertTriangleIcon({ className }: IconProps) {
 
 export function DotIcon({ className }: IconProps) {
   return renderIcon(CircleFill, className);
+}
+
+export function TrashIcon({ className }: IconProps) {
+  return renderIcon(Trash3Fill, className);
 }

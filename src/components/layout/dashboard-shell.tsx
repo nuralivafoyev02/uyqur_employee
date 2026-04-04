@@ -15,6 +15,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 
 import { useAppCopy, usePreferences } from "@/components/providers/preferences-provider";
+import { AssistantWidget } from "@/components/ai/assistant-widget";
 import { getIntegrationIconComponent } from "@/components/integrations/provider-icon";
 import {
   BreadcrumbChevronIcon,
@@ -803,6 +804,17 @@ export function DashboardShell({
           </main>
         </div>
       </div>
+
+      <AssistantWidget
+        viewer={
+          viewer
+            ? {
+                fullName: viewer.fullName,
+                role: viewer.role,
+              }
+            : null
+        }
+      />
     </div>
   );
 }

@@ -168,6 +168,61 @@ export type Database = {
         };
         Relationships: [];
       };
+      ai_threads: {
+        Row: {
+          id: string;
+          user_id: string;
+          title: string;
+          last_message_preview: string | null;
+          last_message_at: string;
+          memory: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          title?: string;
+          last_message_preview?: string | null;
+          last_message_at?: string;
+          memory?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          title?: string;
+          last_message_preview?: string | null;
+          last_message_at?: string;
+          memory?: Json;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      ai_messages: {
+        Row: {
+          id: string;
+          thread_id: string;
+          sender: string;
+          content: string;
+          metadata: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          thread_id: string;
+          sender: string;
+          content: string;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Update: {
+          sender?: string;
+          content?: string;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       integration_connections: {
         Row: {
           id: string;
@@ -249,6 +304,8 @@ export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 export type DailyReport = Database["public"]["Tables"]["daily_reports"]["Row"];
 export type Plan = Database["public"]["Tables"]["plans"]["Row"];
 export type Suggestion = Database["public"]["Tables"]["suggestions"]["Row"];
+export type AiThread = Database["public"]["Tables"]["ai_threads"]["Row"];
+export type AiMessage = Database["public"]["Tables"]["ai_messages"]["Row"];
 export type IntegrationConnection = Database["public"]["Tables"]["integration_connections"]["Row"];
 export type IntegrationCredential = Database["public"]["Tables"]["integration_credentials"]["Row"];
 
