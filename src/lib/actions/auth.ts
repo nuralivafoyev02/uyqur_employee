@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { createActionClient } from "@/lib/supabase/server";
+import { getRequestOrigin } from "@/lib/site-url";
 import {
   type ActionState,
   type FieldErrors,
@@ -30,6 +31,13 @@ function isAlreadyRegisteredError(error: { code?: string; message: string }) {
     error.code === "user_already_exists" ||
     error.code === "email_exists" ||
     /already registered/i.test(error.message)
+  );
+}
+
+function isConfirmationEmailSendError(error: { code?: string; message: string }) {
+  return (
+    error.code === "unexpected_failure" &&
+    /confirmation email/i.test(error.message)
   );
 }
 
@@ -92,10 +100,13 @@ export async function signUpAction(
     );
   }
 
+  const appOrigin = await getRequestOrigin();
+
   const { data, error } = await supabase.auth.signUp({
     email: validation.data.email,
     password: validation.data.password,
     options: {
+      emailRedirectTo: `${appOrigin}/auth/confirm?next=/dashboard`,
       data: {
         full_name: validation.data.fullName,
         role: "employee" satisfies UserRole,
@@ -104,6 +115,12 @@ export async function signUpAction(
   });
 
   if (error) {
+    if (isConfirmationEmailSendError(error)) {
+      return authError(
+        "Tasdiqlash emailini yuborib bo'lmadi. Supabase Auth email sozlamalarini tekshiring.",
+      );
+    }
+
     if (isAlreadyRegisteredError(error)) {
       return authError(
         "Bu email allaqachon ro'yxatdan o'tgan. Login qiling yoki emailingizni tasdiqlang.",

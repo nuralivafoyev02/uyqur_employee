@@ -10,9 +10,10 @@ function normalizeEnv(value: string | undefined) {
 
 export function getSupabasePublicEnv() {
   const url = normalizeEnv(process.env.NEXT_PUBLIC_SUPABASE_URL);
-  const publishableKey = normalizeEnv(
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
-  );
+  const publishableKey =
+    normalizeEnv(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY) ||
+    normalizeEnv(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) ||
+    normalizeEnv(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
   const configured =
     url.length > 0 &&

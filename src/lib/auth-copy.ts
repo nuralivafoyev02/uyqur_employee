@@ -73,7 +73,7 @@ const COPY: Record<AppLanguage, AuthCopy> = {
     },
     form: {
       fullName: "F.I.Sh.",
-      fullNamePlaceholder: "Masalan, Sardor Qodirov",
+      fullNamePlaceholder: "Masalan, Falonchajon Pistonchiyev",
       email: "Email",
       emailPlaceholder: "name@company.com",
       password: "Parol",
@@ -119,7 +119,7 @@ const COPY: Record<AppLanguage, AuthCopy> = {
     },
     form: {
       fullName: "Full name",
-      fullNamePlaceholder: "For example, Sardor Qodirov",
+      fullNamePlaceholder: "For example, Falonchajon Pistonchiyev",
       email: "Email",
       emailPlaceholder: "name@company.com",
       password: "Password",
@@ -165,7 +165,7 @@ const COPY: Record<AppLanguage, AuthCopy> = {
     },
     form: {
       fullName: "Ф.И.О.",
-      fullNamePlaceholder: "Например, Sardor Qodirov",
+      fullNamePlaceholder: "Например, Falonchajon Pistonchiyev",
       email: "Email",
       emailPlaceholder: "name@company.com",
       password: "Пароль",
@@ -219,6 +219,11 @@ const AUTH_MESSAGE_COPY: Record<string, Record<AppLanguage, string>> = {
     en: "Your email is not confirmed yet. Open the confirmation link from your inbox first.",
     ru: "Ваш email еще не подтвержден. Сначала откройте ссылку подтверждения из письма.",
   },
+  "Tasdiqlash emailini yuborib bo'lmadi. Supabase Auth email sozlamalarini tekshiring.": {
+    uz: "Tasdiqlash emailini yuborib bo'lmadi. Supabase Auth email sozlamalarini tekshiring.",
+    en: "The confirmation email could not be sent. Check the Supabase Auth email settings.",
+    ru: "Не удалось отправить письмо с подтверждением. Проверьте настройки email в Supabase Auth.",
+  },
   "Bu email allaqachon ro'yxatdan o'tgan. Login qiling yoki emailingizni tasdiqlang.": {
     uz: "Bu email allaqachon ro'yxatdan o'tgan. Login qiling yoki emailingizni tasdiqlang.",
     en: "This email is already registered. Sign in or confirm your email.",
@@ -243,6 +248,11 @@ const AUTH_MESSAGE_COPY: Record<string, Record<AppLanguage, string>> = {
     uz: "Hisob yaratildi. Emailingizga yuborilgan tasdiqlash havolasini bosing, keyin tizimga kiring.",
     en: "Account created. Open the confirmation link sent to your email, then sign in.",
     ru: "Аккаунт создан. Откройте ссылку подтверждения из письма, затем войдите в систему.",
+  },
+  "Email tasdiqlash havolasi yaroqsiz yoki eskirgan.": {
+    uz: "Email tasdiqlash havolasi yaroqsiz yoki eskirgan.",
+    en: "The email confirmation link is invalid or has expired.",
+    ru: "Ссылка подтверждения email недействительна или устарела.",
   },
 };
 

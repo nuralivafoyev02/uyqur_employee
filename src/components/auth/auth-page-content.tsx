@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { AuthForm } from "@/components/auth/auth-form";
+import type { ToastTone } from "@/components/providers/toast-provider";
 import { usePreferences } from "@/components/providers/preferences-provider";
 import { getAuthCopy } from "@/lib/auth-copy";
 import type { ActionState } from "@/lib/validations";
@@ -17,6 +18,7 @@ type AuthPageContentProps = {
   mode: "login" | "register";
   action: AuthFormAction;
   notice?: string;
+  noticeTone?: ToastTone;
   disabled?: boolean;
 };
 
@@ -24,6 +26,7 @@ export function AuthPageContent({
   mode,
   action,
   notice,
+  noticeTone,
   disabled = false,
 }: AuthPageContentProps) {
   const { language } = usePreferences();
@@ -50,7 +53,13 @@ export function AuthPageContent({
         </div>
       )}
 
-      <AuthForm mode={mode} action={action} notice={notice} disabled={disabled} />
+      <AuthForm
+        mode={mode}
+        action={action}
+        notice={notice}
+        noticeTone={noticeTone}
+        disabled={disabled}
+      />
 
       <p className="text-sm text-app-text-muted">
         {isRegister ? copy.register.hasAccount : copy.login.noAccount}{" "}

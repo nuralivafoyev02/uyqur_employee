@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 
 import { usePreferences } from "@/components/providers/preferences-provider";
+import type { ToastTone } from "@/components/providers/toast-provider";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { ActionStateToast, ToastEffect } from "@/components/ui/toast-effect";
 import { getAuthCopy, translateAuthMessage } from "@/lib/auth-copy";
@@ -18,10 +19,17 @@ type AuthFormProps = {
   mode: "login" | "register";
   action: AuthFormAction;
   notice?: string;
+  noticeTone?: ToastTone;
   disabled?: boolean;
 };
 
-export function AuthForm({ mode, action, notice, disabled = false }: AuthFormProps) {
+export function AuthForm({
+  mode,
+  action,
+  notice,
+  noticeTone = "success",
+  disabled = false,
+}: AuthFormProps) {
   const [state, formAction] = useActionState(action, undefined);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const isRegister = mode === "register";
@@ -32,7 +40,7 @@ export function AuthForm({ mode, action, notice, disabled = false }: AuthFormPro
     <form action={formAction} className="space-y-5">
       <ToastEffect
         message={translateAuthMessage(notice, language)}
-        tone="success"
+        tone={noticeTone}
         eventKey={notice}
       />
       <ActionStateToast
