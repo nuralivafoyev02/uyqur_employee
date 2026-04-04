@@ -1,11 +1,13 @@
 "use client";
 
-import { useActionState } from "react";
+import { startTransition, useActionState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 
 import { useAppCopy, usePreferences } from "@/components/providers/preferences-provider";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { ActionStateToast } from "@/components/ui/toast-effect";
 import { translateProfileMessage } from "@/lib/copy";
+import { PROFILE_EVENT } from "@/lib/profile-events";
 import type { ActionState } from "@/lib/validations";
 import type { Profile } from "@/types/database";
 
@@ -25,6 +27,28 @@ export function ProfileForm({ action, profile }: ProfileFormProps) {
   const [state, formAction] = useActionState(action, undefined);
   const { language } = usePreferences();
   const copy = useAppCopy();
+  const router = useRouter();
+  const handledSuccessRef = useRef<ActionState<ProfileField> | undefined>(undefined);
+
+  useEffect(() => {
+    if (!state?.success) {
+      return;
+    }
+
+    if (handledSuccessRef.current === state) {
+      return;
+    }
+
+    handledSuccessRef.current = state;
+
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event(PROFILE_EVENT));
+    }
+
+    startTransition(() => {
+      router.refresh();
+    });
+  }, [router, state]);
 
   return (
     <form action={formAction} className="space-y-4">

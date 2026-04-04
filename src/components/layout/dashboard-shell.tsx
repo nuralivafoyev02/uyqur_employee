@@ -40,6 +40,7 @@ import { getEmployeesCopy } from "@/lib/employees-copy";
 import { getIntegrationProvider, INTEGRATIONS_EVENT } from "@/lib/integration-providers";
 import type { AppLanguage } from "@/lib/preferences";
 import { getPlansCopy } from "@/lib/plans-copy";
+import { PROFILE_EVENT } from "@/lib/profile-events";
 import { getReportsCopy } from "@/lib/reports-copy";
 import { getSuggestionsCopy } from "@/lib/suggestions-copy";
 import { ProfileStatusBadge } from "@/components/ui/badges";
@@ -327,10 +328,12 @@ function ProfileButton({
   viewer,
   copy,
   language,
+  onStatusSaved,
 }: {
   viewer: ViewerSummary | null;
   copy: AppCopy;
   language: AppLanguage;
+  onStatusSaved: (nextStatus: string) => void;
 }) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
@@ -350,6 +353,12 @@ function ProfileButton({
   const translatedStatusMessage = statusState?.message
     ? translateProfileMessage(statusState.message, language)
     : undefined;
+
+  useEffect(() => {
+    if (statusOverride !== null && statusOverride === (viewer?.profileStatus ?? "")) {
+      setStatusOverride(null);
+    }
+  }, [statusOverride, viewer?.profileStatus]);
 
   function closePopover() {
     setIsStatusEditorOpen(false);
@@ -384,9 +393,15 @@ function ProfileButton({
         return;
       }
 
+      onStatusSaved(nextStatus);
       setStatusOverride(nextStatus);
       setStatusDraft(nextStatus);
       setIsStatusEditorOpen(false);
+
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event(PROFILE_EVENT));
+      }
+
       router.refresh();
     });
   }
@@ -589,6 +604,17 @@ export function DashboardShell({
     "--sidebar-width": isSidebarExpanded ? "260px" : "104px",
   } as CSSProperties;
 
+  function handleViewerStatusChange(nextStatus: string) {
+    setViewer((current) =>
+      current
+        ? {
+            ...current,
+            profileStatus: nextStatus || null,
+          }
+        : current
+    );
+  }
+
   useEffect(() => {
     let active = true;
 
@@ -630,13 +656,18 @@ export function DashboardShell({
     const handleIntegrationsChange = () => {
       void loadShellData();
     };
+    const handleProfileChange = () => {
+      void loadShellData();
+    };
 
     window.addEventListener(INTEGRATIONS_EVENT, handleIntegrationsChange);
+    window.addEventListener(PROFILE_EVENT, handleProfileChange);
     window.addEventListener("focus", handleIntegrationsChange);
 
     return () => {
       active = false;
       window.removeEventListener(INTEGRATIONS_EVENT, handleIntegrationsChange);
+      window.removeEventListener(PROFILE_EVENT, handleProfileChange);
       window.removeEventListener("focus", handleIntegrationsChange);
     };
   }, [pathname]);
@@ -755,7 +786,12 @@ export function DashboardShell({
                   </div>
                 </details>
 
-                <ProfileButton viewer={viewer} copy={copy} language={language} />
+                <ProfileButton
+                  viewer={viewer}
+                  copy={copy}
+                  language={language}
+                  onStatusSaved={handleViewerStatusChange}
+                />
               </div>
             </div>
           </header>
