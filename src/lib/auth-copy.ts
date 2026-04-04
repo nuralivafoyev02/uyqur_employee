@@ -214,15 +214,35 @@ const AUTH_MESSAGE_COPY: Record<string, Record<AppLanguage, string>> = {
     en: "Sign in failed. The email or password is incorrect.",
     ru: "Не удалось войти. Email или пароль указаны неверно.",
   },
+  "Email manzilingiz tasdiqlanmagan. Avval emailingizdagi tasdiqlash havolasini bosing.": {
+    uz: "Email manzilingiz tasdiqlanmagan. Avval emailingizdagi tasdiqlash havolasini bosing.",
+    en: "Your email is not confirmed yet. Open the confirmation link from your inbox first.",
+    ru: "Ваш email еще не подтвержден. Сначала откройте ссылку подтверждения из письма.",
+  },
+  "Bu email allaqachon ro'yxatdan o'tgan. Login qiling yoki emailingizni tasdiqlang.": {
+    uz: "Bu email allaqachon ro'yxatdan o'tgan. Login qiling yoki emailingizni tasdiqlang.",
+    en: "This email is already registered. Sign in or confirm your email.",
+    ru: "Этот email уже зарегистрирован. Войдите в систему или подтвердите email.",
+  },
   "Maydonlarni to'g'rilab qayta yuboring.": {
     uz: "Maydonlarni to'g'rilab qayta yuboring.",
     en: "Correct the fields and submit again.",
     ru: "Исправьте поля и отправьте форму снова.",
   },
+  "Hisob yaratishda xatolik yuz berdi. Keyinroq qayta urinib ko'ring.": {
+    uz: "Hisob yaratishda xatolik yuz berdi. Keyinroq qayta urinib ko'ring.",
+    en: "Something went wrong while creating the account. Please try again later.",
+    ru: "При создании аккаунта произошла ошибка. Попробуйте еще раз позже.",
+  },
   "Hisob yaratildi. Endi email va parol bilan tizimga kiring.": {
     uz: "Hisob yaratildi. Endi email va parol bilan tizimga kiring.",
     en: "Account created. Now sign in with your email and password.",
     ru: "Аккаунт создан. Теперь войдите с помощью email и пароля.",
+  },
+  "Hisob yaratildi. Emailingizga yuborilgan tasdiqlash havolasini bosing, keyin tizimga kiring.": {
+    uz: "Hisob yaratildi. Emailingizga yuborilgan tasdiqlash havolasini bosing, keyin tizimga kiring.",
+    en: "Account created. Open the confirmation link sent to your email, then sign in.",
+    ru: "Аккаунт создан. Откройте ссылку подтверждения из письма, затем войдите в систему.",
   },
 };
 

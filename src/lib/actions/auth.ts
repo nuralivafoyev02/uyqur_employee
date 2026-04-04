@@ -21,6 +21,22 @@ function authError(message: string, fieldErrors?: FieldErrors<AuthField>): Actio
   };
 }
 
+function isEmailConfirmationError(error: { code?: string; message: string }) {
+  return error.code === "email_not_confirmed" || /email not confirmed/i.test(error.message);
+}
+
+function isAlreadyRegisteredError(error: { code?: string; message: string }) {
+  return (
+    error.code === "user_already_exists" ||
+    error.code === "email_exists" ||
+    /already registered/i.test(error.message)
+  );
+}
+
+function isExistingUserSignUpResponse(identities: { id: string }[] | undefined) {
+  return Array.isArray(identities) && identities.length === 0;
+}
+
 export async function signInAction(
   _prevState: ActionState<AuthField> | undefined,
   formData: FormData,
@@ -45,6 +61,12 @@ export async function signInAction(
   });
 
   if (error) {
+    if (isEmailConfirmationError(error)) {
+      return authError(
+        "Email manzilingiz tasdiqlanmagan. Avval emailingizdagi tasdiqlash havolasini bosing.",
+      );
+    }
+
     return authError("Login muvaffaqiyatsiz bo'ldi. Email yoki parol noto'g'ri.");
   }
 
@@ -82,7 +104,25 @@ export async function signUpAction(
   });
 
   if (error) {
+    if (isAlreadyRegisteredError(error)) {
+      return authError(
+        "Bu email allaqachon ro'yxatdan o'tgan. Login qiling yoki emailingizni tasdiqlang.",
+      );
+    }
+
     return authError(error.message);
+  }
+
+  // Supabase can return a masked user instead of an explicit error when the email
+  // already exists and email confirmation is enabled in the project.
+  if (isExistingUserSignUpResponse(data.user?.identities)) {
+    return authError(
+      "Bu email allaqachon ro'yxatdan o'tgan. Login qiling yoki emailingizni tasdiqlang.",
+    );
+  }
+
+  if (!data.user && !data.session) {
+    return authError("Hisob yaratishda xatolik yuz berdi. Keyinroq qayta urinib ko'ring.");
   }
 
   revalidatePath("/", "layout");
@@ -91,7 +131,7 @@ export async function signUpAction(
     redirect("/dashboard");
   }
 
-  redirect("/login?registered=1");
+  redirect("/login?registered=1&confirmation=1");
 }
 
 export async function signOutAction() {

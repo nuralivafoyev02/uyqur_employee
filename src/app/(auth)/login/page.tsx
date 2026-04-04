@@ -8,6 +8,7 @@ import { isSupabaseConfigured } from "@/lib/supabase/config";
 type LoginPageProps = {
   searchParams: Promise<{
     registered?: string;
+    confirmation?: string;
   }>;
 };
 
@@ -27,7 +28,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       action={signInAction}
       notice={
         params.registered === "1"
-          ? "Hisob yaratildi. Endi email va parol bilan tizimga kiring."
+          ? params.confirmation === "1"
+            ? "Hisob yaratildi. Emailingizga yuborilgan tasdiqlash havolasini bosing, keyin tizimga kiring."
+            : "Hisob yaratildi. Endi email va parol bilan tizimga kiring."
           : undefined
       }
       disabled={!configured}
