@@ -8,6 +8,7 @@ export type Json =
 
 export type UserRole = "admin" | "manager" | "employee";
 export type ReportStatus = "done" | "in_progress" | "blocked";
+export type TelegramDeliveryStatus = "not_sent" | "sent" | "failed";
 export type PlanPriority = "low" | "medium" | "high";
 export type PlanStatus = "todo" | "in_progress" | "done" | "blocked";
 export type SuggestionStatus = "new" | "accepted" | "prepared" | "canceled";
@@ -57,6 +58,11 @@ export type Database = {
           next_plan: string;
           blockers: string | null;
           status: ReportStatus;
+          telegram_status: TelegramDeliveryStatus;
+          telegram_payload: string | null;
+          telegram_message_id: string | null;
+          telegram_last_error: string | null;
+          telegram_sent_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -69,6 +75,11 @@ export type Database = {
           next_plan: string;
           blockers?: string | null;
           status?: ReportStatus;
+          telegram_status?: TelegramDeliveryStatus;
+          telegram_payload?: string | null;
+          telegram_message_id?: string | null;
+          telegram_last_error?: string | null;
+          telegram_sent_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -79,6 +90,11 @@ export type Database = {
           next_plan?: string;
           blockers?: string | null;
           status?: ReportStatus;
+          telegram_status?: TelegramDeliveryStatus;
+          telegram_payload?: string | null;
+          telegram_message_id?: string | null;
+          telegram_last_error?: string | null;
+          telegram_sent_at?: string | null;
           updated_at?: string;
         };
         Relationships: [];

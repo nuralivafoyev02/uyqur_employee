@@ -3,6 +3,9 @@
 import Link from "next/link";
 
 import { IntegrationProviderBadge } from "@/components/integrations/provider-icon";
+import { TelegramDigestPanel } from "@/components/integrations/telegram-digest-panel";
+import { TelegramTestButton } from "@/components/integrations/telegram-test-button";
+import { PlanTelegramPanel } from "@/components/plans/plan-telegram-panel";
 import { ArrowRightIcon } from "@/components/layout/dashboard-icons";
 import { usePreferences } from "@/components/providers/preferences-provider";
 import { IntegrationDisconnectButton } from "@/components/settings/integration-disconnect-button";
@@ -13,17 +16,33 @@ import {
   getIntegrationPublicSummary,
   type ActiveIntegrationSummary,
 } from "@/lib/integration-providers";
+import type { TelegramDigestOverview } from "@/lib/telegram-digest";
+import type { TodayCompletedPlansPreviewData } from "@/lib/queries/plans";
 import { formatDateTime } from "@/lib/utils";
 import type { ActionState } from "@/lib/validations";
 
 type IntegrationPageContentProps = {
+  canManageTelegram: boolean;
+  canSendPersonalCompletedPlans: boolean;
   connection: ActiveIntegrationSummary;
   disconnectAction: (formData: FormData) => Promise<ActionState<string>>;
+  personalCompletedPlans: TodayCompletedPlansPreviewData | null;
+  sendCompletedPlansToTelegramAction?: (formData: FormData) => Promise<ActionState<string>>;
+  sendTelegramDigestAction?: (formData: FormData) => Promise<ActionState<string>>;
+  sendTelegramTestAction?: (formData: FormData) => Promise<ActionState<string>>;
+  telegramDigestOverview: TelegramDigestOverview | null;
 };
 
 export function IntegrationPageContent({
+  canManageTelegram,
+  canSendPersonalCompletedPlans,
   connection,
   disconnectAction,
+  personalCompletedPlans,
+  sendCompletedPlansToTelegramAction,
+  sendTelegramDigestAction,
+  sendTelegramTestAction,
+  telegramDigestOverview,
 }: IntegrationPageContentProps) {
   const { language } = usePreferences();
   const copy = getIntegrationsCopy(language);
@@ -57,6 +76,9 @@ export function IntegrationPageContent({
 
           <div className="flex flex-wrap items-center gap-2">
             <Badge tone="success">{copy.connectedStatus}</Badge>
+            {connection.provider === "telegram" && sendTelegramTestAction && canManageTelegram ? (
+              <TelegramTestButton action={sendTelegramTestAction} />
+            ) : null}
             <IntegrationDisconnectButton
               action={disconnectAction}
               provider={connection.provider}
@@ -72,41 +94,64 @@ export function IntegrationPageContent({
           </div>
         </div>
 
-        <div className="mt-5 flex flex-wrap gap-2">
-          <div className="rounded-full border border-app-border bg-app-bg-elevated px-3 py-1.5 text-[12px] font-medium text-app-text-muted">
-            {copy.connectedAtLabel}: {formatDateTime(connection.createdAt, language)}
+        <div className="mt-5 grid gap-4 xl:grid-cols-[minmax(0,0.85fr)_minmax(420px,1.15fr)] xl:items-end">
+          <div className="flex flex-wrap gap-2 xl:self-end">
+            <div className="rounded-full border border-app-border bg-app-bg-elevated px-3 py-1.5 text-[12px] font-medium text-app-text-muted">
+              {copy.connectedAtLabel}: {formatDateTime(connection.createdAt, language)}
+            </div>
+            <div className="rounded-full border border-app-border bg-app-bg-elevated px-3 py-1.5 text-[12px] font-medium text-app-text-muted">
+              {copy.updatedAtLabel}: {formatDateTime(connection.updatedAt, language)}
+            </div>
           </div>
-          <div className="rounded-full border border-app-border bg-app-bg-elevated px-3 py-1.5 text-[12px] font-medium text-app-text-muted">
-            {copy.updatedAtLabel}: {formatDateTime(connection.updatedAt, language)}
+
+          <div className="rounded-3xl border border-app-border bg-app-bg-elevated p-4">
+            <p className="app-kicker">{copy.publicConfigLabel}</p>
+
+            {summary.length > 0 ? (
+              <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                {summary.map((item) => (
+                  <div
+                    key={`${connection.id}-${item.key}`}
+                    className="rounded-2xl border border-app-border bg-app-surface p-4"
+                  >
+                    <p className="text-[11px] text-app-text-subtle">{item.label}</p>
+                    <p className="mt-2 break-all text-sm font-semibold text-app-text">
+                      {item.value}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="mt-3 text-sm leading-6 text-app-text-muted">
+                {copy.publicConfigEmpty}
+              </p>
+            )}
           </div>
         </div>
       </section>
 
-      <section className="app-panel p-5">
-        <p className="app-kicker">{copy.publicConfigLabel}</p>
-        <h2 className="mt-2 text-xl font-semibold tracking-tight text-app-text">
-          {provider?.displayName ?? connection.displayName}
-        </h2>
-        <p className="mt-2 text-sm leading-6 text-app-text-muted">
-          {provider?.description[language] ?? copy.pageOverviewDescription}
-        </p>
+      {connection.provider === "telegram" &&
+      personalCompletedPlans &&
+      sendCompletedPlansToTelegramAction ? (
+        <PlanTelegramPanel
+          action={sendCompletedPlansToTelegramAction}
+          canSend={canSendPersonalCompletedPlans}
+          completedPlans={personalCompletedPlans.completedPlans}
+          date={personalCompletedPlans.date}
+          employeeId={personalCompletedPlans.employee?.id ?? ""}
+          employeeName={personalCompletedPlans.employee?.full_name ?? "Unknown"}
+          employeeTitle={personalCompletedPlans.employee?.title}
+          telegramConnection={connection}
+        />
+      ) : null}
 
-        {summary.length > 0 ? (
-          <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-            {summary.map((item) => (
-              <div
-                key={`${connection.id}-${item.key}`}
-                className="rounded-2xl border border-app-border bg-app-bg-elevated p-4"
-              >
-                <p className="text-[11px] text-app-text-subtle">{item.label}</p>
-                <p className="mt-2 break-all text-sm font-semibold text-app-text">{item.value}</p>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="mt-4 text-sm leading-6 text-app-text-muted">{copy.publicConfigEmpty}</p>
-        )}
-      </section>
+      {connection.provider === "telegram" && canManageTelegram && sendTelegramDigestAction ? (
+        <TelegramDigestPanel
+          action={sendTelegramDigestAction}
+          canManage={canManageTelegram}
+          overview={telegramDigestOverview}
+        />
+      ) : null}
     </div>
   );
 }

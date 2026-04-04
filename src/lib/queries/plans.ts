@@ -1,5 +1,6 @@
 import { hasRole } from "@/lib/auth";
 import { SUPABASE_SETUP_MESSAGE } from "@/lib/supabase/config";
+import type { TelegramCompletedPlanItem } from "@/lib/telegram-report";
 import { createServerComponentClient } from "@/lib/supabase/server";
 import { escapeLikeQuery, getTodayIsoDate } from "@/lib/utils";
 import type { Plan, PlanPriority, PlanStatus, Profile, Viewer } from "@/types/database";
@@ -54,6 +55,9 @@ export type PlansPageData = {
   };
   plans: PlanListItem[];
   employees: Array<Pick<Profile, "id" | "full_name" | "title" | "department" | "role">>;
+  telegramCompletedPlans: TelegramCompletedPlanItem[];
+  telegramDate: string;
+  telegramEmployee: Pick<Profile, "id" | "full_name" | "title"> | null;
   totalCount: number;
   pageCount: number;
   isLeadView: boolean;
@@ -64,6 +68,26 @@ export type PlansPageData = {
     done: number;
   };
 };
+
+export type TodayCompletedPlansPreviewData = {
+  date: string;
+  employee: Pick<Profile, "id" | "full_name" | "title"> | null;
+  completedPlans: TelegramCompletedPlanItem[];
+};
+
+type CompletedPlanRow = {
+  id: string;
+  title: string;
+  due_date: string | null;
+  priority: TelegramCompletedPlanItem["priority"];
+  updated_at: string;
+};
+
+function getNextIsoDate(value: string) {
+  const date = new Date(`${value}T00:00:00`);
+  date.setDate(date.getDate() + 1);
+  return date.toISOString().slice(0, 10);
+}
 
 function normalizeStatus(value: string | undefined) {
   return value === "todo" ||
@@ -120,6 +144,7 @@ export async function getPlansPageData(
   const from = (page - 1) * PLAN_PAGE_SIZE;
   const to = from + PLAN_PAGE_SIZE - 1;
   const today = getTodayIsoDate();
+  const telegramEmployeeId = isLeadView && employeeId ? employeeId : viewer.id;
 
   let plansQuery = supabase
     .from("plans")
@@ -193,13 +218,34 @@ export async function getPlansPageData(
         >,
       });
 
-  const [plansRes, employeesRes, overdueRes, inProgressRes, doneRes] =
+  const [plansRes, employeesRes, overdueRes, inProgressRes, doneRes, telegramCompletedPlansRes, telegramEmployeeRes] =
     await Promise.all([
       plansQuery,
       employeesPromise,
       scopedOverdueQuery,
       scopedInProgressQuery,
       scopedDoneQuery,
+      supabase
+        .from("plans")
+        .select("id, title, due_date, priority, updated_at")
+        .eq("assignee_id", telegramEmployeeId)
+        .eq("status", "done")
+        .gte("updated_at", `${today}T00:00:00`)
+        .lt("updated_at", `${getNextIsoDate(today)}T00:00:00`)
+        .order("updated_at", { ascending: false }),
+      telegramEmployeeId === viewer.id
+        ? Promise.resolve({
+            data: {
+              id: viewer.id,
+              full_name: viewer.full_name,
+              title: viewer.title,
+            } satisfies Pick<Profile, "id" | "full_name" | "title">,
+          })
+        : supabase
+            .from("profiles")
+            .select("id, full_name, title")
+            .eq("id", telegramEmployeeId)
+            .maybeSingle(),
     ]);
 
   return {
@@ -212,6 +258,17 @@ export async function getPlansPageData(
     },
     plans: mapPlans((plansRes.data ?? []) as unknown as PlanRow[]),
     employees: employeesRes.data ?? [],
+    telegramCompletedPlans: ((telegramCompletedPlansRes.data ?? []) as CompletedPlanRow[]).map(
+      (plan) => ({
+        id: plan.id,
+        title: plan.title,
+        dueDate: plan.due_date,
+        priority: plan.priority,
+        updatedAt: plan.updated_at,
+      }),
+    ),
+    telegramDate: today,
+    telegramEmployee: telegramEmployeeRes.data ?? null,
     totalCount: plansRes.count ?? 0,
     pageCount: Math.max(1, Math.ceil((plansRes.count ?? 0) / PLAN_PAGE_SIZE)),
     isLeadView,
@@ -221,5 +278,54 @@ export async function getPlansPageData(
       inProgress: inProgressRes.count ?? 0,
       done: doneRes.count ?? 0,
     },
+  };
+}
+
+export async function getTodayCompletedPlansPreview(
+  viewer: Viewer,
+  employeeId = viewer.id,
+): Promise<TodayCompletedPlansPreviewData> {
+  const supabase = await createServerComponentClient();
+
+  if (!supabase) {
+    throw new Error(SUPABASE_SETUP_MESSAGE);
+  }
+
+  const today = getTodayIsoDate();
+  const nextDate = getNextIsoDate(today);
+  const [completedPlansRes, employeeRes] = await Promise.all([
+    supabase
+      .from("plans")
+      .select("id, title, due_date, priority, updated_at")
+      .eq("assignee_id", employeeId)
+      .eq("status", "done")
+      .gte("updated_at", `${today}T00:00:00`)
+      .lt("updated_at", `${nextDate}T00:00:00`)
+      .order("updated_at", { ascending: false }),
+    employeeId === viewer.id
+      ? Promise.resolve({
+          data: {
+            id: viewer.id,
+            full_name: viewer.full_name,
+            title: viewer.title,
+          } satisfies Pick<Profile, "id" | "full_name" | "title">,
+        })
+      : supabase
+          .from("profiles")
+          .select("id, full_name, title")
+          .eq("id", employeeId)
+          .maybeSingle(),
+  ]);
+
+  return {
+    date: today,
+    employee: employeeRes.data ?? null,
+    completedPlans: ((completedPlansRes.data ?? []) as CompletedPlanRow[]).map((plan) => ({
+      id: plan.id,
+      title: plan.title,
+      dueDate: plan.due_date,
+      priority: plan.priority,
+      updatedAt: plan.updated_at,
+    })),
   };
 }

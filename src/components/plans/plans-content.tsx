@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ChevronDownIcon, PlusIcon } from "@/components/layout/dashboard-icons";
 import { QuickPlanForm } from "@/components/plans/quick-plan-form";
 import { QuickPlanModal } from "@/components/plans/quick-plan-modal";
+import { PlanTelegramPanel } from "@/components/plans/plan-telegram-panel";
 import { PlanForm } from "@/components/plans/plan-form";
 import { usePreferences } from "@/components/providers/preferences-provider";
 import { useToast } from "@/components/providers/toast-provider";
@@ -14,6 +15,7 @@ import { Pagination } from "@/components/ui/pagination";
 import { PageHeader } from "@/components/ui/page-header";
 import { PlanStatusBadge, PriorityBadge } from "@/components/ui/badges";
 import { FilterModal } from "@/components/ui/filter-modal";
+import type { ActiveIntegrationSummary } from "@/lib/integration-providers";
 import { getPlansCopy, translatePlanMessage } from "@/lib/plans-copy";
 import {
   cx,
@@ -42,6 +44,9 @@ type SavePlanAction = (
 ) => Promise<ActionState<PlanField>>;
 
 type UpdatePlanStatusAction = (formData: FormData) => Promise<ActionState | undefined>;
+type SendCompletedPlansToTelegramAction = (
+  formData: FormData,
+) => Promise<ActionState<string>>;
 
 type DragState = {
   planId: string;
@@ -49,8 +54,11 @@ type DragState = {
 };
 
 type PlansContentProps = {
+  canSendTelegram: boolean;
   data: PlansPageData;
   saveAction: SavePlanAction;
+  sendCompletedPlansToTelegramAction: SendCompletedPlansToTelegramAction;
+  telegramConnection: ActiveIntegrationSummary | null;
   updateStatusAction: UpdatePlanStatusAction;
 };
 
@@ -485,8 +493,11 @@ function PlansBoardSection({
 }
 
 export function PlansContent({
+  canSendTelegram,
   data,
   saveAction,
+  sendCompletedPlansToTelegramAction,
+  telegramConnection,
   updateStatusAction,
 }: PlansContentProps) {
   const [isComposerOpen, setIsComposerOpen] = useState(data.isLeadView);
@@ -681,6 +692,17 @@ export function PlansContent({
           </p>
         </div>
       </div>
+
+      <PlanTelegramPanel
+        action={sendCompletedPlansToTelegramAction}
+        canSend={canSendTelegram}
+        completedPlans={data.telegramCompletedPlans}
+        date={data.telegramDate}
+        employeeId={data.telegramEmployee?.id ?? data.filters.employeeId}
+        employeeName={data.telegramEmployee?.full_name ?? copy.list.assigneeMissing}
+        employeeTitle={data.telegramEmployee?.title}
+        telegramConnection={telegramConnection}
+      />
 
       {data.isLeadView && isComposerOpen ? (
         <section className="app-panel p-4 md:p-5">

@@ -53,6 +53,27 @@ type ReportsCopy = {
     updatedAt: string;
     noBlockers: string;
   };
+  telegram: {
+    title: string;
+    description: string;
+    saveFirstHint: string;
+    notConnected: string;
+    notConnectedHint: string;
+    restrictedHint: string;
+    botLabel: string;
+    chatLabel: string;
+    preview: string;
+    completedPlans: string;
+    completedPlansEmpty: string;
+    send: string;
+    resend: string;
+    sending: string;
+    statusNotSent: string;
+    statusSent: string;
+    statusFailed: string;
+    sentAt: string;
+    lastError: string;
+  };
   form: {
     completedWork: string;
     completedWorkPlaceholder: string;
@@ -138,6 +159,28 @@ const COPY: Record<AppLanguage, ReportsCopy> = {
       updatedAt: "Yangilangan vaqti",
       noBlockers: "To'siq ko'rsatilmagan.",
     },
+    telegram: {
+      title: "Telegram",
+      description: "Hisobotni Uyqur Yordamchi bot orqali guruhga yuborish uchun tayyor preview.",
+      saveFirstHint: "Avval hisobotni saqlang, keyin Telegram bo'limi ochiladi.",
+      notConnected: "Telegram integratsiyasi ulanmagan.",
+      notConnectedHint: "Bot token va chat ID sozlangandan keyin shu yerdan guruhga yuborish mumkin bo'ladi.",
+      restrictedHint:
+        "Xodim hisobotini Telegramga yuborish uchun serverda `SUPABASE_SERVICE_ROLE_KEY` sozlanishi kerak.",
+      botLabel: "Bot",
+      chatLabel: "Chat ID",
+      preview: "Yuboriladigan xabar",
+      completedPlans: "Bugun yakunlangan vazifalar",
+      completedPlansEmpty: "Bugun yakunlangan vazifa topilmadi.",
+      send: "Guruhga yuborish",
+      resend: "Qayta yuborish",
+      sending: "Yuborilmoqda...",
+      statusNotSent: "Yuborilmagan",
+      statusSent: "Yuborildi",
+      statusFailed: "Xato",
+      sentAt: "Yuborilgan vaqt",
+      lastError: "Oxirgi xato",
+    },
     form: {
       completedWork: "Bugun nimalarni yakunladingiz?",
       completedWorkPlaceholder: "Yozing...",
@@ -221,6 +264,28 @@ const COPY: Record<AppLanguage, ReportsCopy> = {
       updatedAt: "Last updated",
       noBlockers: "No blockers were reported.",
     },
+    telegram: {
+      title: "Telegram",
+      description: "Preview the message that will be delivered to the group by the Uyqur Yordamchi bot.",
+      saveFirstHint: "Save the report first, then the Telegram section will appear.",
+      notConnected: "The Telegram integration is not connected.",
+      notConnectedHint: "Once the bot token and chat ID are configured, you can send the report to the group from here.",
+      restrictedHint:
+        "To let employees send reports to Telegram, configure `SUPABASE_SERVICE_ROLE_KEY` on the server.",
+      botLabel: "Bot",
+      chatLabel: "Chat ID",
+      preview: "Outgoing message",
+      completedPlans: "Tasks completed today",
+      completedPlansEmpty: "No completed tasks were found for today.",
+      send: "Send to group",
+      resend: "Send again",
+      sending: "Sending...",
+      statusNotSent: "Not sent",
+      statusSent: "Sent",
+      statusFailed: "Failed",
+      sentAt: "Sent at",
+      lastError: "Last error",
+    },
     form: {
       completedWork: "What did you complete today?",
       completedWorkPlaceholder: "Write...",
@@ -303,6 +368,28 @@ const COPY: Record<AppLanguage, ReportsCopy> = {
       reportDate: "Дата отчета",
       updatedAt: "Время обновления",
       noBlockers: "Блокеры не указаны.",
+    },
+    telegram: {
+      title: "Telegram",
+      description: "Предпросмотр сообщения, которое бот Uyqur Yordamchi отправит в группу.",
+      saveFirstHint: "Сначала сохраните отчет, затем здесь откроется раздел Telegram.",
+      notConnected: "Интеграция Telegram не подключена.",
+      notConnectedHint: "После настройки bot token и chat ID отсюда можно будет отправлять отчет в группу.",
+      restrictedHint:
+        "Чтобы сотрудники могли отправлять отчеты в Telegram, на сервере нужно настроить `SUPABASE_SERVICE_ROLE_KEY`.",
+      botLabel: "Бот",
+      chatLabel: "Chat ID",
+      preview: "Сообщение к отправке",
+      completedPlans: "Завершенные сегодня задачи",
+      completedPlansEmpty: "На сегодня завершенных задач не найдено.",
+      send: "Отправить в группу",
+      resend: "Отправить повторно",
+      sending: "Отправка...",
+      statusNotSent: "Не отправлено",
+      statusSent: "Отправлено",
+      statusFailed: "Ошибка",
+      sentAt: "Время отправки",
+      lastError: "Последняя ошибка",
     },
     form: {
       completedWork: "Что вы завершили сегодня?",
@@ -390,6 +477,36 @@ const REPORT_MESSAGE_COPY: Record<string, Record<AppLanguage, string>> = {
     uz: "Hisobot topilmadi.",
     en: "Report not found.",
     ru: "Отчет не найден.",
+  },
+  "Bu hisobotni Telegramga yuborish huquqi yo'q.": {
+    uz: "Bu hisobotni Telegramga yuborish huquqi yo'q.",
+    en: "You do not have permission to send this report to Telegram.",
+    ru: "У вас нет прав на отправку этого отчета в Telegram.",
+  },
+  "Telegram integratsiyasi ulanmagan.": {
+    uz: "Telegram integratsiyasi ulanmagan.",
+    en: "The Telegram integration is not connected.",
+    ru: "Интеграция Telegram не подключена.",
+  },
+  "Telegram chat ID yoki bot token topilmadi.": {
+    uz: "Telegram chat ID yoki bot token topilmadi.",
+    en: "Telegram chat ID or bot token is missing.",
+    ru: "Не найден chat ID или bot token Telegram.",
+  },
+  "Hisobot Telegramga yuborildi.": {
+    uz: "Hisobot Telegramga yuborildi.",
+    en: "The report was sent to Telegram.",
+    ru: "Отчет отправлен в Telegram.",
+  },
+  "Telegramga yuborishda xatolik yuz berdi.": {
+    uz: "Telegramga yuborishda xatolik yuz berdi.",
+    en: "An error occurred while sending to Telegram.",
+    ru: "Произошла ошибка при отправке в Telegram.",
+  },
+  "Xodim hisobotini Telegramga yuborish uchun serverda SUPABASE_SERVICE_ROLE_KEY sozlanishi kerak.": {
+    uz: "Xodim hisobotini Telegramga yuborish uchun serverda SUPABASE_SERVICE_ROLE_KEY sozlanishi kerak.",
+    en: "To send an employee report to Telegram, SUPABASE_SERVICE_ROLE_KEY must be configured on the server.",
+    ru: "Чтобы отправлять отчет сотрудника в Telegram, на сервере нужно настроить SUPABASE_SERVICE_ROLE_KEY.",
   },
   "Hisobot o'chirildi.": {
     uz: "Hisobot o'chirildi.",

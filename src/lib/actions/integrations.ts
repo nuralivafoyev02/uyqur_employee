@@ -6,8 +6,15 @@ import { hasRole, requireViewer } from "@/lib/auth";
 import { getIntegrationsCopy } from "@/lib/integrations-copy";
 import { getIntegrationProvider } from "@/lib/integration-providers";
 import { parseAppLanguage } from "@/lib/preferences";
+import { getTelegramDigestCopy } from "@/lib/telegram-digest-copy";
+import {
+  buildTelegramCompletedPlansDigestMessage,
+  buildTelegramReportsDigestMessage,
+} from "@/lib/telegram-digest";
+import { loadTelegramDigestOverview } from "@/lib/telegram-digest-data";
 import { isMissingIntegrationsRelationError, toStringRecord } from "@/lib/queries/integrations";
 import { createActionClient } from "@/lib/supabase/server";
+import { getTelegramConfig, sendTelegramTextMessage } from "@/lib/telegram-service";
 import type { ActionState, FieldErrors } from "@/lib/validations";
 
 function pushFieldError(
@@ -85,10 +92,10 @@ export async function saveIntegrationAction(
 
   const { data: existingCredential, error: existingCredentialError } = existingConnection?.id
     ? await supabase
-        .from("integration_credentials")
-        .select("secret_config")
-        .eq("connection_id", existingConnection.id)
-        .maybeSingle()
+      .from("integration_credentials")
+      .select("secret_config")
+      .eq("connection_id", existingConnection.id)
+      .maybeSingle()
     : { data: null, error: null };
 
   if (isMissingIntegrationsRelationError(existingCredentialError)) {
@@ -283,4 +290,175 @@ export async function disconnectIntegrationAction(
     success: true,
     message: copy.messages.disconnected(provider.displayName),
   };
+}
+
+export async function sendTelegramTestMessageAction(
+  formData: FormData,
+): Promise<ActionState<string>> {
+  const viewer = await requireViewer();
+  const languageEntry = formData.get("language");
+  const language = parseAppLanguage(typeof languageEntry === "string" ? languageEntry : undefined);
+  const copy = getIntegrationsCopy(language);
+  const providerValue = formData.get("provider");
+  const providerEntry = typeof providerValue === "string" ? providerValue : "";
+
+  if (!hasRole(viewer.role, ["admin", "manager"])) {
+    return {
+      success: false,
+      message: copy.messages.unauthorized,
+    };
+  }
+
+  if (providerEntry !== "telegram") {
+    return {
+      success: false,
+      message: copy.messages.telegramOnly,
+    };
+  }
+
+  const supabase = await createActionClient();
+
+  if (!supabase) {
+    return {
+      success: false,
+      message: copy.messages.supabaseMissing,
+    };
+  }
+
+  const telegramConfig = await getTelegramConfig(supabase);
+
+  if (!telegramConfig) {
+    return {
+      success: false,
+      message: copy.messages.telegramConfigMissing,
+    };
+  }
+
+  const timestamp = new Intl.DateTimeFormat(language, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date());
+
+  const text =
+    language === "en"
+      ? `Uyqur Support ERP web app test message\nTime: ${timestamp}\nSent by: ${viewer.full_name}`
+      : language === "ru"
+        ? `Тестовое сообщение из веб-приложения Uyqur Support ERP\nВремя: ${timestamp}\nОтправил: ${viewer.full_name}`
+        : `Uyqur Support ERP web app test xabari\nVaqt: ${timestamp}\nYuborgan: ${viewer.full_name}`;
+
+  try {
+    await sendTelegramTextMessage(telegramConfig, text);
+
+    return {
+      success: true,
+      message: copy.messages.telegramTestSent,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message:
+        error instanceof Error && error.message
+          ? error.message
+          : "Telegramga yuborishda xatolik yuz berdi.",
+    };
+  }
+}
+
+export async function sendTelegramDigestAction(
+  formData: FormData,
+): Promise<ActionState<string>> {
+  const viewer = await requireViewer();
+  const languageEntry = formData.get("language");
+  const language = parseAppLanguage(typeof languageEntry === "string" ? languageEntry : undefined);
+  const copy = getIntegrationsCopy(language);
+  const digestCopy = getTelegramDigestCopy(language);
+  const providerValue = formData.get("provider");
+  const providerEntry = typeof providerValue === "string" ? providerValue : "";
+  const kindEntry = formData.get("kind");
+  const kind = typeof kindEntry === "string" ? kindEntry : "";
+
+  if (!hasRole(viewer.role, ["admin", "manager"])) {
+    return {
+      success: false,
+      message: copy.messages.unauthorized,
+    };
+  }
+
+  if (providerEntry !== "telegram") {
+    return {
+      success: false,
+      message: copy.messages.telegramOnly,
+    };
+  }
+
+  if (kind !== "reports" && kind !== "completed_plans") {
+    return {
+      success: false,
+      message: copy.messages.reviewFields,
+    };
+  }
+
+  const supabase = await createActionClient();
+
+  if (!supabase) {
+    return {
+      success: false,
+      message: copy.messages.supabaseMissing,
+    };
+  }
+
+  const telegramConfig = await getTelegramConfig(supabase);
+
+  if (!telegramConfig) {
+    return {
+      success: false,
+      message: copy.messages.telegramConfigMissing,
+    };
+  }
+
+  try {
+    const overview = await loadTelegramDigestOverview(supabase);
+    const payload =
+      kind === "reports"
+        ? buildTelegramReportsDigestMessage(language, overview)
+        : buildTelegramCompletedPlansDigestMessage(language, overview);
+
+    if (kind === "reports" && overview.reports.length === 0) {
+      return {
+        success: false,
+        message: digestCopy.messages.reportsEmpty,
+      };
+    }
+
+    if (kind === "completed_plans" && overview.completedPlans.length === 0) {
+      return {
+        success: false,
+        message: digestCopy.messages.completedPlansEmpty,
+      };
+    }
+
+    await sendTelegramTextMessage(telegramConfig, payload);
+
+    revalidatePath("/settings");
+    revalidatePath("/dashboard");
+    revalidatePath("/reports");
+    revalidatePath("/plans");
+    revalidatePath("/integrations/telegram");
+
+    return {
+      success: true,
+      message:
+        kind === "reports"
+          ? digestCopy.messages.reportsSent
+          : digestCopy.messages.completedPlansSent,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message:
+        error instanceof Error && error.message
+          ? error.message
+          : "Telegramga yuborishda xatolik yuz berdi.",
+    };
+  }
 }

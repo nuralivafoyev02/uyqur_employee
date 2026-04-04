@@ -1,7 +1,13 @@
 import { PlansContent } from "@/components/plans/plans-content";
 import { getPlansPageData } from "@/lib/queries/plans";
-import { requireViewer } from "@/lib/auth";
-import { savePlanAction, updatePlanStatusAction } from "@/lib/actions/plans";
+import { getActiveIntegrationByProvider } from "@/lib/queries/integrations";
+import { hasRole, requireViewer } from "@/lib/auth";
+import {
+  savePlanAction,
+  sendCompletedPlansToTelegramAction,
+  updatePlanStatusAction,
+} from "@/lib/actions/plans";
+import { hasSupabaseServiceRoleEnv } from "@/lib/supabase/config";
 
 type PlansPageProps = {
   searchParams: Promise<{
@@ -16,12 +22,21 @@ type PlansPageProps = {
 export default async function PlansPage({ searchParams }: PlansPageProps) {
   const viewer = await requireViewer();
   const filters = await searchParams;
-  const data = await getPlansPageData(viewer, filters);
+  const [data, telegramConnection] = await Promise.all([
+    getPlansPageData(viewer, filters),
+    getActiveIntegrationByProvider("telegram"),
+  ]);
+  const canSendTelegram =
+    Boolean(telegramConnection) &&
+    (hasRole(viewer.role, ["admin", "manager"]) || hasSupabaseServiceRoleEnv());
 
   return (
     <PlansContent
+      canSendTelegram={canSendTelegram}
       data={data}
       saveAction={savePlanAction}
+      sendCompletedPlansToTelegramAction={sendCompletedPlansToTelegramAction}
+      telegramConnection={telegramConnection}
       updateStatusAction={updatePlanStatusAction}
     />
   );

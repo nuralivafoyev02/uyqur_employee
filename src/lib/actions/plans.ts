@@ -3,7 +3,12 @@
 import { revalidatePath } from "next/cache";
 
 import { hasRole, requireViewer } from "@/lib/auth";
-import { createActionClient } from "@/lib/supabase/server";
+import { parseAppLanguage } from "@/lib/preferences";
+import { buildTelegramCompletedPlansMessage } from "@/lib/telegram-report";
+import { hasSupabaseServiceRoleEnv, isSupabaseConfigured } from "@/lib/supabase/config";
+import { createActionClient, createAdminClient } from "@/lib/supabase/server";
+import { getTelegramConfig, sendTelegramTextMessage } from "@/lib/telegram-service";
+import { getTodayIsoDate, isValidIsoDate } from "@/lib/utils";
 import { type ActionState, validatePlanForm } from "@/lib/validations";
 import type { PlanStatus } from "@/types/database";
 
@@ -180,4 +185,135 @@ export async function updatePlanStatusAction(formData: FormData) {
     success: true,
     message: "Vazifa statusi yangilandi.",
   } satisfies ActionState;
+}
+
+export async function sendCompletedPlansToTelegramAction(
+  formData: FormData,
+): Promise<ActionState<string>> {
+  const viewer = await requireViewer();
+  const supabase = await createActionClient();
+  const languageEntry = formData.get("language");
+  const language = parseAppLanguage(typeof languageEntry === "string" ? languageEntry : undefined);
+  const employeeIdEntry = formData.get("employeeId");
+  const employeeId =
+    typeof employeeIdEntry === "string" && employeeIdEntry.trim() ? employeeIdEntry.trim() : viewer.id;
+  const reportDateEntry = formData.get("reportDate");
+  const reportDate =
+    typeof reportDateEntry === "string" && isValidIsoDate(reportDateEntry)
+      ? reportDateEntry
+      : getTodayIsoDate();
+
+  if (!supabase || !isSupabaseConfigured()) {
+    return {
+      success: false,
+      message: "Supabase ulanishi sozlanmagan.",
+    };
+  }
+
+  if (employeeId !== viewer.id && !hasRole(viewer.role, ["admin", "manager"])) {
+    return {
+      success: false,
+      message: "Bu xodimning yakunlangan vazifalarini Telegramga yuborish huquqi yo'q.",
+    };
+  }
+
+  const canReadTelegramSecrets =
+    hasRole(viewer.role, ["admin", "manager"]) || hasSupabaseServiceRoleEnv();
+
+  if (!canReadTelegramSecrets) {
+    return {
+      success: false,
+      message:
+        "Xodim yakunlangan vazifalarini Telegramga yuborish uchun serverda SUPABASE_SERVICE_ROLE_KEY sozlanishi kerak.",
+    };
+  }
+
+  const telegramConfigClient =
+    hasRole(viewer.role, ["admin", "manager"]) ? supabase : createAdminClient() ?? supabase;
+  const telegramConfig = await getTelegramConfig(telegramConfigClient);
+
+  if (!telegramConfig) {
+    return {
+      success: false,
+      message: "Telegram chat ID yoki bot token topilmadi.",
+    };
+  }
+
+  const employee =
+    employeeId === viewer.id
+      ? {
+          full_name: viewer.full_name,
+          title: viewer.title,
+        }
+      : await supabase
+          .from("profiles")
+          .select("full_name, title")
+          .eq("id", employeeId)
+          .maybeSingle()
+          .then((result) => result.data);
+
+  if (!employee) {
+    return {
+      success: false,
+      message: "Xodim topilmadi.",
+    };
+  }
+
+  const nextDate = new Date(`${reportDate}T00:00:00`);
+  nextDate.setDate(nextDate.getDate() + 1);
+  const endDate = nextDate.toISOString().slice(0, 10);
+
+  const { data: completedPlans } = await supabase
+    .from("plans")
+    .select("id, title, due_date, priority, updated_at")
+    .eq("assignee_id", employeeId)
+    .eq("status", "done")
+    .gte("updated_at", `${reportDate}T00:00:00`)
+    .lt("updated_at", `${endDate}T00:00:00`)
+    .order("updated_at", { ascending: false });
+
+  if (!completedPlans || completedPlans.length === 0) {
+    return {
+      success: false,
+      message: "Bugun yakunlangan vazifa topilmadi.",
+    };
+  }
+
+  const payload = buildTelegramCompletedPlansMessage({
+    language,
+    employeeName: employee.full_name,
+    employeeTitle: employee.title,
+    reportDate,
+    completedPlans: completedPlans.map((plan) => ({
+      id: plan.id,
+      title: plan.title,
+      dueDate: plan.due_date,
+      priority: plan.priority,
+      updatedAt: plan.updated_at,
+    })),
+  });
+
+  try {
+    await sendTelegramTextMessage(telegramConfig, payload);
+
+    revalidatePath("/dashboard");
+    revalidatePath("/plans");
+    revalidatePath("/employees");
+    revalidatePath(`/employees/${employeeId}`);
+    revalidatePath("/api/employees");
+    revalidatePath("/api/reports");
+
+    return {
+      success: true,
+      message: "Yakunlangan vazifalar Telegramga yuborildi.",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message:
+        error instanceof Error && error.message
+          ? error.message
+          : "Telegramga yuborishda xatolik yuz berdi.",
+    };
+  }
 }

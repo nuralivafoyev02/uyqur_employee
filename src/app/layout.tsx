@@ -17,6 +17,11 @@ export const metadata: Metadata = {
   },
   description:
     "Uyqur Support ERP - Ichki employee tracking tizimi: hisobotlar, rejalar va boshqaruv ko'rinishi.",
+  icons: {
+    icon: "/logo.jpg",
+    shortcut: "/logo.jpg",
+    apple: "/logo.jpg",
+  },
 };
 
 const themeInitScript = `

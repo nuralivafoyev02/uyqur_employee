@@ -31,6 +31,8 @@ type IntegrationsCopy = {
   close: string;
   disconnect: string;
   disconnecting: string;
+  testMessage: string;
+  testingMessage: string;
   required: string;
   optional: string;
   privateField: string;
@@ -54,6 +56,9 @@ type IntegrationsCopy = {
     providerUnavailable: string;
     supabaseMissing: string;
     tablesMissing: string;
+    telegramTestSent: string;
+    telegramConfigMissing: string;
+    telegramOnly: string;
     connectionSaved: (providerName: string) => string;
     disconnected: (providerName: string) => string;
     requiredField: (fieldLabel: string) => string;
@@ -99,6 +104,8 @@ const COPY: Record<AppLanguage, IntegrationsCopy> = {
     close: "Yopish",
     disconnect: "Uzish",
     disconnecting: "Uzilmoqda...",
+    testMessage: "Test xabar yuborish",
+    testingMessage: "Yuborilmoqda...",
     required: "Majburiy",
     optional: "Ixtiyoriy",
     privateField: "Maxfiy",
@@ -133,6 +140,9 @@ const COPY: Record<AppLanguage, IntegrationsCopy> = {
       supabaseMissing: "Supabase ulanishi sozlanmagan.",
       tablesMissing:
         "Integratsiya jadvallari hali bazaga qo'llanmagan. Migratsiyani ishga tushiring.",
+      telegramTestSent: "Telegramga test xabar yuborildi.",
+      telegramConfigMissing: "Telegram bot token yoki chat ID topilmadi.",
+      telegramOnly: "Test xabar faqat Telegram integratsiyasi uchun mavjud.",
       connectionSaved: (providerName: string) => `${providerName} integratsiyasi saqlandi.`,
       disconnected: (providerName: string) => `${providerName} integratsiyasi uzildi.`,
       requiredField: (fieldLabel: string) => `${fieldLabel} maydonini to'ldiring.`,
@@ -176,6 +186,8 @@ const COPY: Record<AppLanguage, IntegrationsCopy> = {
     close: "Close",
     disconnect: "Disconnect",
     disconnecting: "Disconnecting...",
+    testMessage: "Send test message",
+    testingMessage: "Sending...",
     required: "Required",
     optional: "Optional",
     privateField: "Private",
@@ -210,6 +222,9 @@ const COPY: Record<AppLanguage, IntegrationsCopy> = {
       supabaseMissing: "Supabase connection is not configured.",
       tablesMissing:
         "Integration tables have not been applied to the database yet. Run the migration first.",
+      telegramTestSent: "A Telegram test message was sent.",
+      telegramConfigMissing: "The Telegram bot token or chat ID is missing.",
+      telegramOnly: "Test messages are only available for the Telegram integration.",
       connectionSaved: (providerName: string) => `${providerName} integration saved.`,
       disconnected: (providerName: string) => `${providerName} integration disconnected.`,
       requiredField: (fieldLabel: string) => `Please fill in ${fieldLabel}.`,
@@ -253,6 +268,8 @@ const COPY: Record<AppLanguage, IntegrationsCopy> = {
     close: "Закрыть",
     disconnect: "Отключить",
     disconnecting: "Отключение...",
+    testMessage: "Отправить тест",
+    testingMessage: "Отправка...",
     required: "Обязательно",
     optional: "Опционально",
     privateField: "Секретно",
@@ -287,6 +304,9 @@ const COPY: Record<AppLanguage, IntegrationsCopy> = {
       supabaseMissing: "Подключение Supabase не настроено.",
       tablesMissing:
         "Таблицы интеграций еще не применены в базе. Сначала запустите миграцию.",
+      telegramTestSent: "Тестовое сообщение отправлено в Telegram.",
+      telegramConfigMissing: "Не найден bot token или chat ID Telegram.",
+      telegramOnly: "Тестовое сообщение доступно только для интеграции Telegram.",
       connectionSaved: (providerName: string) => `Интеграция ${providerName} сохранена.`,
       disconnected: (providerName: string) => `Интеграция ${providerName} отключена.`,
       requiredField: (fieldLabel: string) => `Заполните поле ${fieldLabel}.`,

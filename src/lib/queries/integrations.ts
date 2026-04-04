@@ -1,4 +1,6 @@
 import { SUPABASE_SETUP_MESSAGE } from "@/lib/supabase/config";
+import { loadTelegramDigestOverview } from "@/lib/telegram-digest-data";
+import type { TelegramDigestOverview } from "@/lib/telegram-digest";
 import { createServerComponentClient } from "@/lib/supabase/server";
 import {
   getIntegrationProvider,
@@ -126,6 +128,16 @@ export async function getActiveIntegrationByProvider(
   }
 
   return mapConnection(data as ConnectionRow);
+}
+
+export async function getTelegramDigestOverview(): Promise<TelegramDigestOverview | null> {
+  const supabase = await createServerComponentClient();
+
+  if (!supabase) {
+    throw new Error(SUPABASE_SETUP_MESSAGE);
+  }
+
+  return loadTelegramDigestOverview(supabase);
 }
 
 export { isMissingIntegrationsRelationError, toStringRecord };

@@ -11,6 +11,7 @@ import { ProfileStatusBadge, ReportStatusBadge } from "@/components/ui/badges";
 import { FilterModal } from "@/components/ui/filter-modal";
 import { ReportDetailModal } from "@/components/reports/report-detail-modal";
 import { ReportForm } from "@/components/reports/report-form";
+import type { ActiveIntegrationSummary } from "@/lib/integration-providers";
 import { getReportsCopy } from "@/lib/reports-copy";
 import { formatDate, formatDateTime, getReportStatusLabel, truncate } from "@/lib/utils";
 import type { ActionState } from "@/lib/validations";
@@ -30,17 +31,32 @@ type SaveReportAction = (
   formData: FormData,
 ) => Promise<ActionState<ReportField>>;
 
+type SendReportToTelegramAction = (
+  state: ActionState<string> | undefined,
+  formData: FormData,
+) => Promise<ActionState<string>>;
+
 type DeleteReportAction = (formData: FormData) => Promise<void>;
 
 type ReportsContentProps = {
   data: ReportsPageData;
   action: SaveReportAction;
+  canSendTelegram: boolean;
+  sendTelegramAction: SendReportToTelegramAction;
   deleteAction: DeleteReportAction;
+  telegramConnection: ActiveIntegrationSummary | null;
 };
 
 const STATUSES: ReportStatus[] = ["done", "in_progress", "blocked"];
 
-export function ReportsContent({ data, action, deleteAction }: ReportsContentProps) {
+export function ReportsContent({
+  data,
+  action,
+  canSendTelegram,
+  sendTelegramAction,
+  deleteAction,
+  telegramConnection,
+}: ReportsContentProps) {
   const editorPanelId = useId();
   const [isEditorOpen, setIsEditorOpen] = useState(
     !data.isLeadView || Boolean(data.editorRequested),
@@ -318,9 +334,15 @@ export function ReportsContent({ data, action, deleteAction }: ReportsContentPro
             <ReportForm
               key={editorKey}
               action={action}
+              canSendTelegram={canSendTelegram}
+              sendTelegramAction={sendTelegramAction}
               employeeId={data.editorEmployeeId}
+              employeeName={data.editorEmployee?.full_name ?? copy.history.unknownEmployee}
+              employeeTitle={data.editorEmployee?.title}
               initialValue={data.reportForEditor}
               selectedDate={data.editorDate}
+              telegramConnection={telegramConnection}
+              completedPlans={data.reportForEditorCompletedPlans}
             />
           </div>
         </section>

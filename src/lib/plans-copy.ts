@@ -69,6 +69,23 @@ type PlansCopy = {
     emptyTitle: string;
     emptyDescription: string;
   };
+  telegram: {
+    title: string;
+    completedPlansTitle: string;
+    description: string;
+    employeeLabel: string;
+    dateLabel: string;
+    completedPlans: string;
+    completedPlansEmpty: string;
+    botLabel: string;
+    chatLabel: string;
+    preview: string;
+    send: string;
+    sending: string;
+    notConnected: string;
+    notConnectedHint: string;
+    restrictedHint: string;
+  };
   pagination: {
     summary: (page: number, pageCount: number) => string;
     previous: string;
@@ -149,6 +166,26 @@ const COPY: Record<AppLanguage, PlansCopy> = {
       emptyTitle: "Vazifalar topilmadi",
       emptyDescription: "Tanlangan filtrlar bo'yicha hozircha vazifalar mavjud emas.",
     },
+    telegram: {
+      title: "Telegram",
+      completedPlansTitle: "Bugun yakunlangan vazifalar",
+      description:
+        "Bugun `done` holatiga o'tgan va sizga biriktirilgan vazifalarni Uyqur Yordamchi bot orqali guruhga yuboring.",
+      employeeLabel: "Xodim",
+      dateLabel: "Sana",
+      completedPlans: "Yuboriladigan vazifalar",
+      completedPlansEmpty: "Bugun yakunlangan vazifa topilmadi.",
+      botLabel: "Bot",
+      chatLabel: "Chat ID",
+      preview: "Yuboriladigan xabar",
+      send: "Telegramga yuborish",
+      sending: "Yuborilmoqda...",
+      notConnected: "Telegram integratsiyasi ulanmagan.",
+      notConnectedHint:
+        "Bot token va chat ID sozlangandan keyin shu yerdan vazifalarni guruhga yuborish mumkin bo'ladi.",
+      restrictedHint:
+        "Xodim yakunlangan vazifalarini yuborishi uchun serverda `SUPABASE_SERVICE_ROLE_KEY` sozlanishi kerak.",
+    },
     pagination: {
       summary: (page, pageCount) => `Sahifa ${page} / ${pageCount}`,
       previous: "Oldingi",
@@ -226,6 +263,26 @@ const COPY: Record<AppLanguage, PlansCopy> = {
       dragSuccess: "Task moved to the new column.",
       emptyTitle: "No tasks found",
       emptyDescription: "There are no tasks for the selected filters yet.",
+    },
+    telegram: {
+      title: "Telegram",
+      completedPlansTitle: "Tasks completed today",
+      description:
+        "Send the tasks assigned to you that moved to `done` today to the group through the Uyqur Yordamchi bot.",
+      employeeLabel: "Employee",
+      dateLabel: "Date",
+      completedPlans: "Tasks to send",
+      completedPlansEmpty: "No completed tasks were found for today.",
+      botLabel: "Bot",
+      chatLabel: "Chat ID",
+      preview: "Outgoing message",
+      send: "Send to Telegram",
+      sending: "Sending...",
+      notConnected: "The Telegram integration is not connected.",
+      notConnectedHint:
+        "Once the bot token and chat ID are configured, you can send completed tasks to the group from here.",
+      restrictedHint:
+        "To let employees send completed tasks, configure `SUPABASE_SERVICE_ROLE_KEY` on the server.",
     },
     pagination: {
       summary: (page, pageCount) => `Page ${page} / ${pageCount}`,
@@ -305,6 +362,26 @@ const COPY: Record<AppLanguage, PlansCopy> = {
       emptyTitle: "Задачи не найдены",
       emptyDescription: "По выбранным фильтрам задачи пока отсутствуют.",
     },
+    telegram: {
+      title: "Telegram",
+      completedPlansTitle: "Завершенные сегодня задачи",
+      description:
+        "Отправляйте в группу через бота Uyqur Yordamchi задачи, которые были назначены вам и переведены сегодня в `done`.",
+      employeeLabel: "Сотрудник",
+      dateLabel: "Дата",
+      completedPlans: "Задачи к отправке",
+      completedPlansEmpty: "На сегодня завершенных задач не найдено.",
+      botLabel: "Бот",
+      chatLabel: "Chat ID",
+      preview: "Сообщение к отправке",
+      send: "Отправить в Telegram",
+      sending: "Отправка...",
+      notConnected: "Интеграция Telegram не подключена.",
+      notConnectedHint:
+        "После настройки bot token и chat ID отсюда можно будет отправлять завершенные задачи в группу.",
+      restrictedHint:
+        "Чтобы сотрудники могли отправлять завершенные задачи, на сервере нужно настроить `SUPABASE_SERVICE_ROLE_KEY`.",
+    },
     pagination: {
       summary: (page, pageCount) => `Страница ${page} / ${pageCount}`,
       previous: "Назад",
@@ -378,6 +455,41 @@ const PLAN_MESSAGE_COPY: Record<string, Record<AppLanguage, string>> = {
     uz: "Vazifa statusini yangilab bo'lmadi.",
     en: "Could not update the task status.",
     ru: "Не удалось обновить статус задачи.",
+  },
+  "Bu xodimning yakunlangan vazifalarini Telegramga yuborish huquqi yo'q.": {
+    uz: "Bu xodimning yakunlangan vazifalarini Telegramga yuborish huquqi yo'q.",
+    en: "You do not have permission to send this employee's completed tasks to Telegram.",
+    ru: "У вас нет прав на отправку завершенных задач этого сотрудника в Telegram.",
+  },
+  "Xodim yakunlangan vazifalarini Telegramga yuborish uchun serverda SUPABASE_SERVICE_ROLE_KEY sozlanishi kerak.": {
+    uz: "Xodim yakunlangan vazifalarini Telegramga yuborish uchun serverda SUPABASE_SERVICE_ROLE_KEY sozlanishi kerak.",
+    en: "To send an employee's completed tasks to Telegram, SUPABASE_SERVICE_ROLE_KEY must be configured on the server.",
+    ru: "Чтобы отправлять завершенные задачи сотрудника в Telegram, на сервере нужно настроить SUPABASE_SERVICE_ROLE_KEY.",
+  },
+  "Telegram chat ID yoki bot token topilmadi.": {
+    uz: "Telegram chat ID yoki bot token topilmadi.",
+    en: "Telegram chat ID or bot token is missing.",
+    ru: "Не найден chat ID или bot token Telegram.",
+  },
+  "Xodim topilmadi.": {
+    uz: "Xodim topilmadi.",
+    en: "Employee not found.",
+    ru: "Сотрудник не найден.",
+  },
+  "Bugun yakunlangan vazifa topilmadi.": {
+    uz: "Bugun yakunlangan vazifa topilmadi.",
+    en: "No completed task was found for today.",
+    ru: "На сегодня завершенная задача не найдена.",
+  },
+  "Yakunlangan vazifalar Telegramga yuborildi.": {
+    uz: "Yakunlangan vazifalar Telegramga yuborildi.",
+    en: "Completed tasks were sent to Telegram.",
+    ru: "Завершенные задачи отправлены в Telegram.",
+  },
+  "Telegramga yuborishda xatolik yuz berdi.": {
+    uz: "Telegramga yuborishda xatolik yuz berdi.",
+    en: "An error occurred while sending to Telegram.",
+    ru: "Произошла ошибка при отправке в Telegram.",
   },
 };
 

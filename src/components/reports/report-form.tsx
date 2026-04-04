@@ -4,9 +4,12 @@ import { startTransition, useActionState, useEffect, useRef, useState } from "re
 import { useRouter } from "next/navigation";
 
 import { usePreferences } from "@/components/providers/preferences-provider";
+import { ReportTelegramPanel } from "@/components/reports/report-telegram-panel";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { ActionStateToast } from "@/components/ui/toast-effect";
+import type { ActiveIntegrationSummary } from "@/lib/integration-providers";
 import { getReportsCopy, translateReportMessage } from "@/lib/reports-copy";
+import type { TelegramCompletedPlanItem } from "@/lib/telegram-report";
 import { cx, formatDate, getReportStatusLabel } from "@/lib/utils";
 import type { ActionState } from "@/lib/validations";
 import type { DailyReport, ReportStatus } from "@/types/database";
@@ -24,9 +27,18 @@ type ReportFormAction = (
   formData: FormData,
 ) => Promise<ActionState<ReportField>>;
 
+type SendReportToTelegramAction = (
+  state: ActionState<string> | undefined,
+  formData: FormData,
+) => Promise<ActionState<string>>;
+
 type ReportFormProps = {
   action: ReportFormAction;
+  canSendTelegram: boolean;
+  sendTelegramAction: SendReportToTelegramAction;
   employeeId: string;
+  employeeName: string;
+  employeeTitle?: string | null;
   initialValue?: Pick<
     DailyReport,
     | "id"
@@ -36,8 +48,13 @@ type ReportFormProps = {
     | "next_plan"
     | "blockers"
     | "status"
+    | "telegram_status"
+    | "telegram_last_error"
+    | "telegram_sent_at"
   > | null;
   selectedDate: string;
+  telegramConnection: ActiveIntegrationSummary | null;
+  completedPlans: TelegramCompletedPlanItem[];
 };
 
 type ReportDraft = {
@@ -67,9 +84,15 @@ function getInitialReportDraft(
 
 export function ReportForm({
   action,
+  canSendTelegram,
+  sendTelegramAction,
   employeeId,
+  employeeName,
+  employeeTitle,
   initialValue,
   selectedDate,
+  telegramConnection,
+  completedPlans,
 }: ReportFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const handledRedirectRef = useRef<string | null>(null);
@@ -125,11 +148,7 @@ export function ReportForm({
   ).length;
 
   return (
-    <form ref={formRef} action={formAction} className="space-y-4">
-      {initialValue?.id ? <input type="hidden" name="reportId" value={initialValue.id} /> : null}
-      <input type="hidden" name="employeeId" value={employeeId} />
-      <input type="hidden" name="reportDate" value={initialValue?.report_date ?? selectedDate} />
-      <input type="hidden" name="status" value={draft.status} />
+    <div className="space-y-4">
       <ActionStateToast
         state={state}
         message={state?.message ? translateReportMessage(state.message, language) : undefined}
@@ -231,90 +250,113 @@ export function ReportForm({
         </aside>
 
         <div className="space-y-3">
-          {sections.map((section, index) => (
-            <div
-              key={section.key}
-              className="rounded-2xl border border-app-border bg-app-surface p-4"
-            >
-              <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
-                <div className="space-y-1">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-app-text-subtle">
-                    {String(index + 1).padStart(2, "0")}
-                  </p>
-                  <label
-                    className="block text-sm font-semibold tracking-tight text-app-text"
-                    htmlFor={section.key}
-                  >
-                    {section.label}
-                  </label>
-                  <p className="max-w-2xl text-[13px] leading-5 text-app-text-muted">
-                    {section.hint}
-                  </p>
+          <form ref={formRef} action={formAction} className="space-y-3">
+            {initialValue?.id ? <input type="hidden" name="reportId" value={initialValue.id} /> : null}
+            <input type="hidden" name="employeeId" value={employeeId} />
+            <input type="hidden" name="reportDate" value={initialValue?.report_date ?? selectedDate} />
+            <input type="hidden" name="status" value={draft.status} />
+
+            {sections.map((section, index) => (
+              <div
+                key={section.key}
+                className="rounded-2xl border border-app-border bg-app-surface p-4"
+              >
+                <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+                  <div className="space-y-1">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-app-text-subtle">
+                      {String(index + 1).padStart(2, "0")}
+                    </p>
+                    <label
+                      className="block text-sm font-semibold tracking-tight text-app-text"
+                      htmlFor={section.key}
+                    >
+                      {section.label}
+                    </label>
+                    <p className="max-w-2xl text-[13px] leading-5 text-app-text-muted">
+                      {section.hint}
+                    </p>
+                  </div>
                 </div>
+
+                <textarea
+                  id={section.key}
+                  name={section.key}
+                  className="app-field app-textarea mt-3 min-h-32"
+                  value={draft[section.key]}
+                  onChange={(event) =>
+                    setDraft((current) => ({
+                      ...current,
+                      [section.key]: event.target.value,
+                    }))
+                  }
+                  placeholder={section.placeholder}
+                />
+
+                {state?.fieldErrors?.[section.key] ? (
+                  <p className="mt-2 text-[12px] text-rose-700">
+                    {translateReportMessage(state.fieldErrors[section.key]?.[0], language)}
+                  </p>
+                ) : null}
+              </div>
+            ))}
+
+            <div className="rounded-2xl border border-app-border bg-app-bg-elevated p-4">
+              <div className="space-y-1">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-app-text-subtle">
+                  {copy.form.optional}
+                </p>
+                <label
+                  className="block text-sm font-semibold tracking-tight text-app-text"
+                  htmlFor="blockers"
+                >
+                  {copy.form.blockers}
+                </label>
+                <p className="max-w-2xl text-[13px] leading-5 text-app-text-muted">
+                  {copy.form.blockersHint}
+                </p>
               </div>
 
               <textarea
-                id={section.key}
-                name={section.key}
-                className="app-field app-textarea mt-3 min-h-32"
-                value={draft[section.key]}
+                id="blockers"
+                name="blockers"
+                className="app-field app-textarea mt-3 min-h-24"
+                value={draft.blockers}
                 onChange={(event) =>
-                  setDraft((current) => ({
-                    ...current,
-                    [section.key]: event.target.value,
-                  }))
+                  setDraft((current) => ({ ...current, blockers: event.target.value }))
                 }
-                placeholder={section.placeholder}
+                placeholder={copy.form.blockersPlaceholder}
               />
-
-              {state?.fieldErrors?.[section.key] ? (
-                <p className="mt-2 text-[12px] text-rose-700">
-                  {translateReportMessage(state.fieldErrors[section.key]?.[0], language)}
-                </p>
-              ) : null}
-            </div>
-          ))}
-
-          <div className="rounded-2xl border border-app-border bg-app-bg-elevated p-4">
-            <div className="space-y-1">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-app-text-subtle">
-                {copy.form.optional}
-              </p>
-              <label
-                className="block text-sm font-semibold tracking-tight text-app-text"
-                htmlFor="blockers"
-              >
-                {copy.form.blockers}
-              </label>
-              <p className="max-w-2xl text-[13px] leading-5 text-app-text-muted">
-                {copy.form.blockersHint}
-              </p>
             </div>
 
-            <textarea
-              id="blockers"
-              name="blockers"
-              className="app-field app-textarea mt-3 min-h-24"
-              value={draft.blockers}
-              onChange={(event) =>
-                setDraft((current) => ({ ...current, blockers: event.target.value }))
-              }
-              placeholder={copy.form.blockersPlaceholder}
-            />
-          </div>
+            <div className="flex flex-col gap-3 rounded-2xl border border-app-border bg-app-surface p-4 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-[13px] leading-5 text-app-text-muted">
+                {copy.form.progressDescription}
+              </p>
+              <SubmitButton
+                label={copy.form.submit}
+                pendingLabel={copy.form.pending}
+                className="w-full px-4 sm:w-auto"
+              />
+            </div>
+          </form>
 
-          <div className="flex flex-col gap-3 rounded-2xl border border-app-border bg-app-surface p-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-[13px] leading-5 text-app-text-muted">
-              {copy.form.progressDescription}
-            </p>
-            <SubmitButton
-              label={copy.form.submit}
-              pendingLabel={copy.form.pending}
-              className="w-full px-4 sm:w-auto"
+          {initialValue?.id ? (
+            <ReportTelegramPanel
+              action={sendTelegramAction}
+              canSend={canSendTelegram}
+              report={initialValue}
+              employeeName={employeeName}
+              employeeTitle={employeeTitle}
+              completedPlans={completedPlans}
+              telegramConnection={telegramConnection}
             />
-          </div>
+          ) : (
+            <div className="rounded-2xl border border-dashed border-app-border bg-app-bg-elevated px-4 py-4 text-[13px] text-app-text-muted">
+              {copy.telegram.saveFirstHint}
+            </div>
+          )}
         </div>
       </div>
-    </form>
+    </div>
   );
 }

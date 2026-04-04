@@ -28,6 +28,26 @@ export function getSupabasePublicEnv() {
   };
 }
 
+export function getSupabaseServiceEnv() {
+  const { url } = getSupabasePublicEnv();
+  const serviceRoleKey = normalizeEnv(process.env.SUPABASE_SERVICE_ROLE_KEY);
+  const configured =
+    url.length > 0 &&
+    serviceRoleKey.length > 0 &&
+    !url.includes(PLACEHOLDER_URL) &&
+    !serviceRoleKey.includes(PLACEHOLDER_KEY);
+
+  return {
+    url,
+    serviceRoleKey,
+    configured,
+  };
+}
+
 export function isSupabaseConfigured() {
   return getSupabasePublicEnv().configured;
+}
+
+export function hasSupabaseServiceRoleEnv() {
+  return getSupabaseServiceEnv().configured;
 }

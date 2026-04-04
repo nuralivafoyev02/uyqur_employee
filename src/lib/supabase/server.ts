@@ -1,8 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
+import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
 
-import { getSupabasePublicEnv } from "@/lib/supabase/config";
+import { getSupabasePublicEnv, getSupabaseServiceEnv } from "@/lib/supabase/config";
 import type { Database } from "@/types/database";
 
 function buildServerClient() {
@@ -61,6 +62,21 @@ export async function createActionClient() {
           cookieStore.set(name, value, options);
         });
       },
+    },
+  });
+}
+
+export function createAdminClient() {
+  const env = getSupabaseServiceEnv();
+
+  if (!env.configured) {
+    return null;
+  }
+
+  return createClient<Database>(env.url, env.serviceRoleKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
     },
   });
 }

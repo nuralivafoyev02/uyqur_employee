@@ -1,7 +1,13 @@
 import { ReportsContent } from "@/components/reports/reports-content";
 import { getReportsPageData } from "@/lib/queries/reports";
-import { requireViewer } from "@/lib/auth";
-import { deleteReportAction, saveReportAction } from "@/lib/actions/reports";
+import { getActiveIntegrationByProvider } from "@/lib/queries/integrations";
+import { hasRole, requireViewer } from "@/lib/auth";
+import {
+  deleteReportAction,
+  saveReportAction,
+  sendReportToTelegramAction,
+} from "@/lib/actions/reports";
+import { hasSupabaseServiceRoleEnv } from "@/lib/supabase/config";
 
 type ReportsPageProps = {
   searchParams: Promise<{
@@ -17,7 +23,22 @@ type ReportsPageProps = {
 export default async function ReportsPage({ searchParams }: ReportsPageProps) {
   const viewer = await requireViewer();
   const filters = await searchParams;
-  const data = await getReportsPageData(viewer, filters);
+  const [data, telegramConnection] = await Promise.all([
+    getReportsPageData(viewer, filters),
+    getActiveIntegrationByProvider("telegram"),
+  ]);
+  const canSendTelegram =
+    Boolean(telegramConnection) &&
+    (hasRole(viewer.role, ["admin", "manager"]) || hasSupabaseServiceRoleEnv());
 
-  return <ReportsContent data={data} action={saveReportAction} deleteAction={deleteReportAction} />;
+  return (
+    <ReportsContent
+      data={data}
+      action={saveReportAction}
+      canSendTelegram={canSendTelegram}
+      sendTelegramAction={sendReportToTelegramAction}
+      deleteAction={deleteReportAction}
+      telegramConnection={telegramConnection}
+    />
+  );
 }
