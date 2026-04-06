@@ -193,7 +193,7 @@ const COPY: Record<AppLanguage, DashboardCopy> = {
     reports: {
       leadEyebrow: "So'nggi hisobotlar",
       employeeEyebrow: "So'nggi hisobotlarim",
-      leadTitle: "Jamoa yangilanishlari",
+      leadTitle: "Jamoa hisobotlari",
       employeeTitle: "Hisobot tarixi",
       viewAll: "Hisobotlar sahifasi",
       openDetail: "To'liq ko'rish",
